@@ -9,13 +9,14 @@ Make sure you have boost and libusb-1.0 installed.
 * ***sudo apt-get install libusb-1.0-0-dev***
 * ***sudo apt-get install libboost-all-dev***
 
-
 ### Build
+
 Compile by running
 
     make
 
-If you want to run the daemon as user, put the file 91-g13.rules into /etc/udev/rules.d/ (or whatever directory your distribution uses).
+If you want to run the daemon as user, put the file 91-g13.rules into
+/etc/udev/rules.d/ (or whatever directory your distribution uses).
 
 ## Running
 
@@ -47,7 +48,8 @@ If you see output like
 
 
 
-that is good. This also shows you which name the keys on the G13 have, and what keys you can bind them to.
+that is good. This also shows you which name the keys on the G13 have, and what
+keys you can bind them to.
 
 ### Command line options
 
@@ -65,19 +67,24 @@ Option 				|  Description
 
 Configuration is accomplished using the commands described in the [Commands] section.
 
-Commands can be loaded from a file specified by the --config option on the command line.  
+Commands can be loaded from a file specified by the --config option on the
+command line.
 
-Commands can be also be sent to the command input pipe, which is at ***/tmp/g13-0*** by 
-default. Example:
+Commands can be also be sent to the command input pipe, which is at
+***/tmp/g13-0*** by default. Example:
 
     echo rgb 0 255 0 > /tmp/g13-0
 
 ### Actions
 
-Various parts of configuring the G13 depend on assigning actions to occur based on something happening to the G13. 
+Various parts of configuring the G13 depend on assigning actions to occur based
+on something happening to the G13.
+
 * key, possible values shown upon startup  (e.g. ***KEY_LEFTSHIFT***).
 * multiple keys,  like ***KEY_LEFTSHIFT+KEY_F1***
-* pipe output, by using ">" followed by text, as in ***>Hello*** - causing **Hello** (plus newline) to be written to the output pipe ( **/tmp/g13-0_out** by default )
+* pipe output, by using ">" followed by text, as in ***>Hello*** - causing
+  **Hello** (plus newline) to be written to the output pipe ( **/tmp/g13-0_out**
+  by default )
 * command, by using "!" followed by text, as in ***!stick_mode KEYS*** 
 
 ## Commands
@@ -88,8 +95,8 @@ Sets the backlight color
 
 ### mod *n*
 
-Sets the background light of the mod-keys. *n* is the sum of 1 (M1), 2 (M2), 4 (M3) and 8 (MR) (i.e. 13 
-would set M1, M3 and MR, and unset M2).
+Sets the background light of the mod-keys. *n* is the sum of 1 (M1), 2 (M2), 4
+(M3) and 8 (MR) (i.e. 13 would set M1, M3 and MR, and unset M2).
 
 ### bind *keyname* *action*
 
@@ -99,7 +106,8 @@ This binds a key or a stick zone.
 
 ### stickmode *mode*
 
-The stick can be used as an absolute input device or can send key events. You can change modes to one of the following:
+The stick can be used as an absolute input device or can send key events. You
+can change modes to one of the following:
 
 Mode       | Description
 -----------|---------------------------
@@ -120,14 +128,16 @@ operation | what it does
 ----------|----------------
 add       | add a new zone named *zonename*
 del       | remove zone named *zonename*
-action    | set action for zone, see [Actions]  
-bounds    | set boundaries for zone, *args* are X1, Y1, X2, Y2, where X1/Y1 are top left corner, X2/Y2 are bottom right corner 
+action    | set action for zone, see [Actions]
+bounds    | set boundaries for zone, *args* are X1, Y1, X2, Y2, where X1/Y1 are top
+          | left corner, X2/Y2 are bottom right corner
 
 Default created zones are LEFT, RIGHT, UP and DOWN.
 
-Zone boundary coordinates are based on a floating point value from 0.0 (top/left) to 1.0 (bottom/right).  When the 
-stick enters the boundary area, the zone's action ***down*** activity will be fired.  On exiting the boundary, the
-action ***up*** activity will be fired.  
+Zone boundary coordinates are based on a floating point value from 0.0
+(top/left) to 1.0 (bottom/right). When the stick enters the boundary area, the
+zone's action ***down*** activity will be fired. On exiting the boundary, the
+action ***up*** activity will be fired.
 
 Example:
 
@@ -137,13 +147,15 @@ Example:
 
 ### pos *row* *col*
 
-Sets the current text position to *row* *col*.  
-* *row* is specified in characters (0-4), as all fonts are 8 pixels high and rows start on pixel row 0, 8, 16, 24, or 32
+Sets the current text position to *row* *col*.
+* *row* is specified in characters (0-4), as all fonts are 8 pixels high and
+  rows start on pixel row 0, 8, 16, 24, or 32
 * *col* is specified in pixels (0-159)
 
 ### out *text*
 
-Writes *text* to the LCD at the current text position, and advances the current position based on the font size
+Writes *text* to the LCD at the current text position, and advances the current
+position based on the font size
 
 ### clear
 
@@ -159,13 +171,14 @@ Resends the LCD buffer
 
 ### profile *profile_name*
     
-Selects *profile_name* to be the current profile, it if it doesn't exist creating it as a copy of the current profile.
+Selects *profile_name* to be the current profile, it if it doesn't exist
+creating it as a copy of the current profile.
 
 All key binding changes (from the bind command) are made on the current profile.
   
-### font *font_name*   
+### font *font_name*
 
-Switch font, current options are ***8x8*** and ***5x8***    
+Switch font, current options are ***8x8*** and ***5x8***
 
 ### dump *all|current|summary*
 
@@ -177,11 +190,13 @@ Changes the level of detail written to the g13d console
 
 ### LCD display
 
-Use pbm2lpbm to convert a pbm image to the correct format, then just cat that into the pipe (cat starcraft2.lpbm > /tmp/g13-0).
-The pbm file must be 160x43 pixels.
+Use pbm2lpbm to convert a pbm image to the correct format, then just cat that
+into the pipe (cat starcraft2.lpbm > /tmp/g13-0). The pbm file must be 160x43
+pixels.
 
 ## License
 
-All files without a copyright notice are placed in the public domain. Do with it whatever you want.
+All files without a copyright notice are placed in the public domain. Do with it
+whatever you want.
 
 Some source code files include MIT style license - see files for specifics.
