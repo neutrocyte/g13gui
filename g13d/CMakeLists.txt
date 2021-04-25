@@ -11,8 +11,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 
 add_executable(pbm2lpbm pbm2lpbm.cc)
 add_executable(g13d
+  action.cc
   device.cc
-  g13.cc
   g13_fonts.cc
   g13_keys.cc
   g13_lcd.cc

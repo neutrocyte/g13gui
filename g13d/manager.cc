@@ -1,3 +1,5 @@
+#include <signal.h>
+
 #include <boost/log/attributes.hpp>
 #include <boost/log/core/core.hpp>
 #include <boost/log/expressions.hpp>
@@ -14,6 +16,8 @@
 
 #include "device.h"
 #include "manager.h"
+#include "find_or_throw.h"
+#include "repr.h"
 
 namespace G13 {
 
@@ -69,4 +73,134 @@ void G13_Manager::set_log_level(const std::string &level) {
 
   G13_LOG(error, "unknown log level" << level);
 }
+
+void G13_Manager::cleanup() {
+  G13_LOG(info, "cleaning up");
+
+  for (auto device : g13s) {
+    device->cleanup();
+    delete device;
+  }
+
+  libusb_exit(ctx);
+}
+
+
+G13_Manager::G13_Manager()
+    : devs(0), ctx(0) {
+}
+
+// *************************************************************************
+
+bool G13_Manager::running = true;
+void G13_Manager::set_stop(int) { running = false; }
+
+std::string G13_Manager::string_config_value(const std::string &name) const {
+  try {
+    return find_or_throw(_string_config_values, name);
+  } catch (...) {
+    return "";
+  }
+}
+
+void G13_Manager::set_string_config_value(const std::string &name,
+                                          const std::string &value) {
+  G13_LOG(info, "set_string_config_value " << name << " = " << repr(value));
+  _string_config_values[name] = value;
+}
+
+#define CONTROL_DIR std::string("/tmp/")
+
+std::string G13_Manager::make_pipe_name(G13_Device *d, bool is_input) {
+  if (is_input) {
+    std::string config_base = string_config_value("pipe_in");
+    if (config_base.size()) {
+      if (d->id_within_manager() == 0) {
+        return config_base;
+      } else {
+        return config_base + "-" +
+               boost::lexical_cast<std::string>(d->id_within_manager());
+      }
+    }
+    return CONTROL_DIR + "g13-" +
+           boost::lexical_cast<std::string>(d->id_within_manager());
+  } else {
+    std::string config_base = string_config_value("pipe_out");
+    if (config_base.size()) {
+      if (d->id_within_manager() == 0) {
+        return config_base;
+      } else {
+        return config_base + "-" +
+               boost::lexical_cast<std::string>(d->id_within_manager());
+      }
+    }
+
+    return CONTROL_DIR + "g13-" +
+           boost::lexical_cast<std::string>(d->id_within_manager()) + "_out";
+  }
+}
+
+int G13_Manager::run() {
+  init_keynames();
+  display_keys();
+
+  ssize_t cnt;
+  int ret;
+
+  ret = libusb_init(&ctx);
+  if (ret < 0) {
+    G13_LOG(error, "Initialization error: " << ret);
+    return 1;
+  }
+
+  libusb_set_option(ctx, LIBUSB_OPTION_LOG_LEVEL, 3);
+  cnt = libusb_get_device_list(ctx, &devs);
+  if (cnt < 0) {
+    G13_LOG(error, "Error while getting device list");
+    return 1;
+  }
+
+  discover_g13s(devs, cnt, g13s);
+  libusb_free_device_list(devs, 1);
+  G13_LOG(info, "Found " << g13s.size() << " G13s");
+  if (g13s.size() == 0) {
+    return 1;
+  }
+
+  for (auto device : g13s) {
+    device->register_context(ctx);
+  }
+
+  signal(SIGINT, set_stop);
+
+  if (g13s.size() > 0 && logo_filename.size()) {
+    g13s[0]->write_lcd_file(logo_filename);
+  }
+
+  G13_LOG(info, "Active Stick zones ");
+  g13s[0]->stick().dump(std::cout);
+
+  std::string config_fn = string_config_value("config");
+  if (config_fn.size()) {
+    G13_LOG(info, "config_fn = " << config_fn);
+    g13s[0]->read_config_file(config_fn);
+  }
+
+  do {
+    if (g13s.size() > 0)
+      for (auto device : g13s) {
+        int status = device->read_keys();
+        device->read_commands();
+
+        if (status < 0) {
+          running = false;
+        }
+      }
+  } while (running && (g13s.size() > 0));
+
+  cleanup();
+
+  return 0;
+}
+
 } // namespace G13
