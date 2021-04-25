@@ -1,52 +1,42 @@
-all: g13d pbm2lpbm
+CXXFLAGS  := $(CXXFLAGS) -DBOOST_LOG_DYN_LINK=1 -std=c++0x
+LIBS      := -lusb-1.0 -lboost_program_options -lboost_log -lboost_system -lpthread
+PREFIX    ?= /usr/local
 
-FLAGS=$(CXXFLAGS) -DBOOST_LOG_DYN_LINK -std=c++0x
-LIBS=-lusb-1.0 -lboost_log -lboost_log_setup-mt -lboost_thread -lboost_system-mt -lpthread
+G13D_SRCS := \
+	src/g13.cc \
+	src/g13_fonts.cc \
+	src/g13_keys.cc \
+	src/g13_lcd.cc \
+	src/g13_log.cc \
+	src/g13_main.cc \
+	src/g13_stick.cc \
+	src/helper.cc
 
-g13.o: g13.h helper.hpp g13.cc
-	g++ $(FLAGS) -c g13.cc
+G13D_OBJS := $(patsubst src/%.cc,build/%.o,$(G13D_SRCS))
 
-g13_main.o: g13.h helper.hpp g13_main.cc
-	g++ $(FLAGS) -c g13_main.cc
+all: build build/g13d build/pbm2lpbm
 
+build:
+	mkdir -p build
 
-g13_log.o: g13.h helper.hpp g13_log.cc
-	g++ $(FLAGS) -c g13_log.cc
+build/g13d: $(G13D_OBJS) | build
+	$(CXX) $(G13D_OBJS) -o build/g13d $(LIBS)
 
-g13_fonts.o: g13.h helper.hpp g13_fonts.cc
-	g++ $(FLAGS) -c g13_fonts.cc
+build/pbm2lpbm: src/pbm2lpbm.c | build
+	$(CXX) $(CXXFLAGS) src/pbm2lpbm.c -o build/pbm2lpbm
 
-g13_lcd.o: g13.h helper.hpp g13_lcd.cc
-	g++ $(FLAGS) -c g13_lcd.cc
-
-g13_stick.o: g13.h helper.hpp g13_stick.cc
-	g++ $(FLAGS) -c g13_stick.cc
-
-g13_keys.o: g13.h helper.hpp g13_keys.cc
-	g++ $(FLAGS) -c g13_keys.cc
-
-helper.o: helper.hpp helper.cpp
-	g++ $(FLAGS) -c helper.cpp
-
-
-g13d: g13_main.o g13.o g13_log.o g13_fonts.o g13_lcd.o g13_stick.o g13_keys.o helper.o
-	g++ -o g13d -std=c++0x \
-		g13_main.o g13.o g13_log.o g13_fonts.o g13_lcd.o g13_stick.o g13_keys.o helper.o \
-	 	-lusb-1.0 -lboost_program_options \
-	 	-lboost_log    \
-	 	-lboost_system -lpthread
-
-pbm2lpbm: pbm2lpbm.c
-	g++ -o pbm2lpbm pbm2lpbm.c
+build/%.o: src/%.cc
+	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 clean: 
-	rm -f g13 pbm2lpbm
+	rm -rf build
 
-install:
+install: build/g13d build/pbm2lpbm
 	install -d ${HOME}/.local/bin
 	install -m700 -d ${HOME}/.local/var/g13d
 	install -d ${HOME}/.config/systemd/user
-	cat g13d.service |sed "s,@HOME@,${HOME},g" > ${HOME}/.config/systemd/user/g13d.service
-	install -m755 g13d ${HOME}/.local/bin/g13d
+	cat etc/g13d.service |sed "s,@HOME@,${HOME},g" > ${HOME}/.config/systemd/user/g13d.service
+	install -m755 build/g13d ${HOME}/.local/bin/g13d
+	install -m755 build/pbm2lpbm ${HOME}/.local/bin/pbm2lpbm
 
 .PHONY: all clean install
