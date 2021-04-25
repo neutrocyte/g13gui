@@ -251,7 +251,6 @@ void G13_Device::read_config_file(const std::string &filename) {
 }
 
 void G13_Device::read_commands() {
-
   fd_set set;
   FD_ZERO(&set);
   FD_SET(_input_pipe_fid, &set);
@@ -339,8 +338,6 @@ G13_ActionPtr G13_Device::make_action(const std::string &action) {
   }
   throw G13_CommandException("can't create action for " + action);
 }
-
-// *************************************************************************
 
 void G13_Device::dump(std::ostream &o, int detail) {
   o << "G13 id=" << id_within_manager() << std::endl

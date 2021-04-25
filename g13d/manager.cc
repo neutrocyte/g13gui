@@ -94,8 +94,6 @@ G13_Manager::G13_Manager()
     : devs(0), ctx(0) {
 }
 
-// *************************************************************************
-
 bool G13_Manager::running = true;
 void G13_Manager::set_stop(int) { running = false; }
 
