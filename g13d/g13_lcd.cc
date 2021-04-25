@@ -177,25 +177,25 @@ void G13_LCD::image_test(int x, int y) {
   } else {
     image_clear();
     switch (x) {
-    case 1:
-      for (row = 0; row < G13_LCD_ROWS; ++row) {
-        col = row;
-        image_setpixel(row, col);
-        image_setpixel(row, G13_LCD_COLUMNS - col);
-      }
-      break;
+      case 1:
+        for (row = 0; row < G13_LCD_ROWS; ++row) {
+          col = row;
+          image_setpixel(row, col);
+          image_setpixel(row, G13_LCD_COLUMNS - col);
+        }
+        break;
 
-    case 2:
-    default:
-      for (row = 0; row < G13_LCD_ROWS; ++row) {
-        col = row;
-        image_setpixel(row, 8);
-        image_setpixel(row, G13_LCD_COLUMNS - 8);
-        image_setpixel(row, G13_LCD_COLUMNS / 2);
-        image_setpixel(row, col);
-        image_setpixel(row, G13_LCD_COLUMNS - col);
-      }
-      break;
+      case 2:
+      default:
+        for (row = 0; row < G13_LCD_ROWS; ++row) {
+          col = row;
+          image_setpixel(row, 8);
+          image_setpixel(row, G13_LCD_COLUMNS - 8);
+          image_setpixel(row, G13_LCD_COLUMNS / 2);
+          image_setpixel(row, col);
+          image_setpixel(row, G13_LCD_COLUMNS - col);
+        }
+        break;
     }
   }
   image_send();

@@ -57,10 +57,10 @@ void G13_Stick::set_mode(stick_mode_t m) {
   }
   _stick_mode = m;
   switch (_stick_mode) {
-  case STICK_CALBOUNDS:
-    _bounds.tl = G13_StickCoord(255, 255);
-    _bounds.br = G13_StickCoord(0, 0);
-    break;
+    case STICK_CALBOUNDS:
+      _bounds.tl = G13_StickCoord(255, 255);
+      _bounds.br = G13_StickCoord(0, 0);
+      break;
   }
 }
 
@@ -116,17 +116,17 @@ void G13_Stick::parse_joystick(unsigned char *buf) {
   // update targets if we're in calibration mode
   switch (_stick_mode) {
 
-  case STICK_CALCENTER:
-    _center_pos = _current_pos;
-    return;
+    case STICK_CALCENTER:
+      _center_pos = _current_pos;
+      return;
 
-  case STICK_CALNORTH:
-    _north_pos = _current_pos;
-    return;
+    case STICK_CALNORTH:
+      _north_pos = _current_pos;
+      return;
 
-  case STICK_CALBOUNDS:
-    _bounds.expand(_current_pos);
-    return;
+    case STICK_CALBOUNDS:
+      _bounds.expand(_current_pos);
+      return;
   };
 
   // determine our normalized position
