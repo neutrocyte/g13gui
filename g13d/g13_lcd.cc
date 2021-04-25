@@ -19,7 +19,6 @@
  */
 
 #include "g13.h"
-#include "logo.h"
 
 using namespace std;
 

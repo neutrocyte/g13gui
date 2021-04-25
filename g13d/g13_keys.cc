@@ -189,8 +189,6 @@ std::string G13_Manager::find_g13_key_name(G13_KEY_INDEX v) const {
 }
 
 void G13_Manager::display_keys() {
-
-  typedef std::map<std::string, int> mapType;
   G13_OUT("Known keys on G13:");
   G13_OUT(Helper::map_keys_out(g13_name_to_key));
 

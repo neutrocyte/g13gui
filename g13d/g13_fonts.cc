@@ -378,7 +378,6 @@ void G13_FontChar::set_character(unsigned char *data, int width,
     for (int x = 0; x < width; x++) {
       unsigned char x_mask = 1 << x;
       for (int y = 0; y < 8; y++) {
-        unsigned char y_mask = 1 << y;
         if (data[y] & x_mask) {
           dest[x] |= 1 << y;
         }
