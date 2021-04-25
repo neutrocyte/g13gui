@@ -1,5 +1,10 @@
 # Userspace driver for the G13
 
+This is a fork of the original public domain driver written by ecraven, with MIT
+contributions by James Fowler, and reorganization and cleanups by June
+Tate-Gans in prep for more functionality both from a GUI and from the daemon
+itself.
+
 ## Installation
 
 Make sure you have boost and libusb-1.0 installed.
@@ -196,7 +201,16 @@ pixels.
 
 ## License
 
+The original license was listed as below:
+
+```
 All files without a copyright notice are placed in the public domain. Do with it
 whatever you want.
 
 Some source code files include MIT style license - see files for specifics.
+```
+
+For contributions sake, all code in this fork is placed under the MIT license
+explicitly, according to the LICENSE file at the root of the source tree. This
+is equivalent to the public domain license ecraven originally placed the source
+under, with the exception of the indemnity and as-is clauses.
