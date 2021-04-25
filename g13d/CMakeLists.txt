@@ -18,7 +18,6 @@ add_executable(g13d
   lcd.cc
   main.cc
   stick.cc
-  helper.cc
   manager.cc
 )
 
