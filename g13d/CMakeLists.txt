@@ -19,6 +19,7 @@ add_executable(g13d
   main.cc
   stick.cc
   manager.cc
+  repr.cc
 )
 
 target_compile_definitions(g13d PRIVATE BOOST_LOG_DYN_LINK=1)
