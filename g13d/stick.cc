@@ -11,12 +11,6 @@
 
 namespace G13 {
 
-// *************************************************************************
-
-void G13_Device::parse_joystick(unsigned char *buf) {
-  _stick.parse_joystick(buf);
-}
-
 G13_Stick::G13_Stick(G13_Device &keypad)
     : _keypad(keypad), _bounds(0, 0, 255, 255), _center_pos(127, 127),
       _north_pos(127, 0) {
@@ -38,17 +32,18 @@ G13_Stick::G13_Stick(G13_Device &keypad)
 }
 
 G13_StickZone *G13_Stick::zone(const std::string &name, bool create) {
-
   BOOST_FOREACH (G13_StickZone &zone, _zones) {
     if (zone.name() == name) {
       return &zone;
     }
   }
+
   if (create) {
     _zones.push_back(
         G13_StickZone(*this, name, G13_ZoneBounds(0.0, 0.0, 0.0, 0.0)));
     return zone(name);
   }
+
   return 0;
 }
 
@@ -88,6 +83,7 @@ void G13_Stick::dump(std::ostream &out) const {
 
 void G13_StickZone::dump(std::ostream &out) const {
   out << "   " << std::setw(20) << name() << "   " << _bounds << "  ";
+
   if (action()) {
     action()->dump(out);
   } else {
@@ -96,17 +92,14 @@ void G13_StickZone::dump(std::ostream &out) const {
 }
 
 void G13_StickZone::test(const G13_ZoneCoord &loc) {
-  if (!_action)
-    return;
+  if (!_action) return;
+
   bool prior_active = _active;
   _active = _bounds.contains(loc);
-  if (!_active) {
-    if (prior_active) {
-      // cout << "exit stick zone " << _name << std::endl;
-      _action->act(false);
-    }
+
+  if ((!_active) && prior_active) {
+    _action->act(false);
   } else {
-    // cout << "in stick zone " << _name << std::endl;
     _action->act(true);
   }
 }
@@ -118,7 +111,6 @@ G13_StickZone::G13_StickZone(G13_Stick &stick, const std::string &name,
 }
 
 void G13_Stick::parse_joystick(unsigned char *buf) {
-
   _current_pos.x = buf[1];
   _current_pos.y = buf[2];
 
@@ -150,6 +142,7 @@ void G13_Stick::parse_joystick(unsigned char *buf) {
     dx /= (_bounds.br.x - _center_pos.x) * 2;
     dx = 1.0 - dx;
   }
+
   double dy = 0.5;
   if (_current_pos.y <= _center_pos.y) {
     dy = _current_pos.y - _bounds.tl.y;
@@ -162,19 +155,14 @@ void G13_Stick::parse_joystick(unsigned char *buf) {
 
   G13_LOG(trace, "x=" << _current_pos.x << " y=" << _current_pos.y
                       << " dx=" << dx << " dy=" << dy);
+
   G13_ZoneCoord jpos(dx, dy);
   if (_stick_mode == STICK_ABSOLUTE) {
     _keypad.send_event(EV_ABS, ABS_X, _current_pos.x);
     _keypad.send_event(EV_ABS, ABS_Y, _current_pos.y);
-
   } else if (_stick_mode == STICK_KEYS) {
-
     BOOST_FOREACH (G13_StickZone &zone, _zones) { zone.test(jpos); }
     return;
-
-  } else {
-    /*    send_event(g13->uinput_file, EV_REL, REL_X, stick_x/16 - 8);
-     send_event(g13->uinput_file, EV_REL, REL_Y, stick_y/16 - 8);*/
   }
 }
 

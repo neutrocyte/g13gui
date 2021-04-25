@@ -10,10 +10,14 @@
 #include <boost/log/trivial.hpp>
 #include <boost/log/utility/setup.hpp>
 #include <boost/log/utility/setup/console.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/stringize.hpp>
+#include <boost/foreach.hpp>
 
 #include <fstream>
 #include <vector>
 
+#include "helper.h"
 #include "device.h"
 #include "manager.h"
 #include "find_or_throw.h"
@@ -201,6 +205,79 @@ int G13_Manager::run() {
   cleanup();
 
   return 0;
+}
+
+// setup maps to let us convert between strings and G13 key names
+#define ADD_G13_KEY_MAPPING(r, data, elem)                                     \
+  {                                                                            \
+    std::string name = BOOST_PP_STRINGIZE(elem);                               \
+    g13_key_to_name[key_index] = name;                                         \
+    g13_name_to_key[name] = key_index;                                         \
+    key_index++;                                                               \
+  }
+
+// setup maps to let us convert between strings and linux key names
+#define ADD_KB_KEY_MAPPING(r, data, elem)                                      \
+  {                                                                            \
+    std::string name = BOOST_PP_STRINGIZE(elem);                               \
+    int keyval = BOOST_PP_CAT(KEY_, elem);                                     \
+    input_key_to_name[keyval] = name;                                          \
+    input_name_to_key[name] = keyval;                                          \
+  }
+
+void G13_Manager::init_keynames() {
+  int key_index = 0;
+
+  BOOST_PP_SEQ_FOR_EACH(ADD_G13_KEY_MAPPING, _, G13_KEY_SEQ);
+  BOOST_PP_SEQ_FOR_EACH(ADD_KB_KEY_MAPPING, _, KB_INPUT_KEY_SEQ);
+}
+
+LINUX_KEY_VALUE
+G13_Manager::find_g13_key_value(const std::string &keyname) const {
+  auto i = g13_name_to_key.find(keyname);
+  if (i == g13_name_to_key.end()) {
+    return BAD_KEY_VALUE;
+  }
+  return i->second;
+}
+
+LINUX_KEY_VALUE
+G13_Manager::find_input_key_value(const std::string &keyname) const {
+
+  // if there is a KEY_ prefix, strip it off
+  if (!strncmp(keyname.c_str(), "KEY_", 4)) {
+    return find_input_key_value(keyname.c_str() + 4);
+  }
+
+  auto i = input_name_to_key.find(keyname);
+  if (i == input_name_to_key.end()) {
+    return BAD_KEY_VALUE;
+  }
+  return i->second;
+}
+
+std::string G13_Manager::find_input_key_name(LINUX_KEY_VALUE v) const {
+  try {
+    return find_or_throw(input_key_to_name, v);
+  } catch (...) {
+    return "(unknown linux key)";
+  }
+}
+
+std::string G13_Manager::find_g13_key_name(G13_KEY_INDEX v) const {
+  try {
+    return find_or_throw(g13_key_to_name, v);
+  } catch (...) {
+    return "(unknown G13 key)";
+  }
+}
+
+void G13_Manager::display_keys() {
+  G13_OUT("Known keys on G13:");
+  G13_OUT(Helper::map_keys_out(g13_name_to_key));
+
+  G13_OUT("Known keys to map to:");
+  G13_OUT(Helper::map_keys_out(input_name_to_key));
 }
 
 } // namespace G13

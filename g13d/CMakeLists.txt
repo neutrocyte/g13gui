@@ -14,10 +14,10 @@ add_executable(g13d
   action.cc
   device.cc
   font.cc
-  g13_keys.cc
-  g13_lcd.cc
-  g13_main.cc
-  g13_stick.cc
+  profile.cc
+  lcd.cc
+  main.cc
+  stick.cc
   helper.cc
   manager.cc
 )
