@@ -1,1 +1,1 @@
-SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c21c", MODE="0660", TAG+="systemd", ENV{SYSTEMD_WANTS}="g13d.service"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c21c", GROUP="input", MODE="0660", TAG+="systemd", ENV{SYSTEMD_WANTS}="g13d.service"
