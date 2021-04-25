@@ -32,11 +32,22 @@ void G13_Device::send_event(int type, int code, int val) {
   _event.type = type;
   _event.code = code;
   _event.value = val;
-  write(_uinput_fid, &_event, sizeof(_event));
+
+  // TODO(jtgans): Make this actually verify it writes all bytes
+  auto result = write(_uinput_fid, &_event, sizeof(_event));
+  if (result < 0) {
+    G13_LOG(error, "Unable to send event: " << strerror(errno));
+    exit(1);
+  }
 }
 
 void G13_Device::write_output_pipe(const std::string &out) {
-  write(_output_pipe_fid, out.c_str(), out.size());
+  // TODO(jtgans): Make this actually verify it writes all bytes
+  auto result = write(_output_pipe_fid, out.c_str(), out.size());
+  if (result < 0) {
+    G13_LOG(error, "Unable to write to output pipe: " << strerror(errno));
+    exit(1);
+  }
 }
 
 void G13_Device::set_mode_leds(int leds) {
