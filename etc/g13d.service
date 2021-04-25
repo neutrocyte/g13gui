@@ -1,7 +1,7 @@
 [Unit]
-Description=Logitech g13 daemon
+Description=Logitech g13 user-space daemon
 
 [Service]
 Type=simple
-ExecStart=@HOME@/.local/bin/g13d --pipe_in @HOME@/.local/var/g13d/in --pipe_out @HOME@/.local/var/g13d/out
+ExecStart=g13d --pipe_in /run/g13d/in --pipe_out /run/g13d/out
 Restart=on-failure
