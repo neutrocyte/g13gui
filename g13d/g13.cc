@@ -734,10 +734,12 @@ int G13_Manager::run() {
     return 1;
   }
 
-  for (int i = 0; i < g13s.size(); i++) {
-    g13s[i]->register_context(ctx);
+  for (auto device : g13s) {
+    device->register_context(ctx);
   }
+
   signal(SIGINT, set_stop);
+
   if (g13s.size() > 0 && logo_filename.size()) {
     g13s[0]->write_lcd_file(logo_filename);
   }
@@ -753,13 +755,16 @@ int G13_Manager::run() {
 
   do {
     if (g13s.size() > 0)
-      for (int i = 0; i < g13s.size(); i++) {
-        int status = g13s[i]->read_keys();
-        g13s[i]->read_commands();
-        if (status < 0)
+      for (auto device : g13s) {
+        int status = device->read_keys();
+        device->read_commands();
+
+        if (status < 0) {
           running = false;
+        }
       }
-  } while (running);
+  } while (running && (g13s.size() > 0));
+
   cleanup();
 
   return 0;
