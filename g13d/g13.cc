@@ -221,10 +221,12 @@ void G13_Device::cleanup() {
 
 void G13_Manager::cleanup() {
   G13_LOG(info, "cleaning up");
-  for (int i = 0; i < g13s.size(); i++) {
-    g13s[i]->cleanup();
-    delete g13s[i];
+
+  for (auto device : g13s) {
+    device->cleanup();
+    delete device;
   }
+
   libusb_exit(ctx);
 }
 
