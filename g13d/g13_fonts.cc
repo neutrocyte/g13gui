@@ -401,8 +401,8 @@ void G13_Font::install_font(ARRAY_T &data, FLAGST flags, int first) {
     _chars[i + first].set_character(&data[i][0], _width, flags);
   }
 }
-void G13_Device::_init_fonts() {
 
+void G13_Device::_init_fonts() {
   _current_font = FontPtr(new G13_Font("8x8", 8));
   _fonts[_current_font->name()] = _current_font;
 
