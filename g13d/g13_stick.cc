@@ -104,7 +104,7 @@ void G13_StickZone::test(const G13_ZoneCoord &loc) {
 
 G13_StickZone::G13_StickZone(G13_Stick &stick, const std::string &name,
                              const G13_ZoneBounds &b, G13_ActionPtr action)
-    : G13_Actionable<G13_Stick>(stick, name), _bounds(b), _active(false) {
+    : G13_Actionable<G13_Stick>(stick, name), _active(false), _bounds(b) {
   set_action(action);
 }
 
