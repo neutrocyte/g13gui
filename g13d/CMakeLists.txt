@@ -13,7 +13,7 @@ add_executable(pbm2lpbm pbm2lpbm.cc)
 add_executable(g13d
   action.cc
   device.cc
-  g13_fonts.cc
+  font.cc
   g13_keys.cc
   g13_lcd.cc
   g13_main.cc
