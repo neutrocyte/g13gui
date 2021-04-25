@@ -1,129 +1,39 @@
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <signal.h>
+
+#include <libusb-1.0/libusb.h>
+#include <linux/uinput.h>
+
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/foreach.hpp>
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+#include "device.h"
 #include "g13.h"
 #include "logo.h"
-#include <fstream>
-
-#if 0
-#include <boost/log/attributes.hpp>
-#include <boost/log/core/core.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/expressions/formatters/stream.hpp>
-#include <boost/log/sources/severity_feature.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/support/date_time.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#endif
-
-using namespace std;
-
-// *************************************************************************
+#include "manager.h"
+#include "repr.h"
+#include "find_or_throw.h"
 
 #define CONTROL_DIR std::string("/tmp/")
 
 namespace G13 {
 
-// *************************************************************************
-
-void G13_Device::send_event(int type, int code, int val) {
-  memset(&_event, 0, sizeof(_event));
-  gettimeofday(&_event.time, 0);
-  _event.type = type;
-  _event.code = code;
-  _event.value = val;
-
-  // TODO(jtgans): Make this actually verify it writes all bytes
-  auto result = write(_uinput_fid, &_event, sizeof(_event));
-  if (result < 0) {
-    G13_LOG(error, "Unable to send event: " << strerror(errno));
-    exit(1);
-  }
-}
-
-void G13_Device::write_output_pipe(const std::string &out) {
-  // TODO(jtgans): Make this actually verify it writes all bytes
-  auto result = write(_output_pipe_fid, out.c_str(), out.size());
-  if (result < 0) {
-    G13_LOG(error, "Unable to write to output pipe: " << strerror(errno));
-    exit(1);
-  }
-}
-
-void G13_Device::set_mode_leds(int leds) {
-  unsigned char usb_data[] = {5, 0, 0, 0, 0};
-  usb_data[1] = leds;
-  int r = libusb_control_transfer(
-      handle, LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE, 9, 0x305,
-      0, usb_data, 5, 1000);
-
-  if (r != 5) {
-    G13_LOG(error, "Problem sending data");
-    return;
-  }
-}
-
-void G13_Device::set_key_color(int red, int green, int blue) {
-  int error;
-  unsigned char usb_data[] = {5, 0, 0, 0, 0};
-  usb_data[1] = red;
-  usb_data[2] = green;
-  usb_data[3] = blue;
-
-  error = libusb_control_transfer(
-      handle, LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE, 9, 0x307,
-      0, usb_data, 5, 1000);
-  if (error != 5) {
-    G13_LOG(error, "Problem sending data");
-    return;
-  }
-}
-
-// *************************************************************************
-
-void G13_Manager::discover_g13s(libusb_device **devs, ssize_t count,
-                                vector<G13_Device *> &g13s) {
-  for (int i = 0; i < count; i++) {
-    libusb_device_descriptor desc;
-    int r = libusb_get_device_descriptor(devs[i], &desc);
-    if (r < 0) {
-      G13_LOG(error, "Failed to get device descriptor");
-      return;
-    }
-    if (desc.idVendor == G13_VENDOR_ID && desc.idProduct == G13_PRODUCT_ID) {
-      libusb_device_handle *handle;
-      int r = libusb_open(devs[i], &handle);
-      if (r != 0) {
-        G13_LOG(error, "Error opening G13 device");
-        return;
-      }
-      if (libusb_kernel_driver_active(handle, 0) == 1)
-        if (libusb_detach_kernel_driver(handle, 0) == 0)
-          G13_LOG(info, "Kernel driver detached");
-
-      r = libusb_claim_interface(handle, 0);
-      if (r < 0) {
-        G13_LOG(error, "Cannot Claim Interface");
-        return;
-      }
-      g13s.push_back(new G13_Device(*this, handle, g13s.size()));
-    }
-  }
-}
-
-// *************************************************************************
-
 int g13_create_fifo(const char *fifo_name) {
-
-  // mkfifo(g13->fifo_name(), 0777); - didn't work
   mkfifo(fifo_name, 0666);
-  chmod(fifo_name, 0777);
-
+  chmod(fifo_name, 0660);
   return open(fifo_name, O_RDWR | O_NONBLOCK);
 }
 
-// *************************************************************************
-
-int g13_create_uinput(G13_Device *g13) {
+int g13_create_uinput(void) {
   struct uinput_user_dev uinp;
   const char *dev_uinput_fname =
       access("/dev/input/uinput", F_OK) == 0
@@ -197,7 +107,7 @@ void G13_Device::register_context(libusb_context *_ctx) {
 
   write_lcd(g13_logo, sizeof(g13_logo));
 
-  _uinput_fid = g13_create_uinput(this);
+  _uinput_fid = g13_create_uinput();
 
   _input_pipe_name = _manager.make_pipe_name(this, true);
   _input_pipe_fid = g13_create_fifo(_input_pipe_name.c_str());
@@ -238,7 +148,6 @@ static std::string describe_libusb_error_code(int code) {
     return BOOST_PP_STRINGIZE(elem);
 
   switch (code) {
-
     BOOST_PP_SEQ_FOR_EACH(
         TEST_libusb_error, _,
         (SUCCESS)(ERROR_IO)(ERROR_INVALID_PARAM)(ERROR_ACCESS)(ERROR_NO_DEVICE)(
@@ -468,15 +377,17 @@ G13_ActionPtr G13_Device::make_action(const std::string &action) {
 // *************************************************************************
 
 void G13_Device::dump(std::ostream &o, int detail) {
-  o << "G13 id=" << id_within_manager() << endl;
-  o << "   input_pipe_name=" << repr(_input_pipe_name) << endl;
-  o << "   output_pipe_name=" << repr(_output_pipe_name) << endl;
-  o << "   current_profile=" << _current_profile->name() << endl;
-  o << "   current_font=" << _current_font->name() << std::endl;
+  o << "G13 id=" << id_within_manager() << std::endl
+    << "   input_pipe_name=" << repr(_input_pipe_name) << std::endl
+    << "   output_pipe_name=" << repr(_output_pipe_name) << std::endl
+    << "   current_profile=" << _current_profile->name() << std::endl
+    << "   current_font=" << _current_font->name() << std::endl;
 
   if (detail > 0) {
     o << "STICK" << std::endl;
+
     stick().dump(o);
+
     if (detail == 1) {
       _current_profile->dump(o);
     } else {
@@ -513,11 +424,24 @@ struct command_adder {
                                          BOOST_PP_STRINGIZE(name));            \
   BOOST_PP_CAT(add_, name) += [this](const char *remainder)
 
+inline const char *advance_ws(const char* &source, std::string &dest) {
+  const char *space = source ? strchr(source, ' ') : 0;
+
+  if (space) {
+    dest = std::string(source, space - source);
+    source = space + 1;
+  } else {
+    dest = source;
+    source = 0;
+  }
+
+  return source;
+};
+
 void G13_Device::_init_commands() {
-
-  using Helper::advance_ws;
-
-  G13_DEVICE_COMMAND(out) { lcd().write_string(remainder); }
+  G13_DEVICE_COMMAND(out) {
+    lcd().write_string(remainder);
+  }
 
   G13_DEVICE_COMMAND(pos) {
     int row, col;
@@ -548,7 +472,6 @@ void G13_Device::_init_commands() {
   }
 
   G13_DEVICE_COMMAND(profile) { switch_to_profile(remainder); }
-
   G13_DEVICE_COMMAND(font) { switch_to_font(remainder); }
   G13_DEVICE_COMMAND(mod) { set_mode_leds(atoi(remainder)); }
   G13_DEVICE_COMMAND(textmode) { lcd().text_mode = atoi(remainder); }
@@ -562,14 +485,14 @@ void G13_Device::_init_commands() {
     }
   }
 
-  G13_DEVICE_COMMAND(stickmode) {
-
-    std::string mode = remainder;
 #define STICKMODE_TEST(r, data, elem)                                          \
   if (mode == BOOST_PP_STRINGIZE(elem)) {                                      \
     _stick.set_mode(BOOST_PP_CAT(STICK_, elem));                               \
     return;                                                                    \
   } else
+
+  G13_DEVICE_COMMAND(stickmode) {
+    std::string mode = remainder;
 
     BOOST_PP_SEQ_FOR_EACH(
         STICKMODE_TEST, _,
@@ -594,9 +517,11 @@ void G13_Device::_init_commands() {
         zone->set_action(make_action(remainder));
       } else if (operation == "bounds") {
         double x1, y1, x2, y2;
+
         if (sscanf(remainder, "%lf %lf %lf %lf", &x1, &y1, &x2, &y2) != 4) {
           throw G13_CommandException("bad bounds format");
         }
+
         zone->set_bounds(G13_ZoneBounds(x1, y1, x2, y2));
       } else if (operation == "del") {
         _stick.remove_zone(*zone);
@@ -626,22 +551,20 @@ void G13_Device::_init_commands() {
     manager().set_log_level(level);
   }
 
-  G13_DEVICE_COMMAND(refresh) { lcd().image_send(); }
+  G13_DEVICE_COMMAND(refresh) {
+    lcd().image_send();
+  }
 
   G13_DEVICE_COMMAND(clear) {
     lcd().image_clear();
     lcd().image_send();
-  }
-
-  ;
+  };
 }
 
 void G13_Device::command(char const *str) {
   const char *remainder = str;
 
   try {
-    using Helper::advance_ws;
-
     std::string cmd;
     advance_ws(remainder, cmd);
 
@@ -649,15 +572,19 @@ void G13_Device::command(char const *str) {
     if (i == _command_table.end()) {
       RETURN_FAIL("unknown command : " << cmd)
     }
+
     COMMAND_FUNCTION f = i->second;
     f(remainder);
+
     return;
   } catch (const std::exception &ex) {
     RETURN_FAIL("command failed : " << ex.what());
   }
 }
 
-G13_Manager::G13_Manager() : devs(0), ctx(0) {}
+G13_Manager::G13_Manager()
+    : devs(0), ctx(0) {
+}
 
 // *************************************************************************
 
@@ -671,6 +598,7 @@ std::string G13_Manager::string_config_value(const std::string &name) const {
     return "";
   }
 }
+
 void G13_Manager::set_string_config_value(const std::string &name,
                                           const std::string &value) {
   G13_LOG(info, "set_string_config_value " << name << " = " << repr(value));
@@ -707,7 +635,6 @@ std::string G13_Manager::make_pipe_name(G13_Device *d, bool is_input) {
 }
 
 int G13_Manager::run() {
-
   init_keynames();
   display_keys();
 
@@ -769,4 +696,5 @@ int G13_Manager::run() {
 
   return 0;
 }
+
 } // namespace G13

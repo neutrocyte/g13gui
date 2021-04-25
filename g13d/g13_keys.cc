@@ -1,9 +1,15 @@
 /* This file contains code for managing keys an profiles
  *
  */
-#include "g13.h"
 
-using namespace std;
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/foreach.hpp>
+
+#include "profile.h"
+#include "manager.h"
+#include "repr.h"
+#include "find_or_throw.h"
+#include "helper.h"
 
 namespace G13 {
 

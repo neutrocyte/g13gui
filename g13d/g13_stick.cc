@@ -1,9 +1,13 @@
 /* This file contains code for managing keys and profiles
  *
  */
-#include "g13.h"
 
-using namespace std;
+#include <iomanip>
+#include <iostream>
+
+#include <boost/foreach.hpp>
+
+#include "device.h"
 
 namespace G13 {
 
@@ -67,21 +71,23 @@ void G13_Stick::set_mode(stick_mode_t m) {
   }
 }
 
-void G13_Stick::_recalc_calibrated() {}
+void G13_Stick::_recalc_calibrated() {
+}
 
 void G13_Stick::remove_zone(const G13_StickZone &zone) {
   G13_StickZone target(zone);
   _zones.erase(std::remove(_zones.begin(), _zones.end(), target), _zones.end());
 }
+
 void G13_Stick::dump(std::ostream &out) const {
   BOOST_FOREACH (const G13_StickZone &zone, _zones) {
     zone.dump(out);
-    out << endl;
+    out << std::endl;
   }
 }
 
 void G13_StickZone::dump(std::ostream &out) const {
-  out << "   " << setw(20) << name() << "   " << _bounds << "  ";
+  out << "   " << std::setw(20) << name() << "   " << _bounds << "  ";
   if (action()) {
     action()->dump(out);
   } else {

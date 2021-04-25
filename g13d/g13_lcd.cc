@@ -18,9 +18,11 @@
          A0.01 A1.01 A2.01 ...
  */
 
-#include "g13.h"
+#include <iostream>
+#include <fstream>
 
-using namespace std;
+#include "lcd.h"
+#include "device.h"
 
 namespace G13 {
 
@@ -51,16 +53,16 @@ void G13_Device::write_lcd(unsigned char *data, size_t size) {
                        << error << ", " << bytes_written << " bytes written");
 }
 
-void G13_Device::write_lcd_file(const string &filename) {
-  filebuf *pbuf;
-  ifstream filestr;
+void G13_Device::write_lcd_file(const std::string &filename) {
+  std::filebuf *pbuf;
+  std::ifstream filestr;
   size_t size;
 
   filestr.open(filename.c_str());
   pbuf = filestr.rdbuf();
 
-  size = pbuf->pubseekoff(0, ios::end, ios::in);
-  pbuf->pubseekpos(0, ios::in);
+  size = pbuf->pubseekoff(0, std::ios::end, std::ios::in);
+  pbuf->pubseekpos(0, std::ios::in);
 
   char buffer[size];
 

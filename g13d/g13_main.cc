@@ -1,35 +1,30 @@
-#include "g13.h"
+#include <iostream>
 
 #include <boost/program_options.hpp>
-#if 0
-#include <boost/log/attributes.hpp>
-#include <boost/log/core/core.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/expressions/formatters/stream.hpp>
-#include <boost/log/support/date_time.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#endif
+#include <boost/foreach.hpp>
 
-using namespace std;
-using namespace G13;
+#include "g13.h"
+#include "manager.h"
+
 namespace po = boost::program_options;
 
-int main(int argc, char *argv[]) {
+extern "C" {
 
-  G13_Manager manager;
+int main(int argc, char *argv[]) {
+  G13::G13_Manager manager;
   manager.set_log_level("info");
 
   // Declare the supported options.
   po::options_description desc("Allowed options");
   desc.add_options()("help", "produce help message");
   std::vector<std::string> sopt_names;
+
   auto add_string_option = [&sopt_names, &desc](const char *name,
                                                 const char *description) {
     desc.add_options()(name, po::value<std::string>(), description);
     sopt_names.push_back(name);
   };
+
   add_string_option("logo", "set logo from file");
   add_string_option("config", "load config commands from file");
   add_string_option("pipe_in", "specify name for input pipe");
@@ -46,8 +41,8 @@ int main(int argc, char *argv[]) {
   po::notify(vm);
 
   if (vm.count("help")) {
-    cout << argv[0] << " : user space G13 driver" << endl;
-    cout << desc << "\n";
+    std::cout << argv[0] << " : user space G13 driver" << std::endl
+              << desc << "\n";
     return 1;
   }
 
@@ -66,4 +61,8 @@ int main(int argc, char *argv[]) {
   }
 
   manager.run();
+
+  return 0;
+}
+
 }

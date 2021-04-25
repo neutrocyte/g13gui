@@ -26,11 +26,11 @@
  *
  */
 
-#include "helper.h"
+#include "repr.h"
 
 // *************************************************************************
 
-namespace Helper {
+namespace G13 {
 
 void string_repr_out::write_on(std::ostream &o) const {
 

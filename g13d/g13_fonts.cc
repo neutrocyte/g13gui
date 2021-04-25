@@ -1,4 +1,5 @@
-#include "g13.h"
+#include "device.h"
+#include "font.h"
 
 using namespace std;
 
