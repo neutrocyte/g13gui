@@ -145,7 +145,7 @@ int g13_create_uinput(G13_Device *g13) {
   }
   memset(&uinp, 0, sizeof(uinp));
   char name[] = "G13";
-  strncpy(uinp.name, name, sizeof(name));
+  strncpy(uinp.name, name, sizeof(uinp.name));
   uinp.id.version = 1;
   uinp.id.bustype = BUS_USB;
   uinp.id.product = G13_PRODUCT_ID;
