@@ -405,16 +405,9 @@ G13_Action_Keys::G13_Action_Keys(G13_Device &keypad,
 G13_Action_Keys::~G13_Action_Keys() {}
 
 void G13_Action_Keys::act(G13_Device &g13, bool is_down) {
-  if (is_down) {
-    for (int i = 0; i < _keys.size(); i++) {
-      g13.send_event(EV_KEY, _keys[i], is_down);
-      G13_LOG(trace, "sending KEY DOWN " << _keys[i]);
-    }
-  } else {
-    for (int i = _keys.size() - 1; i >= 0; i--) {
-      g13.send_event(EV_KEY, _keys[i], is_down);
-      G13_LOG(trace, "sending KEY UP " << _keys[i]);
-    }
+  for (auto key : _keys) {
+    g13.send_event(EV_KEY, key, is_down);
+    G13_LOG(trace, "sending KEY " << (is_down ? "DOWN " : "UP ") << key);
   }
 }
 
