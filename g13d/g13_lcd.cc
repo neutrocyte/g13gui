@@ -169,8 +169,8 @@ void G13_LCD::write_string(const char *str) {
 }
 
 void G13_LCD::image_test(int x, int y) {
+  unsigned int row = 0, col = 0;
 
-  int row = 0, col = 0;
   if (y >= 0) {
     image_setpixel(x, y);
   } else {
@@ -197,6 +197,7 @@ void G13_LCD::image_test(int x, int y) {
         break;
     }
   }
+
   image_send();
 }
 

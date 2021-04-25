@@ -397,7 +397,7 @@ template <typename T, int size> int GetFontCharacterCount(T (&)[size]) {
 
 template <class ARRAY_T, class FLAGST>
 void G13_Font::install_font(ARRAY_T &data, FLAGST flags, int first) {
-  for (size_t i = 0; i < GetFontCharacterCount(data); i++) {
+  for (int i = 0; i < GetFontCharacterCount(data); i++) {
     _chars[i + first].set_character(&data[i][0], _width, flags);
   }
 }

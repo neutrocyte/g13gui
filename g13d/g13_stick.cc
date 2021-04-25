@@ -115,7 +115,6 @@ void G13_Stick::parse_joystick(unsigned char *buf) {
 
   // update targets if we're in calibration mode
   switch (_stick_mode) {
-
     case STICK_CALCENTER:
       _center_pos = _current_pos;
       return;
