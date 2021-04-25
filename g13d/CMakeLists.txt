@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16.3)
 project(g13d LANGUAGES CXX VERSION "0.1.0")
 
 configure_file("config.h.in" "config.h")
-include_directories(${PROJECT_BINARY_BIN})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
 set(CMAKE_CXX_STANDARD 11)
