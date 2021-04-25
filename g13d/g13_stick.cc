@@ -49,18 +49,21 @@ G13_StickZone *G13_Stick::zone(const std::string &name, bool create) {
 }
 
 void G13_Stick::set_mode(stick_mode_t m) {
-  if (m == _stick_mode)
+  if (m == _stick_mode) {
     return;
-  if (_stick_mode == STICK_CALCENTER || _stick_mode == STICK_CALBOUNDS ||
+  }
+
+  if (_stick_mode == STICK_CALCENTER ||
+      _stick_mode == STICK_CALBOUNDS ||
       _stick_mode == STICK_CALNORTH) {
     _recalc_calibrated();
   }
+
   _stick_mode = m;
-  switch (_stick_mode) {
-    case STICK_CALBOUNDS:
-      _bounds.tl = G13_StickCoord(255, 255);
-      _bounds.br = G13_StickCoord(0, 0);
-      break;
+
+  if (_stick_mode == STICK_CALBOUNDS) {
+    _bounds.tl = G13_StickCoord(255, 255);
+    _bounds.br = G13_StickCoord(0, 0);
   }
 }
 
@@ -126,6 +129,9 @@ void G13_Stick::parse_joystick(unsigned char *buf) {
     case STICK_CALBOUNDS:
       _bounds.expand(_current_pos);
       return;
+
+    default:
+      break;
   };
 
   // determine our normalized position
