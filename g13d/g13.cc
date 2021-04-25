@@ -346,8 +346,8 @@ void G13_Device::read_commands() {
 
 G13_Device::G13_Device(G13_Manager &manager, libusb_device_handle *handle,
                        int _id)
-    : _manager(manager), _lcd(*this), _stick(*this), handle(handle),
-      _id_within_manager(_id), _uinput_fid(-1), ctx(0) {
+    : _id_within_manager(_id), handle(handle), ctx(0), _uinput_fid(-1),
+      _manager(manager), _lcd(*this), _stick(*this) {
   _current_profile = ProfilePtr(new G13_Profile(*this, "default"));
   _profiles["default"] = _current_profile;
 
@@ -657,7 +657,7 @@ void G13_Device::command(char const *str) {
   }
 }
 
-G13_Manager::G13_Manager() : ctx(0), devs(0) {}
+G13_Manager::G13_Manager() : devs(0), ctx(0) {}
 
 // *************************************************************************
 
