@@ -351,8 +351,9 @@ G13_Device::G13_Device(G13_Manager &manager, libusb_device_handle *handle,
   _current_profile = ProfilePtr(new G13_Profile(*this, "default"));
   _profiles["default"] = _current_profile;
 
-  for (int i = 0; i < sizeof(keys); i++)
+  for (unsigned int i = 0; i < sizeof(keys); i++) {
     keys[i] = false;
+  }
 
   lcd().image_clear();
 
