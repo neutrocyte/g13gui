@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.16.3)
+project(g13d LANGUAGES CXX VERSION "0.1.0")
 
-project(g13d CXX)
+configure_file("config.h.in" "config.h")
+include_directories(${PROJECT_BINARY_BIN})
+
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+
 add_executable(pbm2lpbm pbm2lpbm.cc)
 add_executable(g13d
   g13.cc
@@ -13,7 +21,8 @@ add_executable(g13d
   helper.cc
 )
 
-target_compile_definitions(g13d PUBLIC BOOST_LOG_DYN_LINK=1)
+target_compile_definitions(g13d PRIVATE BOOST_LOG_DYN_LINK=1)
+
 find_package(PkgConfig)
 pkg_check_modules(libusb-1.0 REQUIRED libusb-1.0)
 find_package(Boost REQUIRED COMPONENTS system log program_options)
