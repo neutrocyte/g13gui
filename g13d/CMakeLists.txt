@@ -23,3 +23,7 @@ target_link_libraries(g13d
   ${libusb-1.0_LIBRARIES})
 
 install(TARGETS g13d pbm2lpbm RUNTIME)
+install(CODE "
+  execute_process(COMMAND install -d -m 0660 -o root -g input /run/g13d)
+  message(STATUS \"Install: /run/g13d\")
+")
