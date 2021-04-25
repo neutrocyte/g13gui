@@ -150,7 +150,7 @@ typedef boost::shared_ptr<G13_Action> G13_ActionPtr;
 template <class PARENT_T> class G13_Actionable {
 public:
   G13_Actionable(PARENT_T &parent_arg, const std::string &name)
-      : _parent_ptr(&parent_arg), _name(name) {}
+      : _name(name), _parent_ptr(&parent_arg) {}
   virtual ~G13_Actionable() { _parent_ptr = 0; }
 
   G13_ActionPtr action() const { return _action; }
@@ -234,8 +234,8 @@ public:
 
 protected:
   G13_Device &_keypad;
-  std::vector<G13_Key> _keys;
   std::string _name;
+  std::vector<G13_Key> _keys;
 
   void _init_keys();
 };
@@ -335,7 +335,6 @@ public:
 
 protected:
   bool _active;
-
   G13_ZoneBounds _bounds;
 };
 
