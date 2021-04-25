@@ -26,7 +26,6 @@ namespace G13 {
 // *************************************************************************
 
 void G13_Device::send_event(int type, int code, int val) {
-
   memset(&_event, 0, sizeof(_event));
   gettimeofday(&_event.time, 0);
   _event.type = type;
@@ -51,17 +50,18 @@ void G13_Device::write_output_pipe(const std::string &out) {
 }
 
 void G13_Device::set_mode_leds(int leds) {
-
   unsigned char usb_data[] = {5, 0, 0, 0, 0};
   usb_data[1] = leds;
   int r = libusb_control_transfer(
       handle, LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE, 9, 0x305,
       0, usb_data, 5, 1000);
+
   if (r != 5) {
     G13_LOG(error, "Problem sending data");
     return;
   }
 }
+
 void G13_Device::set_key_color(int red, int green, int blue) {
   int error;
   unsigned char usb_data[] = {5, 0, 0, 0, 0};
@@ -125,7 +125,6 @@ int g13_create_fifo(const char *fifo_name) {
 
 int g13_create_uinput(G13_Device *g13) {
   struct uinput_user_dev uinp;
-  struct input_event event;
   const char *dev_uinput_fname =
       access("/dev/input/uinput", F_OK) == 0
           ? "/dev/input/uinput"
@@ -590,6 +589,7 @@ void G13_Device::_init_commands() {
       if (!zone) {
         throw G13_CommandException("unknown stick zone");
       }
+
       if (operation == "action") {
         zone->set_action(make_action(remainder));
       } else if (operation == "bounds") {
@@ -598,7 +598,6 @@ void G13_Device::_init_commands() {
           throw G13_CommandException("bad bounds format");
         }
         zone->set_bounds(G13_ZoneBounds(x1, y1, x2, y2));
-
       } else if (operation == "del") {
         _stick.remove_zone(*zone);
       } else {
