@@ -3,16 +3,16 @@ LIBS      := -lusb-1.0 -lboost_program_options -lboost_log -lboost_system -lpthr
 PREFIX    ?= /usr/local
 
 G13D_SRCS := \
-	src/g13.cc \
-	src/g13_fonts.cc \
-	src/g13_keys.cc \
-	src/g13_lcd.cc \
-	src/g13_log.cc \
-	src/g13_main.cc \
-	src/g13_stick.cc \
-	src/helper.cc
+	g13d/g13.cc \
+	g13d/g13_fonts.cc \
+	g13d/g13_keys.cc \
+	g13d/g13_lcd.cc \
+	g13d/g13_log.cc \
+	g13d/g13_main.cc \
+	g13d/g13_stick.cc \
+	g13d/helper.cc
 
-G13D_OBJS := $(patsubst src/%.cc,build/%.o,$(G13D_SRCS))
+G13D_OBJS := $(patsubst g13d/%.cc,build/%.o,$(G13D_SRCS))
 
 all: build build/g13d build/pbm2lpbm
 
