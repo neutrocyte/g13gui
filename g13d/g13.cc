@@ -583,10 +583,10 @@ void G13_Device::_init_commands() {
     std::string operation, zonename;
     advance_ws(remainder, operation);
     advance_ws(remainder, zonename);
-    if (operation == "add") {
-      G13_StickZone *zone = _stick.zone(zonename, true);
-    } else {
+
+    if (operation != "add") {
       G13_StickZone *zone = _stick.zone(zonename);
+
       if (!zone) {
         throw G13_CommandException("unknown stick zone");
       }
