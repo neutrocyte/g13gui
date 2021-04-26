@@ -1,6 +1,7 @@
+#include <string.h>
+
 #include <cstdio>
 #include <iostream>
-#include <string.h>
 #include <string>
 using namespace std;
 // convert a .pbm raw file to our custom .lpbm format
@@ -32,10 +33,8 @@ int main(int argc, char *argv[]) {
   unsigned char buf[160 * 48];
   memset(buf, 0, 160 * 43);
   while (cin >> c) {
-    if (i % 20 == 0)
-      row++;
-    if (row == 8)
-      row = 0;
+    if (i % 20 == 0) row++;
+    if (row == 8) row = 0;
     buf[7 + (i % 20) * 8 + i / 160 * 160] |= ((c >> 0) & 0x01) << row;
     buf[6 + (i % 20) * 8 + i / 160 * 160] |= ((c >> 1) & 0x01) << row;
     buf[5 + (i % 20) * 8 + i / 160 * 160] |= ((c >> 2) & 0x01) << row;

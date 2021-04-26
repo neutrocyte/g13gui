@@ -1,32 +1,30 @@
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <signal.h>
+#include "device.h"
 
+#include <fcntl.h>
 #include <libusb-1.0/libusb.h>
 #include <linux/uinput.h>
+#include <signal.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
-
-#include <iostream>
+#include <boost/lexical_cast.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 #include "logo.h"
 #include "manager.h"
 #include "repr.h"
-#include "device.h"
 
 namespace G13 {
 
 static std::string describe_libusb_error_code(int code) {
-
-#define TEST_libusb_error(r, data, elem)                                       \
-  case BOOST_PP_CAT(LIBUSB_, elem):                                            \
+#define TEST_libusb_error(r, data, elem) \
+  case BOOST_PP_CAT(LIBUSB_, elem):      \
     return BOOST_PP_STRINGIZE(elem);
 
   switch (code) {
@@ -194,7 +192,6 @@ void G13_Device::cleanup() {
   libusb_close(handle);
 }
 
-
 /*! reads and processes key state report from G13
  *
  */
@@ -206,7 +203,6 @@ int G13_Device::read_keys() {
                                 buffer, G13_REPORT_SIZE, &size, 100);
 
   if (error && error != LIBUSB_ERROR_TIMEOUT) {
-
     G13_LOG(error, "Error while reading keys: "
                        << error << " (" << describe_libusb_error_code(error)
                        << ")");
@@ -226,7 +222,6 @@ void G13_Device::read_config_file(const std::string &filename) {
 
   G13_LOG(info, "reading configuration from " << filename);
   while (s.good()) {
-
     // grab a line
     char buf[1024];
     buf[0] = 0;
@@ -265,7 +260,7 @@ void G13_Device::read_commands() {
     G13_LOG(trace, "read " << ret << " characters");
 
     if (ret ==
-        960) { // TODO probably image, for now, don't test, just assume image
+        960) {  // TODO probably image, for now, don't test, just assume image
       lcd().image(buf, ret);
     } else {
       std::string buffer = reinterpret_cast<const char *>(buf);
@@ -288,8 +283,13 @@ void G13_Device::read_commands() {
 
 G13_Device::G13_Device(G13_Manager &manager, libusb_device_handle *handle,
                        int _id)
-    : _id_within_manager(_id), handle(handle), ctx(0), _uinput_fid(-1),
-      _manager(manager), _lcd(*this), _stick(*this) {
+    : _id_within_manager(_id),
+      handle(handle),
+      ctx(0),
+      _uinput_fid(-1),
+      _manager(manager),
+      _lcd(*this),
+      _stick(*this) {
   _current_profile = ProfilePtr(new G13_Profile(*this, "default"));
   _profiles["default"] = _current_profile;
 
@@ -323,7 +323,6 @@ ProfilePtr G13_Device::profile(const std::string &name) {
   }
   return rv;
 }
-
 
 G13_ActionPtr G13_Device::make_action(const std::string &action) {
   if (!action.size()) {
@@ -361,7 +360,7 @@ void G13_Device::dump(std::ostream &o, int detail) {
   }
 }
 
-inline const char *advance_ws(const char* &source, std::string &dest) {
+inline const char *advance_ws(const char *&source, std::string &dest) {
   const char *space = source ? strchr(source, ' ') : 0;
 
   if (space) {
@@ -377,7 +376,9 @@ inline const char *advance_ws(const char* &source, std::string &dest) {
 
 struct command_adder {
   command_adder(G13_Device::CommandFunctionTable &t, const char *name)
-      : _t(t), _name(name) {}
+      : _t(t),
+        _name(name) {
+  }
 
   G13_Device::CommandFunctionTable &_t;
   std::string _name;
@@ -387,16 +388,16 @@ struct command_adder {
   };
 };
 
-#define RETURN_FAIL(message)                                                   \
-  {                                                                            \
-    G13_LOG(error, message);                                                   \
-    return;                                                                    \
+#define RETURN_FAIL(message) \
+  {                          \
+    G13_LOG(error, message); \
+    return;                  \
   }
 
-#define G13_DEVICE_COMMAND(name)                                               \
-  ;                                                                            \
-  command_adder BOOST_PP_CAT(add_, name)(_command_table,                       \
-                                         BOOST_PP_STRINGIZE(name));            \
+#define G13_DEVICE_COMMAND(name)                                    \
+  ;                                                                 \
+  command_adder BOOST_PP_CAT(add_, name)(_command_table,            \
+                                         BOOST_PP_STRINGIZE(name)); \
   BOOST_PP_CAT(add_, name) += [this](const char *remainder)
 
 void G13_Device::_init_commands() {
@@ -432,10 +433,18 @@ void G13_Device::_init_commands() {
     }
   }
 
-  G13_DEVICE_COMMAND(profile) { switch_to_profile(remainder); }
-  G13_DEVICE_COMMAND(font) { switch_to_font(remainder); }
-  G13_DEVICE_COMMAND(mod) { set_mode_leds(atoi(remainder)); }
-  G13_DEVICE_COMMAND(textmode) { lcd().text_mode = atoi(remainder); }
+  G13_DEVICE_COMMAND(profile) {
+    switch_to_profile(remainder);
+  }
+  G13_DEVICE_COMMAND(font) {
+    switch_to_font(remainder);
+  }
+  G13_DEVICE_COMMAND(mod) {
+    set_mode_leds(atoi(remainder));
+  }
+  G13_DEVICE_COMMAND(textmode) {
+    lcd().text_mode = atoi(remainder);
+  }
 
   G13_DEVICE_COMMAND(rgb) {
     int red, green, blue;
@@ -446,10 +455,10 @@ void G13_Device::_init_commands() {
     }
   }
 
-#define STICKMODE_TEST(r, data, elem)                                          \
-  if (mode == BOOST_PP_STRINGIZE(elem)) {                                      \
-    _stick.set_mode(BOOST_PP_CAT(STICK_, elem));                               \
-    return;                                                                    \
+#define STICKMODE_TEST(r, data, elem)            \
+  if (mode == BOOST_PP_STRINGIZE(elem)) {        \
+    _stick.set_mode(BOOST_PP_CAT(STICK_, elem)); \
+    return;                                      \
   } else
 
   G13_DEVICE_COMMAND(stickmode) {
@@ -543,7 +552,6 @@ void G13_Device::command(char const *str) {
   }
 }
 
-
 void G13_Device::init_lcd() {
   int error = libusb_control_transfer(handle, 0, 9, 1, 0, 0, 0, 1000);
   if (error) {
@@ -594,4 +602,4 @@ void G13_Device::parse_joystick(unsigned char *buf) {
   _stick.parse_joystick(buf);
 }
 
-} // namespace G13
+}  // namespace G13

@@ -7,10 +7,10 @@
 
 namespace G13 {
 
-template <class T> class Bounds {
-public:
-  Bounds(const Coord<T> &_tl, const Coord<T> &_br)
-      : tl(_tl), br(_br) {
+template <class T>
+class Bounds {
+ public:
+  Bounds(const Coord<T> &_tl, const Coord<T> &_br) : tl(_tl), br(_br) {
   }
 
   Bounds(T x1, T y1, T x2, T y2) : tl(x1, y1), br(x2, y2) {
@@ -21,14 +21,10 @@ public:
   }
 
   void expand(const Coord<T> &pos) {
-    if (pos.x < tl.x)
-      tl.x = pos.x;
-    if (pos.y < tl.y)
-      tl.y = pos.y;
-    if (pos.x > br.x)
-      br.x = pos.x;
-    if (pos.y > br.y)
-      br.y = pos.y;
+    if (pos.x < tl.x) tl.x = pos.x;
+    if (pos.y < tl.y) tl.y = pos.y;
+    if (pos.x > br.x) br.x = pos.x;
+    if (pos.y > br.y) br.y = pos.y;
   }
 
   Coord<T> tl;
@@ -37,15 +33,12 @@ public:
 
 template <class T>
 std::ostream &operator<<(std::ostream &o, const Bounds<T> &b) {
-  o << "{ "
-    << b.tl.x << " x " << b.tl.y
-    << " / "
-    << b.br.x << " x " << b.br.y
+  o << "{ " << b.tl.x << " x " << b.tl.y << " / " << b.br.x << " x " << b.br.y
     << " }";
 
   return o;
 };
 
-} // namespace G13
+}  // namespace G13
 
-#endif // BOUNDS_H
+#endif  // BOUNDS_H

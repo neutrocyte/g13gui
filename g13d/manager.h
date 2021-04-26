@@ -1,9 +1,9 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 #include "action.h"
 #include "device.h"
@@ -14,7 +14,7 @@ namespace G13 {
  * top level class, holds what would otherwise be in global variables
  */
 class G13_Manager {
-public:
+ public:
   G13_Manager();
 
   G13_KEY_INDEX find_g13_key_value(const std::string &keyname) const;
@@ -23,7 +23,9 @@ public:
   LINUX_KEY_VALUE find_input_key_value(const std::string &keyname) const;
   std::string find_input_key_name(LINUX_KEY_VALUE) const;
 
-  void set_logo(const std::string &fn) { logo_filename = fn; }
+  void set_logo(const std::string &fn) {
+    logo_filename = fn;
+  }
   int run();
 
   std::string string_config_value(const std::string &name) const;
@@ -34,7 +36,7 @@ public:
   void set_log_level(::boost::log::trivial::severity_level lvl);
   void set_log_level(const std::string &);
 
-protected:
+ protected:
   void init_keynames();
   void display_keys();
   void discover_g13s(libusb_device **devs, ssize_t count,
@@ -74,6 +76,6 @@ inline const G13_Manager &G13_Profile::manager() const {
   return _keypad.manager();
 }
 
-} // namespace G13
+}  // namespace G13
 
-#endif // MANAGER_H
+#endif  // MANAGER_H

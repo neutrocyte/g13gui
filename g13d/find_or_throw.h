@@ -6,13 +6,13 @@
 namespace G13 {
 
 class NotFoundException : public std::exception {
-public:
+ public:
   const char *what() throw();
 };
 
-template<class K_T, class V_T>
+template <class K_T, class V_T>
 inline const V_T &find_or_throw(const std::map<K_T, V_T> &m,
-                                  const K_T &target) {
+                                const K_T &target) {
   auto i = m.find(target);
 
   if (i == m.end()) {
@@ -22,7 +22,7 @@ inline const V_T &find_or_throw(const std::map<K_T, V_T> &m,
   return i->second;
 };
 
-template<class K_T, class V_T>
+template <class K_T, class V_T>
 inline V_T &find_or_throw(std::map<K_T, V_T> &m, const K_T &target) {
   auto i = m.find(target);
 
@@ -33,6 +33,6 @@ inline V_T &find_or_throw(std::map<K_T, V_T> &m, const K_T &target) {
   return i->second;
 };
 
-} // namespace G13
+}  // namespace G13
 
-#endif // FIND_OR_THROW_H
+#endif  // FIND_OR_THROW_H

@@ -2,17 +2,18 @@
  *
  */
 
+#include <boost/foreach.hpp>
 #include <iomanip>
 #include <iostream>
-
-#include <boost/foreach.hpp>
 
 #include "device.h"
 
 namespace G13 {
 
 G13_Stick::G13_Stick(G13_Device &keypad)
-    : _keypad(keypad), _bounds(0, 0, 255, 255), _center_pos(127, 127),
+    : _keypad(keypad),
+      _bounds(0, 0, 255, 255),
+      _center_pos(127, 127),
       _north_pos(127, 0) {
   _stick_mode = STICK_KEYS;
 
@@ -52,8 +53,7 @@ void G13_Stick::set_mode(stick_mode_t m) {
     return;
   }
 
-  if (_stick_mode == STICK_CALCENTER ||
-      _stick_mode == STICK_CALBOUNDS ||
+  if (_stick_mode == STICK_CALCENTER || _stick_mode == STICK_CALBOUNDS ||
       _stick_mode == STICK_CALNORTH) {
     _recalc_calibrated();
   }
@@ -106,7 +106,9 @@ void G13_StickZone::test(const G13_ZoneCoord &loc) {
 
 G13_StickZone::G13_StickZone(G13_Stick &stick, const std::string &name,
                              const G13_ZoneBounds &b, G13_ActionPtr action)
-    : G13_Actionable<G13_Stick>(stick, name), _active(false), _bounds(b) {
+    : G13_Actionable<G13_Stick>(stick, name),
+      _active(false),
+      _bounds(b) {
   set_action(action);
 }
 
@@ -166,4 +168,4 @@ void G13_Stick::parse_joystick(unsigned char *buf) {
   }
 }
 
-} // namespace G13
+}  // namespace G13

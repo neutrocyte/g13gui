@@ -1,6 +1,6 @@
-#include <ostream>
-
 #include "repr.h"
+
+#include <ostream>
 
 namespace G13 {
 
@@ -52,4 +52,4 @@ void string_repr_out::write_on(std::ostream &o) const {
   o << "\"";
 };
 
-} // namespace G13
+}  // namespace G13

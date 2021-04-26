@@ -1,16 +1,18 @@
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/foreach.hpp>
-
 #include "action.h"
+
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
+
 #include "manager.h"
 #include "repr.h"
 
 namespace G13 {
 
-G13_Action::~G13_Action() {}
+G13_Action::~G13_Action() {
+}
 
 G13_Action_Keys::G13_Action_Keys(G13_Device &keypad,
                                  const std::string &keys_string)
@@ -29,7 +31,8 @@ G13_Action_Keys::G13_Action_Keys(G13_Device &keypad,
   std::vector<int> _keys;
 }
 
-G13_Action_Keys::~G13_Action_Keys() {}
+G13_Action_Keys::~G13_Action_Keys() {
+}
 
 void G13_Action_Keys::act(G13_Device &g13, bool is_down) {
   for (auto key : _keys) {
@@ -42,16 +45,18 @@ void G13_Action_Keys::dump(std::ostream &out) const {
   out << " SEND KEYS: ";
 
   for (size_t i = 0; i < _keys.size(); i++) {
-    if (i)
-      out << " + ";
+    if (i) out << " + ";
     out << manager().find_input_key_name(_keys[i]);
   }
 }
 
 G13_Action_PipeOut::G13_Action_PipeOut(G13_Device &keypad,
                                        const std::string &out)
-    : G13_Action(keypad), _out(out + "\n") {}
-G13_Action_PipeOut::~G13_Action_PipeOut() {}
+    : G13_Action(keypad),
+      _out(out + "\n") {
+}
+G13_Action_PipeOut::~G13_Action_PipeOut() {
+}
 
 void G13_Action_PipeOut::act(G13_Device &kp, bool is_down) {
   if (is_down) {
@@ -65,8 +70,11 @@ void G13_Action_PipeOut::dump(std::ostream &o) const {
 
 G13_Action_Command::G13_Action_Command(G13_Device &keypad,
                                        const std::string &cmd)
-    : G13_Action(keypad), _cmd(cmd) {}
-G13_Action_Command::~G13_Action_Command() {}
+    : G13_Action(keypad),
+      _cmd(cmd) {
+}
+G13_Action_Command::~G13_Action_Command() {
+}
 
 void G13_Action_Command::act(G13_Device &kp, bool is_down) {
   if (is_down) {
@@ -78,4 +86,4 @@ void G13_Action_Command::dump(std::ostream &o) const {
   o << "COMMAND : " << repr(_cmd);
 }
 
-}
+}  // namespace G13

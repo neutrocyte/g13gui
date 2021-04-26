@@ -1,33 +1,45 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include <linux/input.h>
 #include <libusb-1.0/libusb.h>
+#include <linux/input.h>
 
+#include <map>
 #include <ostream>
 #include <string>
-#include <map>
 
-#include "lcd.h"
-#include "stick.h"
 #include "font.h"
+#include "lcd.h"
 #include "profile.h"
+#include "stick.h"
 
 namespace G13 {
 
 class G13_Manager;
 
 class G13_Device {
-public:
+ public:
   G13_Device(G13_Manager &manager, libusb_device_handle *handle, int id);
 
-  G13_Manager &manager() { return _manager; }
-  const G13_Manager &manager() const { return _manager; }
+  G13_Manager &manager() {
+    return _manager;
+  }
+  const G13_Manager &manager() const {
+    return _manager;
+  }
 
-  G13_LCD &lcd() { return _lcd; }
-  const G13_LCD &lcd() const { return _lcd; }
-  G13_Stick &stick() { return _stick; }
-  const G13_Stick &stick() const { return _stick; }
+  G13_LCD &lcd() {
+    return _lcd;
+  }
+  const G13_LCD &lcd() const {
+    return _lcd;
+  }
+  G13_Stick &stick() {
+    return _stick;
+  }
+  const G13_Stick &stick() const {
+    return _stick;
+  }
 
   FontPtr switch_to_font(const std::string &name);
   void switch_to_profile(const std::string &name);
@@ -60,15 +72,21 @@ public:
   void register_context(libusb_context *ctx);
   void write_lcd_file(const std::string &filename);
 
-  G13_Font &current_font() { return *_current_font; }
-  G13_Profile &current_profile() { return *_current_profile; }
+  G13_Font &current_font() {
+    return *_current_font;
+  }
+  G13_Profile &current_profile() {
+    return *_current_profile;
+  }
 
-  int id_within_manager() const { return _id_within_manager; }
+  int id_within_manager() const {
+    return _id_within_manager;
+  }
 
   typedef std::function<void(const char *)> COMMAND_FUNCTION;
   typedef std::map<std::string, COMMAND_FUNCTION> CommandFunctionTable;
 
-protected:
+ protected:
   void _init_fonts();
   void init_lcd();
   void _init_commands();
@@ -112,6 +130,6 @@ inline bool G13_Device::update(int key, bool v) {
   return old != v;
 }
 
-} // namespace G13
+}  // namespace G13
 
-#endif // DEVICE_H
+#endif  // DEVICE_H

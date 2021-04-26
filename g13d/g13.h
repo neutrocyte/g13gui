@@ -2,7 +2,6 @@
 #define G13_H
 
 #include <boost/log/trivial.hpp>
-
 #include <string>
 
 namespace G13 {
@@ -42,14 +41,18 @@ const LINUX_KEY_VALUE BAD_KEY_VALUE = -1;
 typedef int G13_KEY_INDEX;
 
 class G13_CommandException : public std::exception {
-public:
-  G13_CommandException(const std::string &reason) : _reason(reason) {}
-  virtual ~G13_CommandException() throw() {}
-  virtual const char *what() const throw() { return _reason.c_str(); }
+ public:
+  G13_CommandException(const std::string &reason) : _reason(reason) {
+  }
+  virtual ~G13_CommandException() throw() {
+  }
+  virtual const char *what() const throw() {
+    return _reason.c_str();
+  }
 
   std::string _reason;
 };
 
-} // namespace G13
+}  // namespace G13
 
-#endif // __G13_H__
+#endif  // __G13_H__

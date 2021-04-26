@@ -1,7 +1,6 @@
-#include <iostream>
-
-#include <boost/program_options.hpp>
 #include <boost/foreach.hpp>
+#include <boost/program_options.hpp>
+#include <iostream>
 
 #include "g13.h"
 #include "manager.h"
@@ -64,5 +63,4 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-
 }

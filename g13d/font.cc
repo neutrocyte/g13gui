@@ -1,5 +1,6 @@
-#include "device.h"
 #include "font.h"
+
+#include "device.h"
 
 using namespace std;
 
@@ -7,10 +8,13 @@ namespace G13 {
 
 #include "font8x8.h"
 
-G13_Font::G13_Font() : _name("default"), _width(8) {}
+G13_Font::G13_Font() : _name("default"), _width(8) {
+}
 
 G13_Font::G13_Font(const std::string &name, unsigned int width)
-    : _name(name), _width(width) {}
+    : _name(name),
+      _width(width) {
+}
 
 void G13_FontChar::set_character(unsigned char *data, int width,
                                  unsigned flags) {
@@ -35,7 +39,8 @@ void G13_FontChar::set_character(unsigned char *data, int width,
   }
 }
 
-template <typename T, int size> int GetFontCharacterCount(T (&)[size]) {
+template <typename T, int size>
+int GetFontCharacterCount(T (&)[size]) {
   return size;
 }
 
@@ -57,4 +62,4 @@ void G13_Device::_init_fonts() {
   _fonts[fiveXeight->name()] = fiveXeight;
 }
 
-} // namespace G13
+}  // namespace G13

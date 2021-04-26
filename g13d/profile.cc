@@ -2,14 +2,15 @@
  *
  */
 
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/foreach.hpp>
-
 #include "profile.h"
-#include "manager.h"
-#include "repr.h"
+
+#include <boost/foreach.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
+
 #include "find_or_throw.h"
 #include "helper.h"
+#include "manager.h"
+#include "repr.h"
 
 namespace G13 {
 // *************************************************************************
@@ -37,10 +38,10 @@ void G13_Profile::_init_keys() {
   int key_index = 0;
 
   // create a G13_Key entry for every key in G13_KEY_SEQ
-#define INIT_KEY(r, data, elem)                                                \
-  {                                                                            \
-    G13_Key key(*this, BOOST_PP_STRINGIZE(elem), key_index++);                 \
-    _keys.push_back(key);                                                      \
+#define INIT_KEY(r, data, elem)                                \
+  {                                                            \
+    G13_Key key(*this, BOOST_PP_STRINGIZE(elem), key_index++); \
+    _keys.push_back(key);                                      \
   }
 
   BOOST_PP_SEQ_FOR_EACH(INIT_KEY, _, G13_KEY_SEQ)
@@ -48,11 +49,11 @@ void G13_Profile::_init_keys() {
   assert(_keys.size() == G13_NUM_KEYS);
 
   // now disable testing for keys in G13_NONPARSED_KEY_SEQ
-#define MARK_NON_PARSED_KEY(r, data, elem)                                     \
-  {                                                                            \
-    G13_Key *key = find_key(BOOST_PP_STRINGIZE(elem));                         \
-    assert(key);                                                               \
-    key->_should_parse = false;                                                \
+#define MARK_NON_PARSED_KEY(r, data, elem)             \
+  {                                                    \
+    G13_Key *key = find_key(BOOST_PP_STRINGIZE(elem)); \
+    assert(key);                                       \
+    key->_should_parse = false;                        \
   }
 
   BOOST_PP_SEQ_FOR_EACH(MARK_NON_PARSED_KEY, _, G13_NONPARSED_KEY_SEQ)
@@ -88,4 +89,4 @@ G13_Key *G13_Profile::find_key(const std::string &keyname) {
   return 0;
 }
 
-} // namespace G13
+}  // namespace G13

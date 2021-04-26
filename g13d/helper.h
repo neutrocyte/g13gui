@@ -37,12 +37,9 @@
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq.hpp>
 #include <boost/shared_ptr.hpp>
-
+#include <exception>
 #include <iomanip>
 #include <iostream>
-
-#include <exception>
-
 #include <map>
 #include <string>
 #include <vector>
@@ -53,9 +50,9 @@ namespace Helper {
 
 // *************************************************************************
 
-template <class MAP_T> struct _map_keys_out {
-  _map_keys_out(const MAP_T &c, const std::string &s)
-      : container(c), sep(s) {
+template <class MAP_T>
+struct _map_keys_out {
+  _map_keys_out(const MAP_T &c, const std::string &s) : container(c), sep(s) {
   }
 
   const MAP_T &container;
@@ -84,8 +81,8 @@ _map_keys_out<MAP_T> map_keys_out(const MAP_T &c,
 
 // *************************************************************************
 
-}; // namespace Helper
+};  // namespace Helper
 
 // *************************************************************************
 
-#endif // __HELPER_HPP__
+#endif  // __HELPER_HPP__

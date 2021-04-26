@@ -1,9 +1,9 @@
 #ifndef STICK_H
 #define STICK_H
 
-#include "coord.h"
-#include "bounds.h"
 #include "action.h"
+#include "bounds.h"
+#include "coord.h"
 
 namespace G13 {
 
@@ -15,7 +15,7 @@ typedef Coord<double> G13_ZoneCoord;
 typedef Bounds<double> G13_ZoneBounds;
 
 class G13_StickZone : public G13_Actionable<G13_Stick> {
-public:
+ public:
   G13_StickZone(G13_Stick &, const std::string &name, const G13_ZoneBounds &,
                 G13_ActionPtr = 0);
 
@@ -27,9 +27,11 @@ public:
 
   void parse_key(unsigned char *byte, G13_Device *g13);
   void test(const G13_ZoneCoord &loc);
-  void set_bounds(const G13_ZoneBounds &bounds) { _bounds = bounds; }
+  void set_bounds(const G13_ZoneBounds &bounds) {
+    _bounds = bounds;
+  }
 
-protected:
+ protected:
   bool _active;
   G13_ZoneBounds _bounds;
 };
@@ -37,7 +39,7 @@ protected:
 typedef boost::shared_ptr<G13_StickZone> G13_StickZonePtr;
 
 class G13_Stick {
-public:
+ public:
   G13_Stick(G13_Device &keypad);
 
   void parse_joystick(unsigned char *buf);
@@ -46,11 +48,13 @@ public:
   G13_StickZone *zone(const std::string &, bool create = false);
   void remove_zone(const G13_StickZone &zone);
 
-  const std::vector<G13_StickZone> &zones() const { return _zones; }
+  const std::vector<G13_StickZone> &zones() const {
+    return _zones;
+  }
 
   void dump(std::ostream &) const;
 
-protected:
+ protected:
   void _recalc_calibrated();
 
   G13_Device &_keypad;
@@ -65,6 +69,6 @@ protected:
   stick_mode_t _stick_mode;
 };
 
-} // namespace G13
+}  // namespace G13
 
-#endif // STICK_H
+#endif  // STICK_H

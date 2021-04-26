@@ -1,5 +1,8 @@
+#include "manager.h"
+
 #include <signal.h>
 
+#include <boost/foreach.hpp>
 #include <boost/log/attributes.hpp>
 #include <boost/log/core/core.hpp>
 #include <boost/log/expressions.hpp>
@@ -12,15 +15,12 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/stringize.hpp>
-#include <boost/foreach.hpp>
-
 #include <fstream>
 #include <vector>
 
-#include "helper.h"
 #include "device.h"
-#include "manager.h"
 #include "find_or_throw.h"
+#include "helper.h"
 #include "repr.h"
 
 namespace G13 {
@@ -61,11 +61,10 @@ void G13_Manager::set_log_level(::boost::log::trivial::severity_level lvl) {
 }
 
 void G13_Manager::set_log_level(const std::string &level) {
-
-#define CHECK_LEVEL(L)                                                         \
-  if (level == BOOST_PP_STRINGIZE(L)) {                                        \
-    set_log_level(::boost::log::trivial::L);                                   \
-    return;                                                                    \
+#define CHECK_LEVEL(L)                       \
+  if (level == BOOST_PP_STRINGIZE(L)) {      \
+    set_log_level(::boost::log::trivial::L); \
+    return;                                  \
   }
 
   CHECK_LEVEL(trace);
@@ -89,13 +88,13 @@ void G13_Manager::cleanup() {
   libusb_exit(ctx);
 }
 
-
-G13_Manager::G13_Manager()
-    : devs(0), ctx(0) {
+G13_Manager::G13_Manager() : devs(0), ctx(0) {
 }
 
 bool G13_Manager::running = true;
-void G13_Manager::set_stop(int) { running = false; }
+void G13_Manager::set_stop(int) {
+  running = false;
+}
 
 std::string G13_Manager::string_config_value(const std::string &name) const {
   try {
@@ -206,21 +205,21 @@ int G13_Manager::run() {
 }
 
 // setup maps to let us convert between strings and G13 key names
-#define ADD_G13_KEY_MAPPING(r, data, elem)                                     \
-  {                                                                            \
-    std::string name = BOOST_PP_STRINGIZE(elem);                               \
-    g13_key_to_name[key_index] = name;                                         \
-    g13_name_to_key[name] = key_index;                                         \
-    key_index++;                                                               \
+#define ADD_G13_KEY_MAPPING(r, data, elem)       \
+  {                                              \
+    std::string name = BOOST_PP_STRINGIZE(elem); \
+    g13_key_to_name[key_index] = name;           \
+    g13_name_to_key[name] = key_index;           \
+    key_index++;                                 \
   }
 
 // setup maps to let us convert between strings and linux key names
-#define ADD_KB_KEY_MAPPING(r, data, elem)                                      \
-  {                                                                            \
-    std::string name = BOOST_PP_STRINGIZE(elem);                               \
-    int keyval = BOOST_PP_CAT(KEY_, elem);                                     \
-    input_key_to_name[keyval] = name;                                          \
-    input_name_to_key[name] = keyval;                                          \
+#define ADD_KB_KEY_MAPPING(r, data, elem)        \
+  {                                              \
+    std::string name = BOOST_PP_STRINGIZE(elem); \
+    int keyval = BOOST_PP_CAT(KEY_, elem);       \
+    input_key_to_name[keyval] = name;            \
+    input_name_to_key[name] = keyval;            \
   }
 
 void G13_Manager::init_keynames() {
@@ -241,7 +240,6 @@ G13_Manager::find_g13_key_value(const std::string &keyname) const {
 
 LINUX_KEY_VALUE
 G13_Manager::find_input_key_value(const std::string &keyname) const {
-
   // if there is a KEY_ prefix, strip it off
   if (!strncmp(keyname.c_str(), "KEY_", 4)) {
     return find_input_key_value(keyname.c_str() + 4);
@@ -278,4 +276,4 @@ void G13_Manager::display_keys() {
   G13_OUT(Helper::map_keys_out(input_name_to_key));
 }
 
-} // namespace G13
+}  // namespace G13

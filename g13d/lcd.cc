@@ -18,10 +18,11 @@
          A0.01 A1.01 A2.01 ...
  */
 
-#include <iostream>
-#include <fstream>
-
 #include "lcd.h"
+
+#include <fstream>
+#include <iostream>
+
 #include "device.h"
 
 namespace G13 {
@@ -38,7 +39,7 @@ G13_LCD::G13_LCD(G13_Device &keypad) : _keypad(keypad) {
 
 void G13_LCD::image_setpixel(unsigned row, unsigned col) {
   unsigned offset =
-      image_byte_offset(row, col); // col + (row /8 ) * BYTES_PER_ROW * 8;
+      image_byte_offset(row, col);  // col + (row /8 ) * BYTES_PER_ROW * 8;
   unsigned char mask = 1 << ((row)&7);
 
   if (offset >= G13_LCD_BUF_SIZE) {
@@ -51,9 +52,8 @@ void G13_LCD::image_setpixel(unsigned row, unsigned col) {
 }
 
 void G13_LCD::image_clearpixel(unsigned row, unsigned col) {
-
   unsigned offset =
-      image_byte_offset(row, col); // col + (row /8 ) * BYTES_PER_ROW * 8;
+      image_byte_offset(row, col);  // col + (row /8 ) * BYTES_PER_ROW * 8;
   unsigned char mask = 1 << ((row)&7);
 
   if (offset >= G13_LCD_BUF_SIZE) {
@@ -88,7 +88,7 @@ void G13_LCD::write_char(char c, int row, int col) {
   }
 
   unsigned offset = image_byte_offset(row * G13_LCD_TEXT_CHEIGHT,
-                                      col); //*_keypad._current_font->_width );
+                                      col);  //*_keypad._current_font->_width );
   if (text_mode) {
     memcpy(&image_buf[offset],
            &_keypad.current_font().char_data(c).bits_inverted,
@@ -157,4 +157,4 @@ void G13_LCD::image_test(int x, int y) {
   image_send();
 }
 
-} // namespace G13
+}  // namespace G13

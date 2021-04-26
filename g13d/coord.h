@@ -3,14 +3,13 @@
 
 namespace G13 {
 
-template <class T> class Coord {
-public:
-  Coord()
-      : x(), y() {
+template <class T>
+class Coord {
+ public:
+  Coord() : x(), y() {
   }
 
-  Coord(T _x, T _y)
-      : x(_x), y(_y) {
+  Coord(T _x, T _y) : x(_x), y(_y) {
   }
 
   T x;
@@ -23,6 +22,6 @@ std::ostream &operator<<(std::ostream &o, const Coord<T> &c) {
   return o;
 };
 
-} // namespace G13
+}  // namespace G13
 
-#endif // COORD_H
+#endif  // COORD_H
