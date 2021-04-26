@@ -1,5 +1,6 @@
 #include "action.h"
 
+#include <boost/range/adaptor/reversed.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
@@ -35,9 +36,16 @@ Action_Keys::~Action_Keys() {
 }
 
 void Action_Keys::act(Device &g13, bool is_down) {
-  for (auto key : _keys) {
-    g13.send_event(EV_KEY, key, is_down);
-    G13_LOG(trace, "sending KEY " << (is_down ? "DOWN " : "UP ") << key);
+  if (is_down) {
+    for (auto key : _keys) {
+      g13.send_event(EV_KEY, key, is_down);
+      G13_LOG(trace, "sending KEY DOWN " << key);
+    }
+  } else {
+    for (auto key : boost::adaptors::reverse(_keys)) {
+      g13.send_event(EV_KEY, key, is_down);
+      G13_LOG(trace, "sending KEY UP " << key);
+    }
   }
 }
 
