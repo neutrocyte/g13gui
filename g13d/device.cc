@@ -104,7 +104,7 @@ int g13_create_uinput(void) {
   return ufile;
 }
 
-void G13_Device::send_event(int type, int code, int val) {
+void Device::send_event(int type, int code, int val) {
   memset(&_event, 0, sizeof(_event));
   gettimeofday(&_event.time, 0);
   _event.type = type;
@@ -119,7 +119,7 @@ void G13_Device::send_event(int type, int code, int val) {
   }
 }
 
-void G13_Device::write_output_pipe(const std::string &out) {
+void Device::write_output_pipe(const std::string &out) {
   // TODO(jtgans): Make this actually verify it writes all bytes
   auto result = write(_output_pipe_fid, out.c_str(), out.size());
   if (result < 0) {
@@ -128,7 +128,7 @@ void G13_Device::write_output_pipe(const std::string &out) {
   }
 }
 
-void G13_Device::set_mode_leds(int leds) {
+void Device::set_mode_leds(int leds) {
   unsigned char usb_data[] = {5, 0, 0, 0, 0};
   usb_data[1] = leds;
   int r = libusb_control_transfer(
@@ -141,7 +141,7 @@ void G13_Device::set_mode_leds(int leds) {
   }
 }
 
-void G13_Device::set_key_color(int red, int green, int blue) {
+void Device::set_key_color(int red, int green, int blue) {
   int error;
   unsigned char usb_data[] = {5, 0, 0, 0, 0};
   usb_data[1] = red;
@@ -157,7 +157,7 @@ void G13_Device::set_key_color(int red, int green, int blue) {
   }
 }
 
-void G13_Device::register_context(libusb_context *_ctx) {
+void Device::register_context(libusb_context *_ctx) {
   ctx = _ctx;
 
   int leds = 0;
@@ -183,7 +183,7 @@ void G13_Device::register_context(libusb_context *_ctx) {
   }
 }
 
-void G13_Device::cleanup() {
+void Device::cleanup() {
   remove(_input_pipe_name.c_str());
   remove(_output_pipe_name.c_str());
   ioctl(_uinput_fid, UI_DEV_DESTROY);
@@ -195,7 +195,7 @@ void G13_Device::cleanup() {
 /*! reads and processes key state report from G13
  *
  */
-int G13_Device::read_keys() {
+int Device::read_keys() {
   unsigned char buffer[G13_REPORT_SIZE];
   int size;
   int error =
@@ -217,7 +217,7 @@ int G13_Device::read_keys() {
   return 0;
 }
 
-void G13_Device::read_config_file(const std::string &filename) {
+void Device::read_config_file(const std::string &filename) {
   std::ifstream s(filename);
 
   G13_LOG(info, "reading configuration from " << filename);
@@ -245,7 +245,7 @@ void G13_Device::read_config_file(const std::string &filename) {
   }
 }
 
-void G13_Device::read_commands() {
+void Device::read_commands() {
   fd_set set;
   FD_ZERO(&set);
   FD_SET(_input_pipe_fid, &set);
@@ -281,7 +281,7 @@ void G13_Device::read_commands() {
   }
 }
 
-G13_Device::G13_Device(G13_Manager &manager, libusb_device_handle *handle,
+Device::Device(Manager &manager, libusb_device_handle *handle,
                        int _id)
     : _id_within_manager(_id),
       handle(handle),
@@ -290,7 +290,7 @@ G13_Device::G13_Device(G13_Manager &manager, libusb_device_handle *handle,
       _manager(manager),
       _lcd(*this),
       _stick(*this) {
-  _current_profile = ProfilePtr(new G13_Profile(*this, "default"));
+  _current_profile = ProfilePtr(new Profile(*this, "default"));
   _profiles["default"] = _current_profile;
 
   for (unsigned int i = 0; i < sizeof(keys); i++) {
@@ -303,7 +303,7 @@ G13_Device::G13_Device(G13_Manager &manager, libusb_device_handle *handle,
   _init_commands();
 }
 
-FontPtr G13_Device::switch_to_font(const std::string &name) {
+FontPtr Device::switch_to_font(const std::string &name) {
   FontPtr rv = _fonts[name];
   if (rv) {
     _current_font = rv;
@@ -311,34 +311,34 @@ FontPtr G13_Device::switch_to_font(const std::string &name) {
   return rv;
 }
 
-void G13_Device::switch_to_profile(const std::string &name) {
+void Device::switch_to_profile(const std::string &name) {
   _current_profile = profile(name);
 }
 
-ProfilePtr G13_Device::profile(const std::string &name) {
+ProfilePtr Device::profile(const std::string &name) {
   ProfilePtr rv = _profiles[name];
   if (!rv) {
-    rv = ProfilePtr(new G13_Profile(*_current_profile, name));
+    rv = ProfilePtr(new Profile(*_current_profile, name));
     _profiles[name] = rv;
   }
   return rv;
 }
 
-G13_ActionPtr G13_Device::make_action(const std::string &action) {
+ActionPtr Device::make_action(const std::string &action) {
   if (!action.size()) {
-    throw G13_CommandException("empty action string");
+    throw CommandException("empty action string");
   }
   if (action[0] == '>') {
-    return G13_ActionPtr(new G13_Action_PipeOut(*this, &action[1]));
+    return ActionPtr(new Action_PipeOut(*this, &action[1]));
   } else if (action[0] == '!') {
-    return G13_ActionPtr(new G13_Action_Command(*this, &action[1]));
+    return ActionPtr(new Action_Command(*this, &action[1]));
   } else {
-    return G13_ActionPtr(new G13_Action_Keys(*this, action));
+    return ActionPtr(new Action_Keys(*this, action));
   }
-  throw G13_CommandException("can't create action for " + action);
+  throw CommandException("can't create action for " + action);
 }
 
-void G13_Device::dump(std::ostream &o, int detail) {
+void Device::dump(std::ostream &o, int detail) {
   o << "G13 id=" << id_within_manager() << std::endl
     << "   input_pipe_name=" << repr(_input_pipe_name) << std::endl
     << "   output_pipe_name=" << repr(_output_pipe_name) << std::endl
@@ -375,14 +375,14 @@ inline const char *advance_ws(const char *&source, std::string &dest) {
 };
 
 struct command_adder {
-  command_adder(G13_Device::CommandFunctionTable &t, const char *name)
+  command_adder(Device::CommandFunctionTable &t, const char *name)
       : _t(t),
         _name(name) {
   }
 
-  G13_Device::CommandFunctionTable &_t;
+  Device::CommandFunctionTable &_t;
   std::string _name;
-  command_adder &operator+=(G13_Device::COMMAND_FUNCTION f) {
+  command_adder &operator+=(Device::COMMAND_FUNCTION f) {
     _t[_name] = f;
     return *this;
   };
@@ -400,7 +400,7 @@ struct command_adder {
                                          BOOST_PP_STRINGIZE(name)); \
   BOOST_PP_CAT(add_, name) += [this](const char *remainder)
 
-void G13_Device::_init_commands() {
+void Device::_init_commands() {
   G13_DEVICE_COMMAND(out) {
     lcd().write_string(remainder);
   }
@@ -477,10 +477,10 @@ void G13_Device::_init_commands() {
     advance_ws(remainder, zonename);
 
     if (operation != "add") {
-      G13_StickZone *zone = _stick.zone(zonename);
+      StickZone *zone = _stick.zone(zonename);
 
       if (!zone) {
-        throw G13_CommandException("unknown stick zone");
+        throw CommandException("unknown stick zone");
       }
 
       if (operation == "action") {
@@ -489,10 +489,10 @@ void G13_Device::_init_commands() {
         double x1, y1, x2, y2;
 
         if (sscanf(remainder, "%lf %lf %lf %lf", &x1, &y1, &x2, &y2) != 4) {
-          throw G13_CommandException("bad bounds format");
+          throw CommandException("bad bounds format");
         }
 
-        zone->set_bounds(G13_ZoneBounds(x1, y1, x2, y2));
+        zone->set_bounds(ZoneBounds(x1, y1, x2, y2));
       } else if (operation == "del") {
         _stick.remove_zone(*zone);
       } else {
@@ -531,7 +531,7 @@ void G13_Device::_init_commands() {
   };
 }
 
-void G13_Device::command(char const *str) {
+void Device::command(char const *str) {
   const char *remainder = str;
 
   try {
@@ -552,14 +552,14 @@ void G13_Device::command(char const *str) {
   }
 }
 
-void G13_Device::init_lcd() {
+void Device::init_lcd() {
   int error = libusb_control_transfer(handle, 0, 9, 1, 0, 0, 0, 1000);
   if (error) {
     G13_LOG(error, "Error when initializing lcd endpoint");
   }
 }
 
-void G13_Device::write_lcd(unsigned char *data, size_t size) {
+void Device::write_lcd(unsigned char *data, size_t size) {
   init_lcd();
   if (size != G13_LCD_BUFFER_SIZE) {
     G13_LOG(error, "Invalid LCD data size " << size << ", should be "
@@ -579,7 +579,7 @@ void G13_Device::write_lcd(unsigned char *data, size_t size) {
                        << error << ", " << bytes_written << " bytes written");
 }
 
-void G13_Device::write_lcd_file(const std::string &filename) {
+void Device::write_lcd_file(const std::string &filename) {
   std::filebuf *pbuf;
   std::ifstream filestr;
   size_t size;
@@ -598,7 +598,7 @@ void G13_Device::write_lcd_file(const std::string &filename) {
   write_lcd((unsigned char *)buffer, size);
 }
 
-void G13_Device::parse_joystick(unsigned char *buf) {
+void Device::parse_joystick(unsigned char *buf) {
   _stick.parse_joystick(buf);
 }
 

@@ -25,8 +25,8 @@
 
 namespace G13 {
 
-void G13_Manager::discover_g13s(libusb_device **devs, ssize_t count,
-                                std::vector<G13_Device *> &g13s) {
+void Manager::discover_g13s(libusb_device **devs, ssize_t count,
+                                std::vector<Device *> &g13s) {
   for (int i = 0; i < count; i++) {
     libusb_device_descriptor desc;
     int r = libusb_get_device_descriptor(devs[i], &desc);
@@ -50,17 +50,17 @@ void G13_Manager::discover_g13s(libusb_device **devs, ssize_t count,
         G13_LOG(error, "Cannot Claim Interface");
         return;
       }
-      g13s.push_back(new G13_Device(*this, handle, g13s.size()));
+      g13s.push_back(new Device(*this, handle, g13s.size()));
     }
   }
 }
 
-void G13_Manager::set_log_level(::boost::log::trivial::severity_level lvl) {
+void Manager::set_log_level(::boost::log::trivial::severity_level lvl) {
   boost::log::core::get()->set_filter(::boost::log::trivial::severity >= lvl);
   G13_OUT("set log level to " << lvl);
 }
 
-void G13_Manager::set_log_level(const std::string &level) {
+void Manager::set_log_level(const std::string &level) {
 #define CHECK_LEVEL(L)                       \
   if (level == BOOST_PP_STRINGIZE(L)) {      \
     set_log_level(::boost::log::trivial::L); \
@@ -77,7 +77,7 @@ void G13_Manager::set_log_level(const std::string &level) {
   G13_LOG(error, "unknown log level" << level);
 }
 
-void G13_Manager::cleanup() {
+void Manager::cleanup() {
   G13_LOG(info, "cleaning up");
 
   for (auto device : g13s) {
@@ -88,15 +88,15 @@ void G13_Manager::cleanup() {
   libusb_exit(ctx);
 }
 
-G13_Manager::G13_Manager() : devs(0), ctx(0) {
+Manager::Manager() : devs(0), ctx(0) {
 }
 
-bool G13_Manager::running = true;
-void G13_Manager::set_stop(int) {
+bool Manager::running = true;
+void Manager::set_stop(int) {
   running = false;
 }
 
-std::string G13_Manager::string_config_value(const std::string &name) const {
+std::string Manager::string_config_value(const std::string &name) const {
   try {
     return find_or_throw(_string_config_values, name);
   } catch (...) {
@@ -104,7 +104,7 @@ std::string G13_Manager::string_config_value(const std::string &name) const {
   }
 }
 
-void G13_Manager::set_string_config_value(const std::string &name,
+void Manager::set_string_config_value(const std::string &name,
                                           const std::string &value) {
   G13_LOG(info, "set_string_config_value " << name << " = " << repr(value));
   _string_config_values[name] = value;
@@ -112,7 +112,7 @@ void G13_Manager::set_string_config_value(const std::string &name,
 
 #define CONTROL_DIR std::string("/tmp/")
 
-std::string G13_Manager::make_pipe_name(G13_Device *d, bool is_input) {
+std::string Manager::make_pipe_name(Device *d, bool is_input) {
   if (is_input) {
     std::string config_base = string_config_value("pipe_in");
     if (config_base.size()) {
@@ -141,7 +141,7 @@ std::string G13_Manager::make_pipe_name(G13_Device *d, bool is_input) {
   }
 }
 
-int G13_Manager::run() {
+int Manager::run() {
   init_keynames();
   display_keys();
 
@@ -222,7 +222,7 @@ int G13_Manager::run() {
     input_name_to_key[name] = keyval;            \
   }
 
-void G13_Manager::init_keynames() {
+void Manager::init_keynames() {
   int key_index = 0;
 
   BOOST_PP_SEQ_FOR_EACH(ADD_G13_KEY_MAPPING, _, G13_KEY_SEQ);
@@ -230,7 +230,7 @@ void G13_Manager::init_keynames() {
 }
 
 LINUX_KEY_VALUE
-G13_Manager::find_g13_key_value(const std::string &keyname) const {
+Manager::find_g13_key_value(const std::string &keyname) const {
   auto i = g13_name_to_key.find(keyname);
   if (i == g13_name_to_key.end()) {
     return BAD_KEY_VALUE;
@@ -239,7 +239,7 @@ G13_Manager::find_g13_key_value(const std::string &keyname) const {
 }
 
 LINUX_KEY_VALUE
-G13_Manager::find_input_key_value(const std::string &keyname) const {
+Manager::find_input_key_value(const std::string &keyname) const {
   // if there is a KEY_ prefix, strip it off
   if (!strncmp(keyname.c_str(), "KEY_", 4)) {
     return find_input_key_value(keyname.c_str() + 4);
@@ -252,7 +252,7 @@ G13_Manager::find_input_key_value(const std::string &keyname) const {
   return i->second;
 }
 
-std::string G13_Manager::find_input_key_name(LINUX_KEY_VALUE v) const {
+std::string Manager::find_input_key_name(LINUX_KEY_VALUE v) const {
   try {
     return find_or_throw(input_key_to_name, v);
   } catch (...) {
@@ -260,7 +260,7 @@ std::string G13_Manager::find_input_key_name(LINUX_KEY_VALUE v) const {
   }
 }
 
-std::string G13_Manager::find_g13_key_name(G13_KEY_INDEX v) const {
+std::string Manager::find_g13_key_name(G13_KEY_INDEX v) const {
   try {
     return find_or_throw(g13_key_to_name, v);
   } catch (...) {
@@ -268,7 +268,7 @@ std::string G13_Manager::find_g13_key_name(G13_KEY_INDEX v) const {
   }
 }
 
-void G13_Manager::display_keys() {
+void Manager::display_keys() {
   G13_OUT("Known keys on G13:");
   G13_OUT(Helper::map_keys_out(g13_name_to_key));
 

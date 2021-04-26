@@ -7,13 +7,13 @@
 
 namespace G13 {
 
-class G13_Device;
+class Device;
 
 class G13_LCD {
  public:
-  G13_LCD(G13_Device &keypad);
+  G13_LCD(Device &keypad);
 
-  G13_Device &_keypad;
+  Device &_keypad;
   unsigned char image_buf[G13_LCD_BUF_SIZE + 8];
   unsigned cursor_row;
   unsigned cursor_col;

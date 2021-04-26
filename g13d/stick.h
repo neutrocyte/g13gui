@@ -7,48 +7,48 @@
 
 namespace G13 {
 
-class G13_Stick;
+class Stick;
 
-typedef Coord<int> G13_StickCoord;
-typedef Bounds<int> G13_StickBounds;
-typedef Coord<double> G13_ZoneCoord;
-typedef Bounds<double> G13_ZoneBounds;
+typedef Coord<int> StickCoord;
+typedef Bounds<int> StickBounds;
+typedef Coord<double> ZoneCoord;
+typedef Bounds<double> ZoneBounds;
 
-class G13_StickZone : public G13_Actionable<G13_Stick> {
+class StickZone : public Actionable<Stick> {
  public:
-  G13_StickZone(G13_Stick &, const std::string &name, const G13_ZoneBounds &,
-                G13_ActionPtr = 0);
+  StickZone(Stick &, const std::string &name, const ZoneBounds &,
+                ActionPtr = 0);
 
-  bool operator==(const G13_StickZone &other) const {
+  bool operator==(const StickZone &other) const {
     return _name == other._name;
   }
 
   void dump(std::ostream &) const;
 
-  void parse_key(unsigned char *byte, G13_Device *g13);
-  void test(const G13_ZoneCoord &loc);
-  void set_bounds(const G13_ZoneBounds &bounds) {
+  void parse_key(unsigned char *byte, Device *g13);
+  void test(const ZoneCoord &loc);
+  void set_bounds(const ZoneBounds &bounds) {
     _bounds = bounds;
   }
 
  protected:
   bool _active;
-  G13_ZoneBounds _bounds;
+  ZoneBounds _bounds;
 };
 
-typedef boost::shared_ptr<G13_StickZone> G13_StickZonePtr;
+typedef boost::shared_ptr<StickZone> StickZonePtr;
 
-class G13_Stick {
+class Stick {
  public:
-  G13_Stick(G13_Device &keypad);
+  Stick(Device &keypad);
 
   void parse_joystick(unsigned char *buf);
 
   void set_mode(stick_mode_t);
-  G13_StickZone *zone(const std::string &, bool create = false);
-  void remove_zone(const G13_StickZone &zone);
+  StickZone *zone(const std::string &, bool create = false);
+  void remove_zone(const StickZone &zone);
 
-  const std::vector<G13_StickZone> &zones() const {
+  const std::vector<StickZone> &zones() const {
     return _zones;
   }
 
@@ -57,14 +57,14 @@ class G13_Stick {
  protected:
   void _recalc_calibrated();
 
-  G13_Device &_keypad;
-  std::vector<G13_StickZone> _zones;
+  Device &_keypad;
+  std::vector<StickZone> _zones;
 
-  G13_StickBounds _bounds;
-  G13_StickCoord _center_pos;
-  G13_StickCoord _north_pos;
+  StickBounds _bounds;
+  StickCoord _center_pos;
+  StickCoord _north_pos;
 
-  G13_StickCoord _current_pos;
+  StickCoord _current_pos;
 
   stick_mode_t _stick_mode;
 };

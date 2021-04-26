@@ -31,7 +31,7 @@ void G13_LCD::image(unsigned char *data, int size) {
   _keypad.write_lcd(data, size);
 }
 
-G13_LCD::G13_LCD(G13_Device &keypad) : _keypad(keypad) {
+G13_LCD::G13_LCD(Device &keypad) : _keypad(keypad) {
   cursor_col = 0;
   cursor_row = 0;
   text_mode = 0;

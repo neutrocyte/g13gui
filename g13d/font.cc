@@ -8,15 +8,15 @@ namespace G13 {
 
 #include "font8x8.h"
 
-G13_Font::G13_Font() : _name("default"), _width(8) {
+Font::Font() : _name("default"), _width(8) {
 }
 
-G13_Font::G13_Font(const std::string &name, unsigned int width)
+Font::Font(const std::string &name, unsigned int width)
     : _name(name),
       _width(width) {
 }
 
-void G13_FontChar::set_character(unsigned char *data, int width,
+void FontChar::set_character(unsigned char *data, int width,
                                  unsigned flags) {
   unsigned char *dest = bits_regular;
   memset(dest, 0, CHAR_BUF_SIZE);
@@ -45,19 +45,19 @@ int GetFontCharacterCount(T (&)[size]) {
 }
 
 template <class ARRAY_T, class FLAGST>
-void G13_Font::install_font(ARRAY_T &data, FLAGST flags, int first) {
+void Font::install_font(ARRAY_T &data, FLAGST flags, int first) {
   for (int i = 0; i < GetFontCharacterCount(data); i++) {
     _chars[i + first].set_character(&data[i][0], _width, flags);
   }
 }
 
-void G13_Device::_init_fonts() {
-  _current_font = FontPtr(new G13_Font("8x8", 8));
+void Device::_init_fonts() {
+  _current_font = FontPtr(new Font("8x8", 8));
   _fonts[_current_font->name()] = _current_font;
 
-  _current_font->install_font(font8x8_basic, G13_FontChar::FF_ROTATE, 0);
+  _current_font->install_font(font8x8_basic, FontChar::FF_ROTATE, 0);
 
-  FontPtr fiveXeight(new G13_Font("5x8", 5));
+  FontPtr fiveXeight(new Font("5x8", 5));
   fiveXeight->install_font(font5x8, 0, 32);
   _fonts[fiveXeight->name()] = fiveXeight;
 }

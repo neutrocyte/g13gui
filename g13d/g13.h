@@ -40,11 +40,11 @@ const LINUX_KEY_VALUE BAD_KEY_VALUE = -1;
 
 typedef int G13_KEY_INDEX;
 
-class G13_CommandException : public std::exception {
+class CommandException : public std::exception {
  public:
-  G13_CommandException(const std::string &reason) : _reason(reason) {
+  CommandException(const std::string &reason) : _reason(reason) {
   }
-  virtual ~G13_CommandException() throw() {
+  virtual ~CommandException() throw() {
   }
   virtual const char *what() const throw() {
     return _reason.c_str();

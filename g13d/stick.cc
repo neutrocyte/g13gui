@@ -10,7 +10,7 @@
 
 namespace G13 {
 
-G13_Stick::G13_Stick(G13_Device &keypad)
+Stick::Stick(Device &keypad)
     : _keypad(keypad),
       _bounds(0, 0, 255, 255),
       _center_pos(127, 127),
@@ -19,9 +19,9 @@ G13_Stick::G13_Stick(G13_Device &keypad)
 
   auto add_zone = [this, &keypad](const std::string &name, double x1, double y1,
                                   double x2, double y2) {
-    _zones.push_back(G13_StickZone(
-        *this, "STICK_" + name, G13_ZoneBounds(x1, y1, x2, y2),
-        G13_ActionPtr(new G13_Action_Keys(keypad, "KEY_" + name))));
+    _zones.push_back(StickZone(
+        *this, "STICK_" + name, ZoneBounds(x1, y1, x2, y2),
+        ActionPtr(new Action_Keys(keypad, "KEY_" + name))));
   };
 
   add_zone("UP", 0.0, 0.1, 1.0, 0.3);
@@ -32,8 +32,8 @@ G13_Stick::G13_Stick(G13_Device &keypad)
   add_zone("PAGEDOWN", 0.0, 0.9, 1.0, 1.0);
 }
 
-G13_StickZone *G13_Stick::zone(const std::string &name, bool create) {
-  BOOST_FOREACH (G13_StickZone &zone, _zones) {
+StickZone *Stick::zone(const std::string &name, bool create) {
+  BOOST_FOREACH (StickZone &zone, _zones) {
     if (zone.name() == name) {
       return &zone;
     }
@@ -41,14 +41,14 @@ G13_StickZone *G13_Stick::zone(const std::string &name, bool create) {
 
   if (create) {
     _zones.push_back(
-        G13_StickZone(*this, name, G13_ZoneBounds(0.0, 0.0, 0.0, 0.0)));
+        StickZone(*this, name, ZoneBounds(0.0, 0.0, 0.0, 0.0)));
     return zone(name);
   }
 
   return 0;
 }
 
-void G13_Stick::set_mode(stick_mode_t m) {
+void Stick::set_mode(stick_mode_t m) {
   if (m == _stick_mode) {
     return;
   }
@@ -61,27 +61,27 @@ void G13_Stick::set_mode(stick_mode_t m) {
   _stick_mode = m;
 
   if (_stick_mode == STICK_CALBOUNDS) {
-    _bounds.tl = G13_StickCoord(255, 255);
-    _bounds.br = G13_StickCoord(0, 0);
+    _bounds.tl = StickCoord(255, 255);
+    _bounds.br = StickCoord(0, 0);
   }
 }
 
-void G13_Stick::_recalc_calibrated() {
+void Stick::_recalc_calibrated() {
 }
 
-void G13_Stick::remove_zone(const G13_StickZone &zone) {
-  G13_StickZone target(zone);
+void Stick::remove_zone(const StickZone &zone) {
+  StickZone target(zone);
   _zones.erase(std::remove(_zones.begin(), _zones.end(), target), _zones.end());
 }
 
-void G13_Stick::dump(std::ostream &out) const {
-  BOOST_FOREACH (const G13_StickZone &zone, _zones) {
+void Stick::dump(std::ostream &out) const {
+  BOOST_FOREACH (const StickZone &zone, _zones) {
     zone.dump(out);
     out << std::endl;
   }
 }
 
-void G13_StickZone::dump(std::ostream &out) const {
+void StickZone::dump(std::ostream &out) const {
   out << "   " << std::setw(20) << name() << "   " << _bounds << "  ";
 
   if (action()) {
@@ -91,7 +91,7 @@ void G13_StickZone::dump(std::ostream &out) const {
   }
 }
 
-void G13_StickZone::test(const G13_ZoneCoord &loc) {
+void StickZone::test(const ZoneCoord &loc) {
   if (!_action) return;
 
   bool prior_active = _active;
@@ -104,15 +104,15 @@ void G13_StickZone::test(const G13_ZoneCoord &loc) {
   }
 }
 
-G13_StickZone::G13_StickZone(G13_Stick &stick, const std::string &name,
-                             const G13_ZoneBounds &b, G13_ActionPtr action)
-    : G13_Actionable<G13_Stick>(stick, name),
+StickZone::StickZone(Stick &stick, const std::string &name,
+                             const ZoneBounds &b, ActionPtr action)
+    : Actionable<Stick>(stick, name),
       _active(false),
       _bounds(b) {
   set_action(action);
 }
 
-void G13_Stick::parse_joystick(unsigned char *buf) {
+void Stick::parse_joystick(unsigned char *buf) {
   _current_pos.x = buf[1];
   _current_pos.y = buf[2];
 
@@ -158,12 +158,12 @@ void G13_Stick::parse_joystick(unsigned char *buf) {
   G13_LOG(trace, "x=" << _current_pos.x << " y=" << _current_pos.y
                       << " dx=" << dx << " dy=" << dy);
 
-  G13_ZoneCoord jpos(dx, dy);
+  ZoneCoord jpos(dx, dy);
   if (_stick_mode == STICK_ABSOLUTE) {
     _keypad.send_event(EV_ABS, ABS_X, _current_pos.x);
     _keypad.send_event(EV_ABS, ABS_Y, _current_pos.y);
   } else if (_stick_mode == STICK_KEYS) {
-    BOOST_FOREACH (G13_StickZone &zone, _zones) { zone.test(jpos); }
+    BOOST_FOREACH (StickZone &zone, _zones) { zone.test(jpos); }
     return;
   }
 }

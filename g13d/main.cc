@@ -10,7 +10,7 @@ namespace po = boost::program_options;
 extern "C" {
 
 int main(int argc, char *argv[]) {
-  G13::G13_Manager manager;
+  G13::Manager manager;
   manager.set_log_level("info");
 
   // Declare the supported options.

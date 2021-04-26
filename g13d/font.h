@@ -7,12 +7,12 @@
 
 namespace G13 {
 
-class G13_FontChar {
+class FontChar {
  public:
   static const int CHAR_BUF_SIZE = 8;
   enum FONT_FLAGS { FF_ROTATE = 0x01 };
 
-  G13_FontChar() {
+  FontChar() {
     memset(bits_regular, 0, CHAR_BUF_SIZE);
     memset(bits_inverted, 0, CHAR_BUF_SIZE);
   }
@@ -22,10 +22,10 @@ class G13_FontChar {
   unsigned char bits_inverted[CHAR_BUF_SIZE];
 };
 
-class G13_Font {
+class Font {
  public:
-  G13_Font();
-  G13_Font(const std::string &name, unsigned int width = 8);
+  Font();
+  Font(const std::string &name, unsigned int width = 8);
 
   void set_character(unsigned int c, unsigned char *data);
 
@@ -39,7 +39,7 @@ class G13_Font {
     return _width;
   }
 
-  const G13_FontChar &char_data(unsigned int x) {
+  const FontChar &char_data(unsigned int x) {
     return _chars[x];
   }
 
@@ -47,10 +47,10 @@ class G13_Font {
   std::string _name;
   unsigned int _width;
 
-  G13_FontChar _chars[256];
+  FontChar _chars[256];
 };
 
-typedef std::shared_ptr<G13_Font> FontPtr;
+typedef std::shared_ptr<Font> FontPtr;
 
 }  // namespace G13
 
