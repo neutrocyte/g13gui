@@ -221,6 +221,7 @@ void Device::read_config_file(const std::string &filename) {
   std::ifstream s(filename);
 
   G13_LOG(info, "reading configuration from " << filename);
+
   while (s.good()) {
     // grab a line
     char buf[1024];
@@ -476,7 +477,9 @@ void Device::_init_commands() {
     advance_ws(remainder, operation);
     advance_ws(remainder, zonename);
 
-    if (operation != "add") {
+    if (operation == "add") {
+      _stick.zone(zonename, true);
+    } else {
       StickZone *zone = _stick.zone(zonename);
 
       if (!zone) {
