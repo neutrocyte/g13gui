@@ -97,8 +97,10 @@ void StickZone::test(const ZoneCoord &loc) {
   bool prior_active = _active;
   _active = _bounds.contains(loc);
 
-  if ((!_active) && prior_active) {
-    _action->act(false);
+  if (!_active) {
+    if (prior_active) {
+      _action->act(false);
+    }
   } else {
     _action->act(true);
   }
