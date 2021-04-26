@@ -55,4 +55,4 @@ class CommandException : public std::exception {
 
 }  // namespace G13
 
-#endif  // __G13_H__
+#endif  // G13_H

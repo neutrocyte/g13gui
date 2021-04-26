@@ -13,7 +13,6 @@
 #include "repr.h"
 
 namespace G13 {
-// *************************************************************************
 
 void Key::dump(std::ostream &o) const {
   o << manager().find_g13_key_name(index()) << "(" << index() << ") : ";

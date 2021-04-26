@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef __HELPER_HPP__
-#define __HELPER_HPP__
+#ifndef HELPER_HPP
+#define HELPER_HPP
 
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
@@ -44,11 +44,7 @@
 #include <string>
 #include <vector>
 
-// *************************************************************************
-
 namespace Helper {
-
-// *************************************************************************
 
 template <class MAP_T>
 struct _map_keys_out {
@@ -79,10 +75,6 @@ _map_keys_out<MAP_T> map_keys_out(const MAP_T &c,
   return _map_keys_out<MAP_T>(c, sep);
 };
 
-// *************************************************************************
-
 };  // namespace Helper
 
-// *************************************************************************
-
-#endif  // __HELPER_HPP__
+#endif  // HELPER_HPP

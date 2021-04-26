@@ -60,8 +60,6 @@ class Manager {
   static void set_stop(int);
 };
 
-// *************************************************************************
-
 // inlines
 
 inline Manager &Action::manager() {
