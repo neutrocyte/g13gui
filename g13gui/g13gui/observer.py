@@ -12,8 +12,6 @@ class ChangeType(Enum):
 
 
 class Observer(object):
-    """Simple interface class to handle Observer-style notifications"""
-
     def onSubjectChanged(self, subject, changeType, key, data=None):
         """Event handler for observer notifications.
 
@@ -36,18 +34,22 @@ class Observer(object):
 class Subject(object):
     """Simple class to handle the subject-side of the Observer pattern."""
 
-    def registerObserver(self, observer):
+    AllKeys = ''
+
+    def registerObserver(self, observer, subscribedKeys=AllKeys):
         """Registers an Observer class as an observer of this object"""
+        if subscribedKeys != Subject.AllKeys:
+            subscribedKeys = frozenset(subscribedKeys)
         if '_observers' not in self.__dict__:
-            self._observers = {observer}
+            self._observers = {observer: subscribedKeys}
         else:
-            self._observers.add(observer)
+            self._observers[observer] = subscribedKeys
 
     def removeObserver(self, observer):
         """Removes an observer from this object"""
         if '_observers' in self.__dict__:
             if observer in self._observers:
-                self._observers.discard(observer)
+                del self._observers[observer]
 
     def addChange(self, type, key, data=None):
         """Schedules a change notification for transmitting later.
@@ -80,16 +82,17 @@ class Subject(object):
         when no observers are registered will still flush the change buffer.
         """
         if '_observers' in self.__dict__ and '_changes' in self.__dict__:
-            for observer in self._observers:
-                for change in self._changes:
-                    observer.onSubjectChanged(self, *change)
+            for observer, subscribedKeys in self._observers.items():
+                for type, key, data in self._changes:
+                    if subscribedKeys == Subject.AllKeys or key in subscribedKeys:
+                        observer.onSubjectChanged(self, type, key, data)
+
         self._changes = []
 
 
 class ObserverTestCase(Observer, unittest.TestCase):
     def __init__(self, methodName):
         unittest.TestCase.__init__(self, methodName)
-        self.changes = []
         self.clearChanges()
 
     def onSubjectChanged(self, subject, type, key, data=None):

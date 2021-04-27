@@ -5,7 +5,8 @@ import observer
 
 
 class TestIncorrectObserver(observer.Observer):
-    pass
+    def __hash__(self):
+        return hash('TestIncorrectObserver')
 
 
 class TestSubject(observer.Subject):
@@ -49,6 +50,20 @@ class ObserverTestCase(observer.ObserverTestCase):
         self.assertChangeCount(1)
         self.assertChangeNotified(self.subject, observer.ChangeType.ADD, 'foo')
         self.assertChangeDataEquals('bar')
+
+    def testSubscribedKeys(self):
+        self.subject.registerObserver(self, {'a', 'b'})
+
+        self.subject.addChange(observer.ChangeType.ADD, 'a')
+        self.subject.addChange(observer.ChangeType.ADD, 'b')
+        self.subject.addChange(observer.ChangeType.ADD, 'c')
+        self.subject.notifyChanged()
+
+        self.assertChangeCount(2)
+        self.assertChangeNotified(self.subject, observer.ChangeType.ADD, 'a')
+        self.nextChange()
+        self.assertChangeNotified(self.subject, observer.ChangeType.ADD, 'b')
+        self.nextChange()
 
 
 if __name__ == '__main__':
