@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+import enum
+
+
 G13D_TO_GDK_KEYBINDS = {
     '0': '0',
     '1': '1',
@@ -178,23 +181,41 @@ DEFAULT_KEY_BINDINGS = {
     'DOWN': ['M'],
 }
 
+
+class StickRegion(enum.Enum):
+    UP = 'STICK_UP'
+    DOWN = 'STICK_DOWN'
+    LEFT = 'STICK_LEFT'
+    RIGHT = 'STICK_RIGHT'
+
+
+ALL_STICK_REGIONS = frozenset({
+    StickRegion.UP,
+    StickRegion.DOWN,
+    StickRegion.LEFT,
+    StickRegion.RIGHT
+})
+
+
 DEFAULT_STICK_REGION_BINDINGS = {
-    'STICK_UP': ['W'],
-    'STICK_DOWN': ['S'],
-    'STICK_LEFT': ['A'],
-    'STICK_RIGHT': ['D']
+    StickRegion.UP: ['W'],
+    StickRegion.DOWN: ['S'],
+    StickRegion.LEFT: ['A'],
+    StickRegion.RIGHT: ['D']
 }
 
-STICK_MODES = [
-    'ABSOLUTE',
-    'RELATIVE',
-    'KEYS'
-]
+
+class StickMode(enum.Enum):
+    ABSOLUTE = 'ABSOLUTE'
+    RELATIVE = 'RELATIVE'
+    KEYS = 'KEYS'
 
 
-def GetStickModeNum(modeName):
-    return STICK_MODES.index(modeName.upper())
-
+ALL_STICK_MODES = frozenset({
+    StickMode.ABSOLUTE,
+    StickMode.RELATIVE,
+    StickMode.KEYS
+})
 
 def G13DKeyIsModifier(key):
     key = key.upper()
