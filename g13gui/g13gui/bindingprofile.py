@@ -4,11 +4,18 @@ import bindings
 
 
 class BindingProfile(object):
-    def __init__(self):
-        self._stickMode = bindings.GetStickModeNum('KEYS')
-        self._stickRegions = bindings.DEFAULT_STICK_REGIONS
-        self._stickRegionBindings = bindings.DEFAULT_STICK_REGION_BINDINGS
-        self._keyBindings = bindings.DEFAULT_KEY_BINDINGS
+    def __init__(self, dict=None):
+        if dict:
+            self._stickMode = dict['stickMode']
+            self._stickRegions = dict['stickRegions']
+            self._stickRegionBindings = dict['stickRegionBindings']
+            self._keyBindings = dict['keyBindings']
+        else:
+            self._stickMode = bindings.GetStickModeNum('KEYS')
+            self._stickRegions = bindings.DEFAULT_STICK_REGIONS
+            self._stickRegionBindings = bindings.DEFAULT_STICK_REGION_BINDINGS
+            self._keyBindings = bindings.DEFAULT_KEY_BINDINGS
+
         self._observers = []
 
     def registerObserver(self, observer):
@@ -45,8 +52,11 @@ class BindingProfile(object):
         commands = []
 
         for gkey, kbdkey in self._keyBindings.items():
-            keys = ' '.join(['KEY_' + key for key in kbdkey])
-            commands.append("bind %s %s" % (gkey, keys))
+            if len(kbdkey) > 0:
+                keys = ' '.join(['KEY_' + key for key in kbdkey])
+                commands.append("bind %s %s" % (gkey, keys))
+            else:
+                commands.append("unbind %s" % (gkey))
 
         if self._stickMode == bindings.GetStickModeNum('KEYS'):
             for region, bounds in self._stickRegions.items():
@@ -56,3 +66,11 @@ class BindingProfile(object):
                 commands.append("stickzone action %s %s" % (region, keys))
 
         return '\n'.join(commands)
+
+    def toDict(self):
+        return {
+            'stickMode': self._stickMode,
+            'stickRegions': self._stickRegions,
+            'stickRegionBindings': self._stickRegionBindings,
+            'keyBindings': self._keyBindings
+        }

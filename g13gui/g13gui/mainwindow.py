@@ -1,33 +1,57 @@
 #!/usr/bin/python
 
 import gi
+import json
+import traceback
 
-gi.require_version('Gtk', '3.0')
+from common import VERSION
+from common import PROFILES_CONFIG_PATH
 
-from gi.repository import Gtk
-
+from g13d import UploadTask
+from g13d import SaveTask
 from bindings import G13D_TO_GDK_KEYBINDS
 from bindings import G13_KEYS
 from bindingprofile import BindingProfile
 from buttonmenu import ButtonMenu
 
+gi.require_version('Gtk', '3.0')
+
+from gi.repository import Gtk, GObject
+
+
 class MainWindow(Gtk.Window):
-    def __init__(self):
+    def __init__(self, workerQueue):
         Gtk.Window.__init__(self)
+
+        self._workerQueue = workerQueue
+
+        GObject.signal_new("uploading", self, GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_FLOAT,))
+        self.connect("uploading", self.uploadStatusChanged)
+        GObject.signal_new("daemon-connection-changed", self, GObject.SignalFlags.RUN_LAST, GObject.TYPE_NONE, (GObject.TYPE_BOOLEAN,))
+        self.connect("daemon-connection-changed", self.daemonConnectionChanged)
 
         default_profile = BindingProfile()
         default_profile.registerObserver(self)
         self._profiles = {'Default Profile': default_profile}
         self._currentProfile = self._profiles['Default Profile']
 
+        self.loadProfiles()
+
         self.headerBar = Gtk.HeaderBar()
         self.headerBar.set_title("G13 Configurator")
         self.headerBar.set_show_close_button(True)
 
         self.profileComboBox = Gtk.ComboBoxText()
+        self.profileComboBox.connect("changed", self.profileChanged)
         self.headerBar.add(self.profileComboBox)
+
         addProfileButton = Gtk.Button.new_from_icon_name("add", 1)
+        addProfileButton.connect("clicked", self.addProfileClicked)
         self.headerBar.add(addProfileButton)
+
+        self._uploadButton = Gtk.Button.new_from_icon_name("up", 1)
+        self._uploadButton.connect("clicked", self.uploadClicked)
+        self.headerBar.add(self._uploadButton)
 
         Gtk.Window.set_default_size(self, 640, 480)
         Gtk.Window.set_titlebar(self, self.headerBar)
@@ -37,6 +61,65 @@ class MainWindow(Gtk.Window):
 
         self.setupG13ButtonGrid()
         self.updateProfileBox()
+
+    def loadProfiles(self):
+        result = {}
+        currentProfile = None
+
+        try:
+            with open(PROFILES_CONFIG_PATH, 'r') as f:
+                serializedConfig = json.load(f)
+
+            if serializedConfig['version'] != VERSION:
+                print('WARNING: This profile config is from a different version (wanted %s got %s)!' %
+                      (VERSION, result['version']))
+                print('This configuration may not load properly!')
+
+            print("Loaded dict: %s" % (serializedConfig))
+
+            for name, dict in serializedConfig['profiles'].items():
+                result[name] = BindingProfile(dict=dict)
+
+            for name, dict in result.items():
+                if name == serializedConfig['defaultProfileName']:
+                    currentProfile = result[name]
+
+        except (OSError, json.JSONDecodeError, KeyError, ValueError) as e:
+            print("Failed to read profiles from disk: %s" % (e))
+            traceback.print_exc()
+        else:
+            self._profiles = result
+            self._currentProfile = currentProfile
+
+    def daemonConnectionChanged(self, widget, connected):
+        self._connected = connected
+        if connected:
+            self._uploadButton.set_state_flags(Gtk.StateFlags.NORMAL, True)
+        else:
+            self._uploadButton.set_state_flags(Gtk.StateFlags.INSENSITIVE, True)
+
+    def uploadStatusChanged(self, widget, percentage):
+        print("Upload in progress: %f" % (percentage * 100))
+
+    def profileChanged(self, widget):
+        pass
+
+    def addProfileClicked(self, widget):
+        pass
+
+    def uploadClicked(self, widget):
+        config = self._currentProfile.generateConfigString()
+        task = UploadTask(config)
+        self._workerQueue.put(task)
+
+        currentProfileName = None
+        for name, profile in self._profiles.items():
+            if self._currentProfile == profile:
+                currentProfileName = name
+                break
+
+        task = SaveTask(self._profiles, currentProfileName)
+        self._workerQueue.put(task)
 
     def updateProfileBox(self):
         self.profileComboBox.remove_all()
@@ -148,5 +231,4 @@ class MainWindow(Gtk.Window):
         for key in G13_KEYS:
             self.updateG13Button(key)
 
-        print("Profile updated to:")
-        print(self._currentProfile.generateConfigString())
+        self.uploadClicked(self)

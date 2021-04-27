@@ -42,10 +42,14 @@ class ButtonMenu(Gtk.Popover):
 
         self.connect("key-press-event", self.keypress)
         self.connect("key-release-event", self.keyrelease)
+        self.connect("show", self.shown)
         self.connect("closed", self.closed)
         button.connect("pressed", self.clear)
 
         self.rebuildBindingDisplay()
+
+    def shown(self, widget):
+        Gdk.keyboard_grab(self.get_window(), False, Gdk.CURRENT_TIME)
 
     def rebuildBindingDisplay(self):
         if self._bindingBox:
