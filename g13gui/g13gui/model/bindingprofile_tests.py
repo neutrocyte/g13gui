@@ -2,10 +2,10 @@
 
 import unittest
 
-import bindings
-from bindingprofile import BindingProfile
-from observer import ChangeType
-from observer import ObserverTestCase
+import g13gui.model.bindings as bindings
+from g13gui.model.bindingprofile import BindingProfile
+from g13gui.observer import ChangeType
+from g13gui.observer import ObserverTestCase
 
 
 class PrefsTestCase(ObserverTestCase):
@@ -16,14 +16,18 @@ class PrefsTestCase(ObserverTestCase):
         bp = BindingProfile()
         self.assertEqual(bp.stickMode(), bindings.StickMode.KEYS)
         self.assertEqual(bp.stickRegions(), bindings.DEFAULT_STICK_REGIONS)
-        self.assertEqual(bp._stickRegionBindings, bindings.DEFAULT_STICK_REGION_BINDINGS)
+        self.assertEqual(bp.lcdColor(), bindings.DEFAULT_LCD_COLOR)
+        self.assertEqual(bp._stickRegionBindings,
+                         bindings.DEFAULT_STICK_REGION_BINDINGS)
         self.assertEqual(bp._keyBindings, bindings.DEFAULT_KEY_BINDINGS)
+        self.assertEqual(bp._lcdColor, bindings.DEFAULT_LCD_COLOR)
 
     def testInvalidDict(self):
         bp = BindingProfile({})
         self.assertEqual(bp.stickMode(), bindings.StickMode.KEYS)
         self.assertEqual(bp.stickRegions(), bindings.DEFAULT_STICK_REGIONS)
-        self.assertEqual(bp._stickRegionBindings, bindings.DEFAULT_STICK_REGION_BINDINGS)
+        self.assertEqual(bp._stickRegionBindings,
+                         bindings.DEFAULT_STICK_REGION_BINDINGS)
         self.assertEqual(bp._keyBindings, bindings.DEFAULT_KEY_BINDINGS)
 
     def testDictLoadSave(self):
@@ -71,6 +75,21 @@ class PrefsTestCase(ObserverTestCase):
             pass
         else:
             self.fail('Expected ValueError from setStickMode')
+
+    def testLCDColor(self):
+        bp = BindingProfile()
+        bp.registerObserver(self)
+        bp.setLCDColor(1.0, 0.5, 0.1)
+        self.assertEqual(bp._lcdColor, (1.0, 0.5, 0.1))
+        self.assertEqual(bp.lcdColor(), (1.0, 0.5, 0.1))
+        self.assertChangeCount(1)
+        self.assertChangeNotified(bp, ChangeType.MODIFY, 'lcdcolor')
+        self.assertChangeDataEquals((1.0, 0.5, 0.1))
+
+    def testToCommandString(self):
+        bp = BindingProfile()
+        result = bp.toCommandString()
+        self.assertIsNotNone(result)
 
 
 if __name__ == '__main__':

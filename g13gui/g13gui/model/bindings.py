@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
-import enum
-
+"""
+Defines a whole bunch of constants relating to mapping G13D key names to GDK key
+names, as well as the symbols that g13d natively supports.
+"""
 
 G13D_TO_GDK_KEYBINDS = {
     '0': '0',
@@ -147,42 +149,35 @@ G13_KEYS = [
     'LEFT', 'DOWN', 'TOP',
 ]
 
-DEFAULT_STICK_REGIONS = {
-    'STICK_UP':    [0.0, 0.0, 1.0, 0.2],
-    'STICK_DOWN':  [0.0, 0.8, 1.0, 1.0],
-    'STICK_LEFT':  [0.0, 0.0, 0.2, 1.0],
-    'STICK_RIGHT': [0.8, 0.0, 1.0, 1.0]
-}
-
 DEFAULT_KEY_BINDINGS = {
-    'G1': ['ESC'],
+    'G1': ['GRAVE'],
     'G2': ['1'],
     'G3': ['2'],
     'G4': ['3'],
     'G5': ['4'],
     'G6': ['5'],
-    'G7': ['Y'],
-    'G8': ['Q'],
-    'G9': ['Z'],
-    'G10': ['V'],
-    'G11': ['SPACE'],
-    'G12': ['E'],
-    'G13': ['R'],
-    'G14': ['U'],
-    'G15': ['LEFTSHIFT'],
-    'G16': ['F'],
-    'G17': ['X'],
-    'G18': ['C'],
-    'G19': ['H'],
-    'G20': ['LEFTCTRL'],
-    'G21': ['B'],
-    'G22': ['T'],
-    'LEFT': ['TAB'],
-    'DOWN': ['M'],
+    'G7': ['6'],
+    'G8': ['TAB'],
+    'G9': ['Q'],
+    'G10': ['W'],
+    'G11': ['E'],
+    'G12': ['R'],
+    'G13': ['T'],
+    'G14': ['Y'],
+    'G15': ['A'],
+    'G16': ['S'],
+    'G17': ['D'],
+    'G18': ['F'],
+    'G19': ['G'],
+    'G20': ['X'],
+    'G21': ['C'],
+    'G22': ['V'],
+    'LEFT': ['B'],
+    'DOWN': ['N'],
 }
 
 
-class StickRegion(enum.Enum):
+class StickRegion():
     UP = 'STICK_UP'
     DOWN = 'STICK_DOWN'
     LEFT = 'STICK_LEFT'
@@ -190,35 +185,54 @@ class StickRegion(enum.Enum):
 
 
 ALL_STICK_REGIONS = frozenset({
-    StickRegion.UP,
-    StickRegion.DOWN,
-    StickRegion.LEFT,
-    StickRegion.RIGHT
+    StickRegion.UP, StickRegion.DOWN,
+    StickRegion.LEFT, StickRegion.RIGHT
 })
 
 
+DEFAULT_STICK_REGIONS = {
+    StickRegion.UP:    [0.0, 0.0, 1.0, 0.2],
+    StickRegion.DOWN:  [0.0, 0.8, 1.0, 1.0],
+    StickRegion.LEFT:  [0.0, 0.0, 0.2, 1.0],
+    StickRegion.RIGHT: [0.8, 0.0, 1.0, 1.0]
+}
+
 DEFAULT_STICK_REGION_BINDINGS = {
-    StickRegion.UP: ['W'],
-    StickRegion.DOWN: ['S'],
-    StickRegion.LEFT: ['A'],
+    StickRegion.UP:    ['W'],
+    StickRegion.DOWN:  ['S'],
+    StickRegion.LEFT:  ['A'],
     StickRegion.RIGHT: ['D']
 }
 
 
-class StickMode(enum.Enum):
+class StickMode():
     ABSOLUTE = 'ABSOLUTE'
     RELATIVE = 'RELATIVE'
     KEYS = 'KEYS'
 
 
 ALL_STICK_MODES = frozenset({
-    StickMode.ABSOLUTE,
-    StickMode.RELATIVE,
-    StickMode.KEYS
+    StickMode.ABSOLUTE, StickMode.RELATIVE, StickMode.KEYS
 })
+
 
 def G13DKeyIsModifier(key):
     key = key.upper()
     return (key == 'LEFTSHIFT' or key == 'RIGHTSHIFT' or
             key == 'LEFTALT' or key == 'RIGHTALT' or
             key == 'LEFTCTRL' or key == 'RIGHTCTRL')
+
+
+def G13ToGDK(keybinds):
+    if type(keybinds) == list:
+        return [G13D_TO_GDK_KEYBINDS[binding] for binding in keybinds]
+    return G13D_TO_GDK_KEYBINDS[keybinds]
+
+
+def GDKToG13(keybinds):
+    if type(keybinds) == list:
+        return [GDK_TO_G13D_KEYBINDS[binding] for binding in keybinds]
+    return GDK_TO_G13D_KEYBINDS[keybinds]
+
+
+DEFAULT_LCD_COLOR = (1.0, 0.0, 0.0)

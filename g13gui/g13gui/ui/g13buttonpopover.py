@@ -1,43 +1,55 @@
-#!/usr/bin/python3
-
 import gi
+
+from g13gui.observer import GtkObserver
+
+from g13gui.model.bindings import G13ToGDK
+from g13gui.model.bindings import GDKToG13
+from g13gui.model.bindings import G13DKeyIsModifier
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-
-from gi.repository import Gtk
-from gi.repository import Gdk
-
-from bindings import GDK_TO_G13D_KEYBINDS
-from bindings import G13D_TO_GDK_KEYBINDS
-from bindings import G13DKeyIsModifier
+from gi.repository import Gtk, GObject, Gdk
 
 
 MAX_DELAY_BETWEEN_PRESSES_MILLIS = 250
 
 
-class ButtonMenu(Gtk.Popover):
-    def __init__(self, profile, buttonName):
+class G13ButtonPopover(Gtk.Popover, GtkObserver):
+    def __init__(self, buttonOwner, prefs, keyName):
         Gtk.Popover.__init__(self)
+        GtkObserver.__init__(self)
 
-        self._profile = profile
-        self._buttonName = buttonName
-        self._currentBindings = self._profile.getBoundKey(buttonName)
-        self._bindingBox = None
-        self._modifiers = {}
+        self._prefs = prefs
+        self._prefs.registerObserver(self, {'selectedProfile'})
+        self._keyName = keyName
+
+        self._modifiers = set()
         self._consonantKey = None
         self._lastPressTime = 0
 
+        self.set_relative_to(buttonOwner)
+        self.updateBinding()
+        self.build()
+
+    def updateBinding(self):
+        selectedProfile = self._prefs.selectedProfile()
+        self._currentBindings = selectedProfile.keyBinding(self._keyName)
+
+    def gtkSubjectChanged(self, subject, changeType, key, data=None):
+        self.updateBinding()
+
+    def build(self):
         self._box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.VERTICAL)
+        self._box.set_border_width(6)
         self.add(self._box)
 
         label = Gtk.Label()
-        label.set_markup("<b>" + buttonName + "</b>")
+        label.set_markup("<b>" + self._keyName + "</b>")
         self._box.pack_start(label, True, True, 6)
 
         button = Gtk.Button(label="Clear Binding")
+        button.set_can_focus(False)
         self._box.pack_start(button, True, True, 6)
-
         self._box.show_all()
 
         self.connect("key-press-event", self.keypress)
@@ -46,21 +58,25 @@ class ButtonMenu(Gtk.Popover):
         self.connect("closed", self.closed)
         button.connect("pressed", self.clear)
 
-        self.rebuildBindingDisplay()
+        self.buildBindingDisplay()
 
     def shown(self, widget):
-        Gdk.keyboard_grab(self.get_window(), False, Gdk.CURRENT_TIME)
+        self.grab_add()
 
     def rebuildBindingDisplay(self):
         if self._bindingBox:
             self._box.remove(self._bindingBox)
 
-        self._bindingBox = Gtk.Box(spacing=0, orientation=Gtk.Orientation.VERTICAL)
+        self.buildBindingDisplay()
+
+    def buildBindingDisplay(self):
+        self._bindingBox = Gtk.Box(spacing=0,
+                                   orientation=Gtk.Orientation.VERTICAL)
         self._box.pack_start(self._bindingBox, True, True, 6)
         self._box.reorder_child(self._bindingBox, 1)
 
         if len(self._currentBindings) > 0:
-            keybinds = [G13D_TO_GDK_KEYBINDS[binding] for binding in self._currentBindings]
+            keybinds = G13ToGDK(self._currentBindings)
             accelerator = '+'.join(keybinds)
             shortcut = Gtk.ShortcutsShortcut(
                 shortcut_type=Gtk.ShortcutType.ACCELERATOR,
@@ -75,43 +91,44 @@ class ButtonMenu(Gtk.Popover):
         self._bindingBox.show_all()
 
     def keypress(self, buttonMenu, eventKey):
-        print("Keypressed! %s, %s" % (eventKey.keyval, Gdk.keyval_name(eventKey.keyval)))
-
-        if eventKey.time - self._lastPressTime > MAX_DELAY_BETWEEN_PRESSES_MILLIS:
-            self._modifiers = {}
+        pressDelta = eventKey.time - self._lastPressTime
+        if pressDelta > MAX_DELAY_BETWEEN_PRESSES_MILLIS:
+            self._modifiers = set()
             self._consonantKey = None
 
         binding = Gdk.keyval_name(eventKey.keyval)
         if len(binding) == 1:
             binding = binding.upper()
-
         if binding == 'Meta_L':
             binding = 'Alt_L'
         if binding == 'Meta_R':
             binding = 'Alt_R'
-        binding = GDK_TO_G13D_KEYBINDS[binding]
-        print('Binding is %s' % (binding))
+
+        binding = GDKToG13(binding)
 
         if G13DKeyIsModifier(binding):
-            self._modifiers[binding] = True
-            print("Modifiers are now %s" % (repr(self._modifiers.keys())))
+            self._modifiers.add(binding)
         else:
             self._consonantKey = binding
 
         self._lastPressTime = eventKey.time
+        return True
 
     def keyrelease(self, buttonMenu, eventKey):
-        self._currentBindings = [modifier for modifier in self._modifiers.keys()]
+        self._currentBindings = sorted(list(self._modifiers))
         if self._consonantKey:
-            self._currentBindings = self._currentBindings + [self._consonantKey]
-
+            self._currentBindings += [self._consonantKey]
         self.rebuildBindingDisplay()
-        print("Bindings are now %s" % (self._currentBindings))
+        self.hide()
+        return True
 
     def clear(self, button):
         self._currentBindings = []
         self.rebuildBindingDisplay()
+        self.hide()
 
     def closed(self, buttonMenu):
-        self._profile.bindKey(self._buttonName, self._currentBindings)
+        self.grab_remove()
+        self._prefs.selectedProfile().bindKey(self._keyName,
+                                              self._currentBindings)
         self.hide()

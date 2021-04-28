@@ -2,10 +2,10 @@
 
 import traceback
 
-from common import VERSION
-from bindingprofile import BindingProfile
-from observer import Subject
-from observer import ChangeType
+from g13gui.common import VERSION
+from g13gui.model.bindingprofile import BindingProfile
+from g13gui.observer import Subject
+from g13gui.observer import ChangeType
 
 
 DEFAULT_PROFILE_NAME = 'Default Profile'
@@ -21,7 +21,9 @@ class Preferences(Subject):
         else:
             self.initDefaultProfile()
 
-    def profiles(self):
+    def profiles(self, profileName=None):
+        if profileName:
+            return self._profiles[profileName]
         return self._profiles
 
     def profileNames(self):
@@ -83,7 +85,7 @@ class Preferences(Subject):
     def saveToDict(self):
         return {
             'version': VERSION,
-            'profiles': dict([(name, profile.toDict()) for name, profile in self._profiles.items()]),
+            'profiles': dict([(name, profile.saveToDict()) for name, profile in self._profiles.items()]),
             'selectedProfile': self._selectedProfile
         }
 

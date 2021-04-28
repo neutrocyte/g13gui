@@ -3,20 +3,23 @@
 import queue
 import gi
 
-gi.require_version('Gtk', '3.0')
+import g13gui.model as model
+import g13gui.ui as ui
 
+from g13gui.g13d import G13DWorker
+
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject
-from mainwindow import MainWindow
-from g13d import G13DWorker
 
 
 VERSION = '0.1.0'
 
 
 if __name__ == '__main__':
+    prefs = model.Preferences()
     queue = queue.Queue()
 
-    win = MainWindow(queue)
+    win = ui.MainWindow(queue, prefs)
     win.connect("destroy", Gtk.main_quit)
     win.show_all()
 

@@ -9,11 +9,10 @@ import traceback
 import xdg.BaseDirectory as basedir
 import json
 
-from common import PROFILES_CONFIG_PATH
-from common import VERSION
+from g13gui.common import PROFILES_CONFIG_PATH
+from g13gui.common import VERSION
 
 gi.require_version('Gtk', '3.0')
-
 from gi.repository import GObject
 
 
@@ -32,24 +31,12 @@ class UploadTask():
 
 
 class SaveTask():
-    def __init__(self, profiles, defaultProfileName):
-        self._profiles = profiles
-        self._defaultProfileName = defaultProfileName
+    def __init__(self, prefsDict):
+        self._prefsDict = prefsDict
 
     def run(self, outfp, infp, callback):
-        profiles = {}
-        for key, profile in self._profiles.items():
-            profiles[key] = profile.toDict()
-
-        config = {
-            'version': VERSION,
-            'defaultProfileName': self._defaultProfileName,
-            'profiles': profiles
-        }
-
-        encoder = json.JSONEncoder()
         with open(PROFILES_CONFIG_PATH, 'w') as f:
-            f.write(encoder.encode(config))
+            f.write(json.dumps(self._prefsDict, default=str))
             f.flush()
 
 

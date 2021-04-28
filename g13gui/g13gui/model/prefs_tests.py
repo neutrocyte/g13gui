@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
 import unittest
-import prefs
+import g13gui.model.prefs as prefs
 
-from common import VERSION
-from observer import ChangeType
-from observer import ObserverTestCase
+from g13gui.common import VERSION
+from g13gui.observer import ChangeType
+from g13gui.observer import ObserverTestCase
 
 
 class PrefsTestCase(ObserverTestCase):

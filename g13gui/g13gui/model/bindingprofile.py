@@ -1,9 +1,9 @@
 #!/usr/bin/python
 
-import bindings
+import g13gui.model.bindings as bindings
 
-from observer import Subject
-from observer import ChangeType
+from g13gui.observer import Subject
+from g13gui.observer import ChangeType
 
 
 class BindingProfile(Subject):
@@ -17,6 +17,10 @@ class BindingProfile(Subject):
         self._stickRegions = bindings.DEFAULT_STICK_REGIONS
         self._stickRegionBindings = bindings.DEFAULT_STICK_REGION_BINDINGS
         self._keyBindings = bindings.DEFAULT_KEY_BINDINGS
+        self._lcdColor = bindings.DEFAULT_LCD_COLOR
+
+    def lcdColor(self):
+        return self._lcdColor
 
     def stickMode(self):
         return self._stickMode
@@ -35,6 +39,14 @@ class BindingProfile(Subject):
             return self._keyBindings[gkey]
 
         return []
+
+    def _setLCDColor(self, red, green, blue):
+        self._lcdColor = (red, green, blue)
+        self.addChange(ChangeType.MODIFY, 'lcdcolor', self._lcdColor)
+
+    def setLCDColor(self, red, green, blue):
+        self._setLCDColor(red, green, blue)
+        self.notifyChanged()
 
     def _bindKey(self, gkey, keybinding):
         if gkey in self._stickRegions.keys():
@@ -59,15 +71,24 @@ class BindingProfile(Subject):
         self._setStickMode(stickmode)
         self.notifyChanged()
 
+    def _lcdColorToCommandString(self):
+        return 'rgb %d %d %d' % tuple([int(x * 255) for x in self._lcdColor])
+
+    def _keyBindingToCommandString(self, gkey):
+        kbdkey = self._keyBindings[gkey]
+        if len(kbdkey) > 0:
+            keys = '+'.join(['KEY_' + key for key in kbdkey])
+            return "bind %s %s" % (gkey, keys)
+        else:
+            return "unbind %s" % (gkey)
+
     def toCommandString(self):
         commands = []
 
-        for gkey, kbdkey in self._keyBindings.items():
-            if len(kbdkey) > 0:
-                keys = '+'.join(['KEY_' + key for key in kbdkey])
-                commands.append("bind %s %s" % (gkey, keys))
-            else:
-                commands.append("unbind %s" % (gkey))
+        commands.append(self._lcdColorToCommandString())
+
+        for gkey in self._keyBindings.keys():
+            commands.append(self._keyBindingToCommandString(gkey))
 
         if self._stickMode == bindings.StickMode.KEYS:
             for region, bounds in self._stickRegions.items():
@@ -80,6 +101,7 @@ class BindingProfile(Subject):
         return '\n'.join(commands)
 
     def loadFromDict(self, dict):
+        self._lcdColor = dict['lcdcolor']
         self._stickMode = dict['stickMode']
         self._stickRegions = dict['stickRegions']
         self._stickRegionBindings = dict['stickRegionBindings']
@@ -87,6 +109,7 @@ class BindingProfile(Subject):
 
     def saveToDict(self):
         return {
+            'lcdcolor': self._lcdColor,
             'stickMode': self._stickMode,
             'stickRegions': self._stickRegions,
             'stickRegionBindings': self._stickRegionBindings,
