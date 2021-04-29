@@ -22,9 +22,6 @@ class G13Button(Gtk.MenuButton, GtkObserver):
         self._popover = ui.G13ButtonPopover(self, self._prefs, self._keyName)
         self.set_popover(self._popover)
 
-        _image = Gtk.Image.new_from_file(g13KeyName + '.png')
-        self.get_style_context().add_class('flat')
-
         self.set_can_default(False)
         self.updateProfileRegistration()
         self.updateBindingDisplay()
