@@ -118,6 +118,10 @@ class Actionable {
     return _parent_ptr->manager();
   }
 
+  virtual void clear_action() {
+    _action.reset();
+  }
+
   virtual void set_action(const ActionPtr &action) {
     _action = action;
   }

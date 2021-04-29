@@ -434,6 +434,23 @@ void Device::_init_commands() {
     }
   }
 
+  G13_DEVICE_COMMAND(unbind) {
+    std::string keyname = remainder;
+    try {
+      if (auto key = _current_profile->find_key(keyname)) {
+        key->clear_action();
+      } else if (auto stick_key = _stick.zone(keyname)) {
+        stick_key->clear_action();
+      } else {
+        RETURN_FAIL("unbind key " << keyname << " unknown");
+      }
+      G13_LOG(trace, "unbind " << keyname);
+    } catch (const std::exception &ex) {
+      RETURN_FAIL("unbind " << keyname
+                  << " failed : " << ex.what())
+    }
+  }
+
   G13_DEVICE_COMMAND(profile) {
     switch_to_profile(remainder);
   }
