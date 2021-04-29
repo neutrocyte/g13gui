@@ -60,9 +60,7 @@ class G13DWorker(threading.Thread):
             self._outfp = None
             self._infp = None
             self._connected = False
-            print("g13d is not running, or not listening on %s" % (G13D_IN_FIFO))
             self._mainWindow.emit("daemon-connection-changed", False)
-            print("Sleeping for 10 seconds...")
             time.sleep(10)
 
         except Exception as err:
@@ -71,12 +69,10 @@ class G13DWorker(threading.Thread):
             self._connected = False
             print("Unknown exception occurred: %s %s" % (type(err), err))
             self._mainWindow.emit("daemon-connection-changed", False)
-            print("Sleeping for 10 seconds...")
             time.sleep(10)
 
         else:
             self._mainWindow.emit("daemon-connection-changed", True)
-            print("Connected to g13d")
             self._connected = True
 
     def run(self):
