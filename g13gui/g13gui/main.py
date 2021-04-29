@@ -18,8 +18,9 @@ if __name__ == '__main__':
     queue = queue.Queue()
 
     win = ui.MainWindow(queue, prefs)
-    win.connect("destroy", Gtk.main_quit)
     win.show_all()
+
+    indicator = ui.AppIndicator(prefs, win)
 
     worker = G13DWorker(queue, win)
     worker.start()
