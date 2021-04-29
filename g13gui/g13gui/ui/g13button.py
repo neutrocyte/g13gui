@@ -45,9 +45,6 @@ class G13Button(Gtk.MenuButton, GtkObserver):
     def updateBindingDisplay(self):
         self._removeChild()
         bindings = self._prefs.selectedProfile().keyBinding(self._keyName)
-        print('[%s %s] %s: %s' % (self._prefs.selectedProfileName(),
-                                  self._prefs.selectedProfile(),
-                                  self._keyName, bindings))
 
         if len(bindings) > 0:
             keybinds = G13ToGDK(bindings)

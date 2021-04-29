@@ -14,9 +14,9 @@ class BindingProfile(Subject):
 
     def initDefaults(self):
         self._stickMode = bindings.StickMode.KEYS
-        self._stickRegions = bindings.DEFAULT_STICK_REGIONS
-        self._stickRegionBindings = bindings.DEFAULT_STICK_REGION_BINDINGS
-        self._keyBindings = bindings.DEFAULT_KEY_BINDINGS
+        self._stickRegions = bindings.DEFAULT_STICK_REGIONS.copy()
+        self._stickRegionBindings = bindings.DEFAULT_STICK_REGION_BINDINGS.copy()
+        self._keyBindings = bindings.DEFAULT_KEY_BINDINGS.copy()
         self._lcdColor = bindings.DEFAULT_LCD_COLOR
 
     def lcdColor(self):
@@ -103,15 +103,15 @@ class BindingProfile(Subject):
     def loadFromDict(self, dict):
         self._lcdColor = dict['lcdcolor']
         self._stickMode = dict['stickMode']
-        self._stickRegions = dict['stickRegions']
-        self._stickRegionBindings = dict['stickRegionBindings']
-        self._keyBindings = dict['keyBindings']
+        self._stickRegions = dict['stickRegions'].copy()
+        self._stickRegionBindings = dict['stickRegionBindings'].copy()
+        self._keyBindings = dict['keyBindings'].copy()
 
     def saveToDict(self):
         return {
             'lcdcolor': self._lcdColor,
             'stickMode': self._stickMode,
-            'stickRegions': self._stickRegions,
-            'stickRegionBindings': self._stickRegionBindings,
-            'keyBindings': self._keyBindings
+            'stickRegions': self._stickRegions.copy(),
+            'stickRegionBindings': self._stickRegionBindings.copy(),
+            'keyBindings': self._keyBindings.copy()
         }
