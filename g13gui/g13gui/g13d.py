@@ -9,6 +9,7 @@ import traceback
 import xdg.BaseDirectory as basedir
 import json
 
+from g13gui.model import PreferencesStore
 from g13gui.common import PROFILES_CONFIG_PATH
 from g13gui.common import VERSION
 
@@ -31,13 +32,11 @@ class UploadTask():
 
 
 class SaveTask():
-    def __init__(self, prefsDict):
-        self._prefsDict = prefsDict
+    def __init__(self, prefs):
+        self._prefs = prefs
 
     def run(self, outfp, infp, callback):
-        with open(PROFILES_CONFIG_PATH, 'w') as f:
-            f.write(json.dumps(self._prefsDict, default=str))
-            f.flush()
+        PreferencesStore.storePrefs(self._prefs)
 
 
 G13D_IN_FIFO = "/run/g13d/in"
