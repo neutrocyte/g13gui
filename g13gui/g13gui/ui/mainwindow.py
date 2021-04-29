@@ -115,7 +115,7 @@ class MainWindow(Gtk.Window, GtkObserver):
         self._workerQueue.put(task)
 
     def _doSave(self):
-        task = SaveTask(self._prefs.saveToDict())
+        task = SaveTask(self._prefs)
         self._workerQueue.put(task)
 
     def uploadClicked(self, widget):
