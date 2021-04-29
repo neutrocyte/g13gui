@@ -23,8 +23,9 @@ class ProfileComboBox(Gtk.ComboBoxText, GtkObserver):
         GtkObserver.__init__(self)
 
         self._prefs = prefs
-        self._prefs.registerObserver(self, {'profile'})
+        self._prefs.registerObserver(self, {'profile', 'selectedProfile'})
         self._isUpdating = False
+        self._ignoreSelectionChange = False
 
         self._model = self.get_model()
         self._model.set_sort_column_id(0, Gtk.SortType.ASCENDING)
@@ -35,9 +36,10 @@ class ProfileComboBox(Gtk.ComboBoxText, GtkObserver):
 
     def _profileChanged(self, widget):
         selectedProfile = self.get_active_text()
-        print('Profile changed to %s' % selectedProfile)
         if selectedProfile:
+            self._ignoreSelectionChange = True
             self._prefs.setSelectedProfile(selectedProfile)
+            self._ignoreSelectionChange = False
 
     def update(self):
         profiles = self._prefs.profileNames()
@@ -53,7 +55,10 @@ class ProfileComboBox(Gtk.ComboBoxText, GtkObserver):
             row = row + 1
 
     def gtkSubjectChanged(self, subject, changeType, key, data=None):
-        name = list(data.keys())[0]
+        if key == 'profile':
+            name = list(data.keys())[0]
+            if changeType == ChangeType.ADD:
+                self._model.append([name, name])
 
-        if changeType == ChangeType.ADD:
-            self._model.append([name, name])
+        if key == 'selectedProfile' and not self._ignoreSelectionChange:
+            self.update()
