@@ -91,9 +91,11 @@ class PrefsTestCase(ObserverTestCase):
         p = prefs.Preferences()
         initial_d = p.saveToDict()
         self.assertIsNotNone(initial_d)
+
         self.assertEqual(initial_d['version'], VERSION)
         self.assertIn('profiles', initial_d)
         self.assertIn('selectedProfile', initial_d)
+        self.assertEqual('Default Profile', initial_d['selectedProfile'])
 
         p = prefs.Preferences(initial_d)
         new_d = p.saveToDict()
