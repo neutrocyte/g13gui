@@ -35,17 +35,19 @@ enum stick_mode_t {
   STICK_CALNORTH
 };
 
-typedef int LINUX_KEY_VALUE;
-const LINUX_KEY_VALUE BAD_KEY_VALUE = -1;
+typedef int linux_keyvalue;
+const linux_keyvalue BAD_KEY_VALUE = -1;
 
-typedef int G13_KEY_INDEX;
+typedef int g13_keyindex;
 
 class CommandException : public std::exception {
  public:
   CommandException(const std::string &reason) : _reason(reason) {
   }
+
   virtual ~CommandException() throw() {
   }
+
   virtual const char *what() const throw() {
     return _reason.c_str();
   }

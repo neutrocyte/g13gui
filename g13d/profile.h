@@ -52,7 +52,7 @@ class Profile;
 class Key : public Actionable<Profile> {
  public:
   void dump(std::ostream &o) const;
-  G13_KEY_INDEX index() const {
+  g13_keyindex index() const {
     return _index.index;
   }
 

@@ -229,7 +229,7 @@ void Manager::init_keynames() {
   BOOST_PP_SEQ_FOR_EACH(ADD_KB_KEY_MAPPING, _, KB_INPUT_KEY_SEQ);
 }
 
-LINUX_KEY_VALUE
+linux_keyvalue
 Manager::find_g13_key_value(const std::string &keyname) const {
   auto i = g13_name_to_key.find(keyname);
   if (i == g13_name_to_key.end()) {
@@ -238,7 +238,7 @@ Manager::find_g13_key_value(const std::string &keyname) const {
   return i->second;
 }
 
-LINUX_KEY_VALUE
+linux_keyvalue
 Manager::find_input_key_value(const std::string &keyname) const {
   // if there is a KEY_ prefix, strip it off
   if (!strncmp(keyname.c_str(), "KEY_", 4)) {
@@ -252,7 +252,7 @@ Manager::find_input_key_value(const std::string &keyname) const {
   return i->second;
 }
 
-std::string Manager::find_input_key_name(LINUX_KEY_VALUE v) const {
+std::string Manager::find_input_key_name(linux_keyvalue v) const {
   try {
     return find_or_throw(input_key_to_name, v);
   } catch (...) {
@@ -260,7 +260,7 @@ std::string Manager::find_input_key_name(LINUX_KEY_VALUE v) const {
   }
 }
 
-std::string Manager::find_g13_key_name(G13_KEY_INDEX v) const {
+std::string Manager::find_g13_key_name(g13_keyindex v) const {
   try {
     return find_or_throw(g13_key_to_name, v);
   } catch (...) {

@@ -54,7 +54,7 @@ class Action_Keys : public Action {
   virtual void act(Device &, bool is_down);
   virtual void dump(std::ostream &) const;
 
-  std::vector<LINUX_KEY_VALUE> _keys;
+  std::vector<linux_keyvalue> _keys;
 };
 
 /*!

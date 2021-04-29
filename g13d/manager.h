@@ -17,11 +17,11 @@ class Manager {
  public:
   Manager();
 
-  G13_KEY_INDEX find_g13_key_value(const std::string &keyname) const;
-  std::string find_g13_key_name(G13_KEY_INDEX) const;
+  g13_keyindex find_g13_key_value(const std::string &keyname) const;
+  std::string find_g13_key_name(g13_keyindex) const;
 
-  LINUX_KEY_VALUE find_input_key_value(const std::string &keyname) const;
-  std::string find_input_key_name(LINUX_KEY_VALUE) const;
+  linux_keyvalue find_input_key_value(const std::string &keyname) const;
+  std::string find_input_key_name(linux_keyvalue) const;
 
   void set_logo(const std::string &fn) {
     logo_filename = fn;
@@ -49,10 +49,10 @@ class Manager {
   libusb_context *ctx;
   std::vector<Device *> g13s;
 
-  std::map<G13_KEY_INDEX, std::string> g13_key_to_name;
-  std::map<std::string, G13_KEY_INDEX> g13_name_to_key;
-  std::map<LINUX_KEY_VALUE, std::string> input_key_to_name;
-  std::map<std::string, LINUX_KEY_VALUE> input_name_to_key;
+  std::map<g13_keyindex, std::string> g13_key_to_name;
+  std::map<std::string, g13_keyindex> g13_name_to_key;
+  std::map<linux_keyvalue, std::string> input_key_to_name;
+  std::map<std::string, linux_keyvalue> input_name_to_key;
 
   std::map<std::string, std::string> _string_config_values;
 
