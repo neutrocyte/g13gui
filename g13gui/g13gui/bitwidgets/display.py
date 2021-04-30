@@ -10,7 +10,7 @@ from g13gui.observer import ChangeType
 
 class DisplayMetrics(object):
     WIDTH_PIXELS = 160
-    HEIGHT_PIXELS = 43
+    HEIGHT_PIXELS = 48
 
 
 LPBM_LENGTH = 960
@@ -41,9 +41,6 @@ def ImageToLPBM(image):
         if (col % 160) == 0:
             col = 0
             row += 8
-
-    # padding? lpbm files are always 960 bytes, the last bytes are filled with garbage.
-    bio.write(bytes(LPBM_LENGTH - maxBytes))
 
     return bio.getvalue()
 

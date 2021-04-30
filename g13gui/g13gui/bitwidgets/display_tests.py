@@ -16,8 +16,9 @@ class DisplayTests(unittest.TestCase):
 
     def testConversion(self):
         ctx = self.d.getContext()
+        ctx.rectangle((0, 0, 160, 43), fill=1)
         ctx.text((0, 0), "Hello world!",
-                 font=FontManager.getFont(Fonts.HUGE), fill=1)
+                 font=FontManager.getFont(Fonts.HUGE), fill=0)
         result = ImageToLPBM(self.d._bitmap)
 
         self.assertEqual(len(result), LPBM_LENGTH)
