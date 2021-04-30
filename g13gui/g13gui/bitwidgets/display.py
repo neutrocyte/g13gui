@@ -1,12 +1,51 @@
+import struct
+import PIL.ImageDraw
+import PIL.PyAccess
+import sys
+from io import BytesIO
 from PIL import Image
-from PIL.ImageDraw import ImageDraw
 from g13gui.observer import Subject
 from g13gui.observer import ChangeType
 
 
 class DisplayMetrics(object):
     WIDTH_PIXELS = 160
-    HEIGHT_PIXELS = 48
+    HEIGHT_PIXELS = 43
+
+
+LPBM_LENGTH = 960
+
+
+def ImageToLPBM(image):
+    i = PIL.PyAccess.new(image, readonly=True)
+    bio = BytesIO()
+
+    maxBytes = (DisplayMetrics.WIDTH_PIXELS * DisplayMetrics.HEIGHT_PIXELS // 8)
+    row = 0
+    col = 0
+
+    for byteNum in range(0, maxBytes):
+        b = int()
+
+        if row == 40:
+            maxSubrow = 3
+        else:
+            maxSubrow = 8
+
+        for subrow in range(0, maxSubrow):
+            b |= i[col, row + subrow] << subrow
+
+        bio.write(struct.pack('<B', b))
+
+        col += 1
+        if (col % 160) == 0:
+            col = 0
+            row += 8
+
+    # padding? lpbm files are always 960 bytes, the last bytes are filled with garbage.
+    bio.write(bytes(LPBM_LENGTH - maxBytes))
+
+    return bio.getvalue()
 
 
 class Display(Subject):
@@ -17,7 +56,7 @@ class Display(Subject):
                                        DisplayMetrics.HEIGHT_PIXELS))
 
     def getContext(self):
-        return ImageDraw.Draw(self._bitmap)
+        return PIL.ImageDraw.Draw(self._bitmap)
 
     def commit(self):
         # convert to LPBM

@@ -1,20 +1,29 @@
+import unittest
+
+import PIL.Image
+
+from g13gui.bitwidgets.display import LPBM_LENGTH
+from g13gui.bitwidgets.display import ImageToLPBM
 from g13gui.bitwidgets import Fonts
 from g13gui.bitwidgets import FontManager
 from g13gui.bitwidgets import Display
+from g13gui.bitwidgets import DisplayMetrics
 
 
-d = Display()
-ctx = d.getContext()
-ctx.text((0, 0), "Hello world!",
-         font=FontManager.getFont(Fonts.TINY),
-         fill=(1))
-ctx.text((0, 6), "Hello world!",
-         font=FontManager.getFont(Fonts.MEDIUM),
-         fill=(1))
-ctx.text((0, 11), "Hello world!",
-         font=FontManager.getFont(Fonts.LARGE),
-         fill=(1))
-ctx.text((0, 19), "Hello world!",
-         font=FontManager.getFont(Fonts.HUGE),
-         fill=(1))
-d.debug()
+class DisplayTests(unittest.TestCase):
+    def setUp(self):
+        self.d = Display()
+
+    def testConversion(self):
+        ctx = self.d.getContext()
+        ctx.text((0, 0), "Hello world!",
+                 font=FontManager.getFont(Fonts.HUGE), fill=1)
+        result = ImageToLPBM(self.d._bitmap)
+
+        self.assertEqual(len(result), LPBM_LENGTH)
+
+        with open('/run/g13d/in', 'wb') as fp:
+            fp.write(result)
+
+if __name__ == '__main__':
+    unittest.main()

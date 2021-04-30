@@ -26,9 +26,10 @@ X11_FONT_PATH = pathlib.Path('/usr/share/fonts/X11/misc')
 
 class Fonts(enum.Enum):
     TINY = X11_FONT_PATH / '4x6.pcf.gz'
-    MEDIUM = X11_FONT_PATH / '5x7.pcf.gz'
-    LARGE = X11_FONT_PATH / '8x13.pcf.gz'
-    HUGE = X11_FONT_PATH / '9x18.pcf.gz'
+    SMALL = X11_FONT_PATH / '5x7.pcf.gz'
+    MEDIUM = X11_FONT_PATH / '8x13.pcf.gz'
+    LARGE = X11_FONT_PATH / '9x18.pcf.gz'
+    HUGE = X11_FONT_PATH / '10x20.pcf.gz'
 
 
 class PcfFontConverter(PcfFontFile):
