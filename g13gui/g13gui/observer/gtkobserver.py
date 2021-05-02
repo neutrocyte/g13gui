@@ -41,13 +41,5 @@ class GtkObserver(Observer):
         overridden.
         """
         (subject, changeType, key, data) = self._observerQueue.get()
-        self.gtkSubjectChanged(subject, changeType, key, data)
+        Observer.onSubjectChanged(self, subject, changeType, key, data)
         self._observerQueue.task_done()
-
-    def gtkSubjectChanged(self, subject, changeType, key, data=None):
-        """Subject notification handler.
-
-        Runs on the UI thread, and must be overridden by subclasses.
-        """
-        raise NotImplementedError(
-            "%s did not override Observer#gtkSubjectChanged" % (type(self)))

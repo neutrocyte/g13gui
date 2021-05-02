@@ -3,6 +3,8 @@
 import unittest
 import observer
 
+from builtins import property
+
 
 class TestIncorrectObserver(observer.Observer):
     def __hash__(self):
@@ -10,7 +12,16 @@ class TestIncorrectObserver(observer.Observer):
 
 
 class TestSubject(observer.Subject):
-    pass
+    def __init__(self):
+        self._value = None
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self.setProperty('value', value)
 
 
 class ObserverTestCase(observer.ObserverTestCase):

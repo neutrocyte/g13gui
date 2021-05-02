@@ -11,26 +11,6 @@ class ChangeType(Enum):
     MODIFY = 2
 
 
-class Observer(object):
-    def onSubjectChanged(self, subject, changeType, key, data=None):
-        """Event handler for observer notifications.
-
-        Each subclass of Observer MUST override this method. There is no default
-        method for handling events of this nature.
-
-        subject[object]: the subject object that sent the event notifying something
-          changed in its data model.
-        changeType[ChangeType]: the type of change that occurred.
-        key[string]: a required name for what field changed.
-        data[object]: an optional context-dependent object, dict, or
-          None, specifying what changed. In the case of an ADD or MODIFY,
-          whatChanged should be the new data. In the case of a DELETE, it should
-          be the old data (or None).
-        """
-        raise NotImplementedError(
-            "%s did not override Observer#onSubjectChanged!" % (type(self)))
-
-
 class Subject(object):
     """Simple class to handle the subject-side of the Observer pattern."""
 
@@ -89,13 +69,78 @@ class Subject(object):
 
         self._changes = []
 
+    def setProperty(self, propertyName, value, notify=True):
+        propertyName = '_' + propertyName
+        self.__dict__[propertyName] = value
+        self.addChange(ChangeType.MODIFY, propertyName, value)
+        if notify:
+            self.notifyChanged()
+
+
+class Observer(object):
+    def _makeChangeTriggerKeys(self, changeType, keys):
+        result = []
+        if keys != Subject.AllKeys:
+            for key in keys:
+                result.append((changeType, key))
+        else:
+            result.append((changeType, keys))
+
+        return result
+
+    def changeTrigger(self, callback,
+                      changeType=None, keys=Subject.AllKeys):
+        if '_changeTriggers' not in self.__dict__:
+            self._changeTriggers = {}
+        for key in self._makeChangeTriggerKeys(changeType, keys):
+            self._changeTriggers[key] = callback
+
+    def onSubjectChanged(self, subject, changeType, key, data=None):
+        """Generic event handler dispatcher for observer notifications.
+
+        Each subclass of Observer MUST call setChangeTrigger to register a
+        callback method in its __init__.
+
+        subject[object]: the subject object that sent the event notifying
+          something changed in its data model.
+        changeType[ChangeType]: the type of change that occurred.
+        key[string]: a required name for what field changed.
+        data[object]: an optional context-dependent object, dict, or
+          None, specifying what changed. In the case of an ADD or MODIFY,
+          whatChanged should be the new data. In the case of a DELETE, it
+          should be the old data (or None).
+        """
+        if '_changeTriggers' not in self.__dict__:
+            raise NotImplementedError(
+                'onSubjectChanged(%s, %s, %s, %s) fired with no '
+                'listeners registered!' %
+                (subject, changeType, key, data))
+
+        found = False
+        triggers = (
+            self._changeTriggers.get((None, Subject.AllKeys)),
+            self._changeTriggers.get((changeType, Subject.AllKeys)),
+            self._changeTriggers.get((None, key)),
+            self._changeTriggers.get((changeType, key)))
+
+        for trigger in triggers:
+            if trigger:
+                found = True
+                trigger(subject, changeType, key, data)
+
+        if not found:
+            raise NotImplementedError(
+                'onSubjectChanged(%s, %s, %s, %s) fired without a listener!'
+                % (subject, changeType, key, data))
+
 
 class ObserverTestCase(Observer, unittest.TestCase):
     def __init__(self, methodName):
         unittest.TestCase.__init__(self, methodName)
+        self.changeTrigger(self.changed)
         self.clearChanges()
 
-    def onSubjectChanged(self, subject, type, key, data=None):
+    def changed(self, subject, type, key, data=None):
         self.changes.insert(0, {
             'subject': subject,
             'type': type,
