@@ -181,7 +181,7 @@ class Manager(threading.Thread):
         header[0] = 0x03
 
         self._device.write(
-            usb.util.CTRL_OUT | G13Endpoints.LCD.value, header + buffer)
+            usb.util.CTRL_OUT | G13Endpoints.LCD.value, bytes(header) + buffer)
 
     def _processCommands(self):
         while True:
