@@ -50,6 +50,9 @@ class Subject(object):
         """Removes all scheduled changes from the change buffer."""
         self._changes = []
 
+    def notifyChange(self):
+        raise NotImplementedError('Use Subject.notifyChanged instead')
+
     def notifyChanged(self):
         """Notifies all observers of scheduled changes in the change buffer.
 
