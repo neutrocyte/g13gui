@@ -62,17 +62,17 @@ class Widget(Subject, Observer):
 
     def addChild(self, child):
         self._children.append(child)
-        self._children.parent = self
+        child.parent = self
         child.registerObserver(self, 'valid')
         self.addChange(ChangeType.ADD, 'child', child)
-        self.notifyChange()
+        self.notifyChanged()
 
     def removeChild(self, child):
         child.removeObserver(self)
         self._children.remove(child)
         child.parent = None
         self.addChange(ChangeType.REMOVE, 'child', child)
-        self.notifyChange()
+        self.notifyChanged()
 
     @property
     def visible(self):
@@ -95,7 +95,7 @@ class Widget(Subject, Observer):
         self.visible = True
 
     def draw(self, ctx):
-        if self._visible:
+        if self.visible:
             for child in self._children:
-                if child.visible():
+                if child.visible:
                     child.draw(ctx)
