@@ -1,179 +1,39 @@
 #!/usr/bin/python3
 
+from evdev import ecodes as e
+
+from g13gui.g13.common import G13Keys
+
 """
-Defines a whole bunch of constants relating to mapping G13D key names to GDK key
-names, as well as the symbols that g13d natively supports.
+Defines a whole bunch of constants relating to mapping G13D key names to GDK
+key names, as well as the symbols that g13d natively supports.
 """
-
-G13D_TO_GDK_KEYBINDS = {
-    '0': '0',
-    '1': '1',
-    '2': '2',
-    '3': '3',
-    '4': '4',
-    '5': '5',
-    '6': '6',
-    '7': '7',
-    '8': '8',
-    '9': '9',
-    'A': 'A',
-    'B': 'B',
-    'C': 'C',
-    'D': 'D',
-    'E': 'E',
-    'F': 'F',
-    'G': 'G',
-    'H': 'H',
-    'I': 'I',
-    'J': 'J',
-    'K': 'K',
-    'L': 'L',
-    'M': 'M',
-    'N': 'N',
-    'O': 'O',
-    'P': 'P',
-    'Q': 'Q',
-    'R': 'R',
-    'S': 'S',
-    'T': 'T',
-    'U': 'U',
-    'V': 'V',
-    'W': 'W',
-    'X': 'X',
-    'Y': 'Y',
-    'Z': 'Z',
-
-    'LEFT': 'Left',
-    'RIGHT': 'Right',
-    'UP': 'Up',
-    'DOWN': 'Down',
-
-    'APOSTROPHE': 'apostrophe',
-    'BACKSLASH': 'backslash',
-    'BACKSPACE': 'backspace',
-    'CAPSLOCK': 'capslock',
-    'COMMA': 'comma',
-    'DOT': 'period',
-    'ENTER': 'enter',
-    'EQUAL': 'equals',
-    'ESC': 'Escape',
-    'F1': 'F1',
-    'F2': 'F2',
-    'F3': 'F3',
-    'F4': 'F4',
-    'F5': 'F5',
-    'F6': 'F6',
-    'F7': 'F7',
-    'F8': 'F8',
-    'F9': 'F9',
-    'F10': 'F10',
-    'F11': 'F11',
-    'F12': 'F12',
-    'GRAVE': 'grave',
-
-    'INSERT': 'insert',
-    'HOME': 'home',
-    'PAGEUP': 'pageup',
-    'DELETE': 'delete',
-    'END': 'end',
-    'PAGEDOWN': 'pagedown',
-
-    'NUMLOCK': 'numlock',
-    'KPASTERISK': 'kpasterisk',
-    'KPMINUS': '0',
-    'KP7': '0',
-    'KP8': '0',
-    'KP9': '0',
-    'KPPLUS': '0',
-    'KP4': '0',
-    'KP5': '0',
-    'KP6': '0',
-    'KP1': '0',
-    'KP2': '0',
-    'KP3': '0',
-    'KP0': '0',
-    'KPDOT': '0',
-
-    'LEFTBRACE': 'braceleft',
-    'RIGHTBRACE': 'braceright',
-    'MINUS': 'minus',
-    'SEMICOLON': 'semicolon',
-    'SLASH': 'slash',
-    'SPACE': 'space',
-    'TAB': 'Tab',
-
-    'LEFTALT': 'Alt_L',
-    'LEFTCTRL': 'Control_L',
-    'LEFTSHIFT': 'Shift_L',
-    'RIGHTALT': 'Alt_R',
-    'RIGHTCTRL': 'Control_R',
-    'RIGHTSHIFT': 'Shift_R',
-    'SCROLLLOCK': 'ScrollLock',
-}
-
-GDK_TO_G13D_KEYBINDS = {}
-for g13d_key, gdk_key in G13D_TO_GDK_KEYBINDS.items():
-    GDK_TO_G13D_KEYBINDS[gdk_key] = g13d_key
-
-GDK_TO_G13D_KEYBINDS['asciitilde'] = 'GRAVE'
-GDK_TO_G13D_KEYBINDS['braceleft'] = 'LEFTBRACE'
-GDK_TO_G13D_KEYBINDS['braceright'] = 'RIGHTBRACE'
-GDK_TO_G13D_KEYBINDS['bracketleft'] = 'LEFTBRACE'
-GDK_TO_G13D_KEYBINDS['bracketright'] = 'RIGHTBRACE'
-GDK_TO_G13D_KEYBINDS['quotedbl'] = 'APOSTROPHE'
-GDK_TO_G13D_KEYBINDS['less'] = 'COMMA'
-GDK_TO_G13D_KEYBINDS['greater'] = 'DOT'
-GDK_TO_G13D_KEYBINDS['bar'] = 'BACKSLASH'
-GDK_TO_G13D_KEYBINDS['question'] = 'SLASH'
-GDK_TO_G13D_KEYBINDS['colon'] = 'SEMICOLON'
-GDK_TO_G13D_KEYBINDS['plus'] = 'EQUALS'
-GDK_TO_G13D_KEYBINDS['exclam'] = '1'
-GDK_TO_G13D_KEYBINDS['at'] = '2'
-GDK_TO_G13D_KEYBINDS['numbersign'] = '3'
-GDK_TO_G13D_KEYBINDS['dollar'] = '4'
-GDK_TO_G13D_KEYBINDS['percent'] = '5'
-GDK_TO_G13D_KEYBINDS['asciicircum'] = '6'
-GDK_TO_G13D_KEYBINDS['ampersand'] = '7'
-GDK_TO_G13D_KEYBINDS['asterisk'] = '8'
-GDK_TO_G13D_KEYBINDS['parenleft'] = '9'
-GDK_TO_G13D_KEYBINDS['parenright'] = '0'
-GDK_TO_G13D_KEYBINDS['ISO_Left_Tab'] = 'TAB'
-
-G13_KEYS = [
-    'BD', 'L1', 'L2', 'L3', 'L4', 'LIGHT',
-    'M1', 'M2', 'M3', 'MR',
-    'G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7',
-    'G8', 'G9', 'G10', 'G11', 'G12', 'G13', 'G14',
-    'G15', 'G16', 'G17', 'G18', 'G19',
-    'G20', 'G21', 'G22',
-    'LEFT', 'DOWN', 'TOP',
-]
 
 DEFAULT_KEY_BINDINGS = {
-    'G1': ['GRAVE'],
-    'G2': ['1'],
-    'G3': ['2'],
-    'G4': ['3'],
-    'G5': ['4'],
-    'G6': ['5'],
-    'G7': ['6'],
-    'G8': ['TAB'],
-    'G9': ['Q'],
-    'G10': ['W'],
-    'G11': ['E'],
-    'G12': ['R'],
-    'G13': ['T'],
-    'G14': ['Y'],
-    'G15': ['A'],
-    'G16': ['S'],
-    'G17': ['D'],
-    'G18': ['F'],
-    'G19': ['G'],
-    'G20': ['X'],
-    'G21': ['C'],
-    'G22': ['V'],
-    'LEFT': ['B'],
-    'DOWN': ['N'],
+    G13Keys.G1.name: [e.KEY_GRAVE],
+    G13Keys.G2.name: [e.KEY_1],
+    G13Keys.G3.name: [e.KEY_2],
+    G13Keys.G4.name: [e.KEY_3],
+    G13Keys.G5.name: [e.KEY_4],
+    G13Keys.G6.name: [e.KEY_5],
+    G13Keys.G7.name: [e.KEY_6],
+    G13Keys.G8.name: [e.KEY_TAB],
+    G13Keys.G9.name: [e.KEY_Q],
+    G13Keys.G10.name: [e.KEY_W],
+    G13Keys.G11.name: [e.KEY_E],
+    G13Keys.G12.name: [e.KEY_R],
+    G13Keys.G13.name: [e.KEY_T],
+    G13Keys.G14.name: [e.KEY_Y],
+    G13Keys.G15.name: [e.KEY_A],
+    G13Keys.G16.name: [e.KEY_S],
+    G13Keys.G17.name: [e.KEY_D],
+    G13Keys.G18.name: [e.KEY_F],
+    G13Keys.G19.name: [e.KEY_G],
+    G13Keys.G20.name: [e.KEY_X],
+    G13Keys.G21.name: [e.KEY_C],
+    G13Keys.G22.name: [e.KEY_V],
+    G13Keys.THUMB_LEFT.name: [e.KEY_B],
+    G13Keys.THUMB_DOWN.name: [e.KEY_N],
 }
 
 
@@ -198,14 +58,14 @@ DEFAULT_STICK_REGIONS = {
 }
 
 DEFAULT_STICK_REGION_BINDINGS = {
-    StickRegion.UP:    ['W'],
-    StickRegion.DOWN:  ['S'],
-    StickRegion.LEFT:  ['A'],
-    StickRegion.RIGHT: ['D']
+    StickRegion.UP:    [e.KEY_W],
+    StickRegion.DOWN:  [e.KEY_S],
+    StickRegion.LEFT:  [e.KEY_A],
+    StickRegion.RIGHT: [e.KEY_D]
 }
 
 
-class StickMode():
+class StickMode(object):
     ABSOLUTE = 'ABSOLUTE'
     RELATIVE = 'RELATIVE'
     KEYS = 'KEYS'
@@ -214,25 +74,6 @@ class StickMode():
 ALL_STICK_MODES = frozenset({
     StickMode.ABSOLUTE, StickMode.RELATIVE, StickMode.KEYS
 })
-
-
-def G13DKeyIsModifier(key):
-    key = key.upper()
-    return (key == 'LEFTSHIFT' or key == 'RIGHTSHIFT' or
-            key == 'LEFTALT' or key == 'RIGHTALT' or
-            key == 'LEFTCTRL' or key == 'RIGHTCTRL')
-
-
-def G13ToGDK(keybinds):
-    if type(keybinds) == list:
-        return [G13D_TO_GDK_KEYBINDS[binding] for binding in keybinds]
-    return G13D_TO_GDK_KEYBINDS[keybinds]
-
-
-def GDKToG13(keybinds):
-    if type(keybinds) == list:
-        return [GDK_TO_G13D_KEYBINDS[binding] for binding in keybinds]
-    return GDK_TO_G13D_KEYBINDS[keybinds]
 
 
 DEFAULT_LCD_COLOR = (1.0, 0.0, 0.0)

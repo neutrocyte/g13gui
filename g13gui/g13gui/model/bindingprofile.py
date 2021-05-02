@@ -31,8 +31,6 @@ class BindingProfile(Subject):
         return self._stickRegions
 
     def keyBinding(self, gkey):
-        gkey = gkey.upper()
-
         if gkey in self._stickRegions.keys():
             if gkey in self._stickRegionBindings.keys():
                 return self._stickRegionBindings[gkey]
