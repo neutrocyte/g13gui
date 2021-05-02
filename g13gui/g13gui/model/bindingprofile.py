@@ -2,6 +2,7 @@ from builtins import property
 
 from g13gui.observer import Subject
 from g13gui.observer import ChangeType
+import g13gui.model.bindings as bindings
 
 
 class BindingProfile(Subject):
