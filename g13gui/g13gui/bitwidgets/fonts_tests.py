@@ -2,9 +2,9 @@
 
 import unittest
 
-from g13gui.bitwidgets import Fonts
-from g13gui.bitwidgets import FontManager
-from g13gui.bitwidgets import Display
+from g13gui.bitwidgets.fonts import Fonts
+from g13gui.bitwidgets.fonts import FontManager
+from g13gui.bitwidgets.display import Display
 
 
 class FontsTests(unittest.TestCase):

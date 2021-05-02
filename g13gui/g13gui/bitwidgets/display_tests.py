@@ -4,10 +4,10 @@ import PIL.Image
 
 from g13gui.bitwidgets.display import LPBM_LENGTH
 from g13gui.bitwidgets.display import ImageToLPBM
-from g13gui.bitwidgets import Fonts
-from g13gui.bitwidgets import FontManager
-from g13gui.bitwidgets import Display
-from g13gui.bitwidgets import DisplayMetrics
+from g13gui.bitwidgets.fonts import Fonts
+from g13gui.bitwidgets.fonts import FontManager
+from g13gui.bitwidgets.display import Display
+from g13gui.bitwidgets.display import DisplayMetrics
 
 
 class DisplayTests(unittest.TestCase):
