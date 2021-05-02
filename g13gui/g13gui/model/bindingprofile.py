@@ -49,17 +49,6 @@ class BindingProfile(Subject):
         self._setLCDColor(red, green, blue)
         self.notifyChanged()
 
-    def _bindKey(self, gkey, keybinding):
-        if gkey in self._stickRegions.keys():
-            self._stickRegionBindings[gkey] = keybinding
-        else:
-            self._keyBindings[gkey] = keybinding
-        self.addChange(ChangeType.MODIFY, gkey, keybinding)
-
-    def bindKey(self, gkey, keybinding):
-        self._bindKey(gkey, keybinding)
-        self.notifyChanged()
-
     def _setStickMode(self, stickmode):
         if stickmode not in bindings.ALL_STICK_MODES:
             raise ValueError('stickmode must be one of %s' %
@@ -71,6 +60,17 @@ class BindingProfile(Subject):
     @stickMode.setter
     def stickMode(self, stickmode):
         self._setStickMode(stickmode)
+        self.notifyChanged()
+
+    def _bindKey(self, gkey, keybinding):
+        if gkey in self._stickRegions.keys():
+            self._stickRegionBindings[gkey] = keybinding
+        else:
+            self._keyBindings[gkey] = keybinding
+        self.addChange(ChangeType.MODIFY, gkey, keybinding)
+
+    def bindKey(self, gkey, keybinding):
+        self._bindKey(gkey, keybinding)
         self.notifyChanged()
 
     def _lcdColorToCommandString(self):
