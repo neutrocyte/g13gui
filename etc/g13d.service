@@ -1,7 +1,0 @@
-[Unit]
-Description=Logitech g13 user-space daemon
-
-[Service]
-Type=simple
-ExecStart=g13d --pipe_in /run/g13d/in --pipe_out /run/g13d/out
-Restart=on-failure
