@@ -13,8 +13,8 @@ class Screen(Widget):
         Widget.__init__(self)
         self._display = display
         self._buttonBar = ButtonBar()
-
-        self.visible = True
+        self._buttonBar.show()
+        self.show()
 
     @property
     def buttonBar(self):
