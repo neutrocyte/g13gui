@@ -88,7 +88,7 @@ class Widget(Subject, Observer):
     def hide(self):
         self.visible = False
 
-    def show_all(self):
+    def showAll(self):
         for child in self._children:
             if child:
                 child.show()

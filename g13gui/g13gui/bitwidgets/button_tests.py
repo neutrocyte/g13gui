@@ -53,14 +53,14 @@ class ButtonTests(unittest.TestCase):
         self.screen.buttonBar.addChild(upButton)
         self.screen.buttonBar.addChild(downButton)
         self.screen.buttonBar.addChild(checkButton)
-        self.screen.buttonBar.show_all()
+        self.screen.buttonBar.showAll()
 
         self.screen.nextFrame()
 
     def testLabelButton(self):
         testButton = Label(0, 0, "Test", font=Fonts.TINY)
         self.screen.buttonBar.addChild(testButton)
-        self.screen.buttonBar.show_all()
+        self.screen.buttonBar.showAll()
         self.screen.nextFrame()
 
 
