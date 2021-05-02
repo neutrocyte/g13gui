@@ -1,16 +1,28 @@
 #!/usr/bin/python
 
 import unittest
+import time
 
 from g13gui.bitwidgets.fonts import Fonts
 from g13gui.bitwidgets.fonts import FontManager
 from g13gui.bitwidgets.display import Display
+from g13gui.bitwidgets.x11displaydevice import X11DisplayDevice
 
 
 class FontsTests(unittest.TestCase):
+    def setUp(self):
+        self.dd = X11DisplayDevice(self.__class__.__name__)
+        self.dd.start()
+        time.sleep(0.25)
+        self.d = Display(self.dd)
+
+    def tearDown(self):
+        time.sleep(1)
+        self.dd.shutdown()
+        self.dd.join()
+
     def testFontDrawing(self):
-        d = Display()
-        ctx = d.getContext()
+        ctx = self.d.getContext()
         ctx.text((0, 0), "Hello world!",
                  font=FontManager.getFont(Fonts.TINY),
                  fill=(1))
@@ -26,7 +38,7 @@ class FontsTests(unittest.TestCase):
         ctx.text((0, 31), "Hello world!",
                  font=FontManager.getFont(Fonts.HUGE),
                  fill=(1))
-        d.debug()
+        self.d.commit()
 
 
 if __name__ == '__main__':

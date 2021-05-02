@@ -3,25 +3,29 @@ import time
 
 from g13gui.bitwidgets.display import Display
 from g13gui.bitwidgets.x11displaydevice import X11DisplayDevice
+from g13gui.bitwidgets.screen import Screen
 
 
-class DisplayTests(unittest.TestCase):
+class ScreenTests(unittest.TestCase):
     def setUp(self):
         self.dd = X11DisplayDevice(self.__class__.__name__)
         self.dd.start()
         time.sleep(0.25)
         self.d = Display(self.dd)
+        self.s = Screen(self.d)
 
     def tearDown(self):
         time.sleep(1)
         self.dd.shutdown()
         self.dd.join()
 
-    def testUpdate(self):
+    def testDraw(self):
         ctx = self.d.getContext()
-        ctx.line((0, 0)+(160, 48), fill=1)
-        ctx.line((160, 0)+(0, 48), fill=1)
+        self.s.draw(ctx)
         self.d.commit()
+
+    def testNextFrame(self):
+        self.s.nextFrame()
 
 
 if __name__ == '__main__':

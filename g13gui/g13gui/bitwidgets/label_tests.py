@@ -3,9 +3,10 @@ import time
 
 from g13gui.bitwidgets.display import Display
 from g13gui.bitwidgets.x11displaydevice import X11DisplayDevice
+from g13gui.bitwidgets.label import Label
 
 
-class DisplayTests(unittest.TestCase):
+class LabelTests(unittest.TestCase):
     def setUp(self):
         self.dd = X11DisplayDevice(self.__class__.__name__)
         self.dd.start()
@@ -17,10 +18,11 @@ class DisplayTests(unittest.TestCase):
         self.dd.shutdown()
         self.dd.join()
 
-    def testUpdate(self):
+    def testDraw(self):
+        label = Label(0, 0, "Hello world!")
         ctx = self.d.getContext()
-        ctx.line((0, 0)+(160, 48), fill=1)
-        ctx.line((160, 0)+(0, 48), fill=1)
+        label.show()
+        label.draw(ctx)
         self.d.commit()
 
 
