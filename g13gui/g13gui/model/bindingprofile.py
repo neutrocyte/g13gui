@@ -1,6 +1,4 @@
-#!/usr/bin/python
-
-import g13gui.model.bindings as bindings
+from builtins import property
 
 from g13gui.observer import Subject
 from g13gui.observer import ChangeType
@@ -8,6 +6,7 @@ from g13gui.observer import ChangeType
 
 class BindingProfile(Subject):
     def __init__(self, dict=None):
+        Subject.__init__(self)
         self.initDefaults()
         if dict:
             self.loadFromDict(dict)
@@ -19,9 +18,11 @@ class BindingProfile(Subject):
         self._keyBindings = bindings.DEFAULT_KEY_BINDINGS.copy()
         self._lcdColor = bindings.DEFAULT_LCD_COLOR
 
+    @property
     def lcdColor(self):
         return self._lcdColor
 
+    @property
     def stickMode(self):
         return self._stickMode
 
@@ -41,10 +42,10 @@ class BindingProfile(Subject):
         return []
 
     def _setLCDColor(self, red, green, blue):
-        self._lcdColor = (red, green, blue)
-        self.addChange(ChangeType.MODIFY, 'lcdcolor', self._lcdColor)
+        self.setProperty('lcdColor', (red, green, blue), notify=False)
 
-    def setLCDColor(self, red, green, blue):
+    @lcdColor.setter
+    def lcdColor(self, red, green, blue):
         self._setLCDColor(red, green, blue)
         self.notifyChanged()
 
@@ -67,7 +68,8 @@ class BindingProfile(Subject):
         self._stickMode = stickmode
         self.addChange(ChangeType.MODIFY, 'stickmode', stickmode)
 
-    def setStickMode(self, stickmode):
+    @stickMode.setter
+    def stickMode(self, stickmode):
         self._setStickMode(stickmode)
         self.notifyChanged()
 
