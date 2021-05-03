@@ -11,6 +11,8 @@ class Observer(object):
     def _makeChangeTriggerKeys(self, changeType, keys):
         result = []
         if keys != Subject.AllKeys:
+            if type(keys) != set:
+                keys = {keys}
             for key in keys:
                 result.append((changeType, key))
         else:
