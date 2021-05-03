@@ -1,17 +1,21 @@
 #!/usr/bin/python
 
 import unittest
-import observer
 
 from builtins import property
 
+from g13gui.observer.observer import Observer
+from g13gui.observer.observer import ObserverTestCase
+from g13gui.observer.subject import Subject
+from g13gui.observer.subject import ChangeType
 
-class TestIncorrectObserver(observer.Observer):
+
+class TestIncorrectObserver(Observer):
     def __hash__(self):
         return hash('TestIncorrectObserver')
 
 
-class TestSubject(observer.Subject):
+class TestSubject(Subject):
     def __init__(self):
         self._value = None
 
@@ -24,7 +28,7 @@ class TestSubject(observer.Subject):
         self.setProperty('value', value)
 
 
-class ObserverTestCase(observer.ObserverTestCase):
+class ObserverTestCase(ObserverTestCase):
     def setUp(self):
         self.subject = TestSubject()
 
@@ -42,7 +46,7 @@ class ObserverTestCase(observer.ObserverTestCase):
 
     def testSubclassNotificationError(self):
         testObserver = TestIncorrectObserver()
-        self.subject.addChange(observer.ChangeType.ADD, 'foo')
+        self.subject.addChange(ChangeType.ADD, 'foo')
         self.subject.registerObserver(testObserver)
 
         try:
@@ -55,25 +59,25 @@ class ObserverTestCase(observer.ObserverTestCase):
     def testSubclassNotification(self):
         self.subject.registerObserver(self)
 
-        self.subject.addChange(observer.ChangeType.ADD, 'foo', 'bar')
+        self.subject.addChange(ChangeType.ADD, 'foo', 'bar')
         self.subject.notifyChanged()
 
         self.assertChangeCount(1)
-        self.assertChangeNotified(self.subject, observer.ChangeType.ADD, 'foo')
+        self.assertChangeNotified(self.subject, ChangeType.ADD, 'foo')
         self.assertChangeDataEquals('bar')
 
     def testSubscribedKeys(self):
         self.subject.registerObserver(self, {'a', 'b'})
 
-        self.subject.addChange(observer.ChangeType.ADD, 'a')
-        self.subject.addChange(observer.ChangeType.ADD, 'b')
-        self.subject.addChange(observer.ChangeType.ADD, 'c')
+        self.subject.addChange(ChangeType.ADD, 'a')
+        self.subject.addChange(ChangeType.ADD, 'b')
+        self.subject.addChange(ChangeType.ADD, 'c')
         self.subject.notifyChanged()
 
         self.assertChangeCount(2)
-        self.assertChangeNotified(self.subject, observer.ChangeType.ADD, 'a')
+        self.assertChangeNotified(self.subject, ChangeType.ADD, 'a')
         self.nextChange()
-        self.assertChangeNotified(self.subject, observer.ChangeType.ADD, 'b')
+        self.assertChangeNotified(self.subject, ChangeType.ADD, 'b')
         self.nextChange()
 
 
