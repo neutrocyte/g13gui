@@ -1,6 +1,11 @@
 #!/usr/bin/python3
 
+import gi
 from evdev import ecodes as e
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk, GObject, Gdk
 
 from g13gui.g13.common import G13Keys
 
@@ -77,3 +82,19 @@ ALL_STICK_MODES = frozenset({
 
 
 DEFAULT_LCD_COLOR = (1.0, 0.0, 0.0)
+
+
+def KeycodeIsModifier(code):
+    return code in (
+        e.KEY_LEFTSHIFT, e.KEY_RIGHTSHIFT,
+        e.KEY_LEFTCTRL, e.KEY_RIGHTCTRL,
+        e.KEY_LEFTALT, e.KEY_RIGHTALT)
+
+
+def BindsToKeynames(binds):
+    keybinds = []
+    for bind in binds:
+        name = e.KEY[bind][4:].capitalize()
+        keybinds.append(name)
+
+    return keybinds
