@@ -157,12 +157,12 @@ class MainWindow(Gtk.Window, GtkObserver):
         self._keyGrid.attach(self.newG13NumberedButton(), 4, 4, 1, 1)
 
         self._stickGrid.attach(self.newG13Button("STICK_UP"),    4, 0, 1, 1)
-        self._stickGrid.attach(self.newG13Button("LEFT"),        2, 1, 1, 1)
+        self._stickGrid.attach(self.newG13Button("THUMB_LEFT"),  2, 1, 1, 1)
         self._stickGrid.attach(self.newG13Button("STICK_LEFT"),  3, 1, 1, 1)
-        self._stickGrid.attach(self.newG13Button("TOP"),         4, 1, 1, 1)
+        self._stickGrid.attach(self.newG13Button("THUMB_STICK"), 4, 1, 1, 1)
         self._stickGrid.attach(self.newG13Button("STICK_RIGHT"), 5, 1, 1, 1)
         self._stickGrid.attach(self.newG13Button("STICK_DOWN"),  4, 2, 1, 1)
-        self._stickGrid.attach(self.newG13Button("DOWN"),        4, 3, 1, 1)
+        self._stickGrid.attach(self.newG13Button("THUMB_DOWN"),  4, 3, 1, 1)
 
     def newG13NumberedButton(self):
         button = self.newG13Button('G' + str(self._buttonNum))
