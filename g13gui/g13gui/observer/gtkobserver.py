@@ -1,7 +1,7 @@
 import gi
 import queue
 
-from g13gui.observer import Observer
+from g13gui.observer.observer import Observer
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, GObject

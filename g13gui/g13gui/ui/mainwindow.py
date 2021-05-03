@@ -4,9 +4,7 @@ import gi
 
 import g13gui.ui as ui
 
-from g13gui.g13d import SaveTask
-from g13gui.g13d import UploadTask
-from g13gui.observer import GtkObserver
+from g13gui.observer.gtkobserver import GtkObserver
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
@@ -46,8 +44,8 @@ class MainWindow(Gtk.Window, GtkObserver):
         self.setupG13ButtonGrid()
 
     def gtkSubjectChanged(self, subject, changeType, key, data=None):
-        self._doUpload()
-        self._doSave()
+        print('Subject changed! Need to save!')
+        pass
 
     def setupHeaderBar(self):
         self._headerBar = Gtk.HeaderBar()
@@ -108,15 +106,6 @@ class MainWindow(Gtk.Window, GtkObserver):
 
     def _profileChanged(self, widget):
         self._doUpload()
-
-    def _doUpload(self):
-        config = self._prefs.selectedProfile().toCommandString()
-        task = UploadTask(config)
-        self._workerQueue.put(task)
-
-    def _doSave(self):
-        task = SaveTask(self._prefs)
-        self._workerQueue.put(task)
 
     def uploadClicked(self, widget):
         self._doUpload()

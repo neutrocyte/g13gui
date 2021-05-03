@@ -1,7 +1,7 @@
 from builtins import property
 
-from g13gui.observer import Subject
-from g13gui.observer import ChangeType
+from g13gui.observer.subject import Subject
+from g13gui.observer.subject import ChangeType
 import g13gui.model.bindings as bindings
 
 

@@ -2,11 +2,8 @@ import gi
 import enum
 
 import g13gui.model.bindings as bindings
-from g13gui.observer import GtkObserver
-from g13gui.model import BindingProfile
-from g13gui.model.bindings import G13ToGDK
-from g13gui.model.bindings import GDKToG13
-from g13gui.model.bindings import G13DKeyIsModifier
+from g13gui.observer.gtkobserver import GtkObserver
+from g13gui.model.bindingprofile import BindingProfile
 from g13gui.model.bindings import StickMode
 from g13gui.model.bindings import ALL_STICK_MODES
 

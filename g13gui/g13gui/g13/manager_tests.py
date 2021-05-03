@@ -3,14 +3,14 @@
 import unittest
 import time
 import usb.util
-import g13gui.observer as observer
 
+from g13gui.observer.observer import ObserverTestCase
 from g13gui.model.prefs import Preferences
 from g13gui.g13.manager import Manager
 from g13gui.g13.manager import LCD_BUFFER_SIZE
 
 
-class G13ManagerTests(observer.ObserverTestCase):
+class G13ManagerTests(ObserverTestCase):
     def setUp(self):
         prefs = Preferences()
         self.m = Manager(prefs)

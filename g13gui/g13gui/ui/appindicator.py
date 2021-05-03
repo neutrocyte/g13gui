@@ -1,8 +1,8 @@
 import gi
 
 from g13gui.common import PROGNAME
-from g13gui.observer import GtkObserver
-from g13gui.observer import ChangeType
+from g13gui.observer.gtkobserver import GtkObserver
+from g13gui.observer.subject import ChangeType
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')

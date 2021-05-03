@@ -4,8 +4,8 @@ import traceback
 
 from g13gui.common import VERSION
 from g13gui.model.bindingprofile import BindingProfile
-from g13gui.observer import Subject
-from g13gui.observer import ChangeType
+from g13gui.observer.subject import Subject
+from g13gui.observer.subject import ChangeType
 
 
 DEFAULT_PROFILE_NAME = 'Default Profile'

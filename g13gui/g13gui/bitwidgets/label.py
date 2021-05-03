@@ -4,7 +4,7 @@ from builtins import property
 from g13gui.bitwidgets.widget import Widget
 from g13gui.bitwidgets.fonts import Fonts
 from g13gui.bitwidgets.fonts import FontManager
-from g13gui.observer import ChangeType
+from g13gui.observer.subject import ChangeType
 
 
 class Alignment(enum.Enum):

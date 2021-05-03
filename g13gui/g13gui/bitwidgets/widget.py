@@ -1,7 +1,8 @@
 from builtins import property
-from g13gui.observer import Subject
-from g13gui.observer import Observer
-from g13gui.observer import ChangeType
+
+from g13gui.observer.subject import Subject
+from g13gui.observer.subject import ChangeType
+from g13gui.observer.observer import Observer
 
 
 class Widget(Subject, Observer):

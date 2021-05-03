@@ -4,8 +4,8 @@ import unittest
 import g13gui.model.prefs as prefs
 
 from g13gui.common import VERSION
-from g13gui.observer import ChangeType
-from g13gui.observer import ObserverTestCase
+from g13gui.observer.subject import ChangeType
+from g13gui.observer.observer import ObserverTestCase
 
 
 class PrefsTestCase(ObserverTestCase):

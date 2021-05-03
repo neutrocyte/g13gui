@@ -1,8 +1,8 @@
 import gi
 
 import g13gui.ui as ui
-from g13gui.observer import GtkObserver
-from g13gui.model.bindings import G13ToGDK
+from g13gui.observer.gtkobserver import GtkObserver
+from g13gui.model.bindings import BindsToKeynames
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')

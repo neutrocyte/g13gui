@@ -4,7 +4,7 @@ from builtins import property
 from g13gui.bitwidgets import DISPLAY_WIDTH
 from g13gui.bitwidgets import DISPLAY_HEIGHT
 from g13gui.bitwidgets.widget import Widget
-from g13gui.observer import ChangeType
+from g13gui.observer.subject import ChangeType
 
 
 GLYPH_WIDTH = 5
