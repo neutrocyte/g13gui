@@ -15,15 +15,25 @@ class G13Button(Gtk.MenuButton, GtkObserver):
         GtkObserver.__init__(self)
 
         self._prefs = prefs
-        self._prefs.registerObserver(self, {'selectedProfile'})
         self._keyName = g13KeyName
         self._lastProfileName = None
+
+        self._prefs.registerObserver(self, {'selectedProfile', self._keyName})
+        self.changeTrigger(self.onSelectedProfileChanged,
+                           keys={'selectedProfile'})
+        self.changeTrigger(self.onBindingChanged, keys={self._keyName})
 
         self._popover = ui.G13ButtonPopover(self, self._prefs, self._keyName)
         self.set_popover(self._popover)
 
         self.set_can_default(False)
         self.updateProfileRegistration()
+
+    def onSelectedProfileChanged(self, subject, changeType, key, data):
+        self.updateProfileRegistration()
+        self.updateBindingDisplay()
+
+    def onBindingChanged(self, subject, changeType, key, data):
         self.updateBindingDisplay()
 
     def updateProfileRegistration(self):
@@ -46,20 +56,11 @@ class G13Button(Gtk.MenuButton, GtkObserver):
         if len(bindings) > 0:
             keybinds = BindsToKeynames(bindings)
             accelerator = '+'.join(keybinds)
-            shortcut = Gtk.ShortcutsShortcut(
-                shortcut_type=Gtk.ShortcutType.ACCELERATOR,
-                accelerator=accelerator)
-            shortcut.set_halign(Gtk.Align.CENTER)
-            self.add(shortcut)
+            label = Gtk.Label(accelerator)
+            label.set_halign(Gtk.Align.CENTER)
+            self.add(label)
         else:
             label = Gtk.Label(self._keyName)
             self.add(label)
 
         self.show_all()
-
-    def gtkSubjectChanged(self, subject, changeType, key, data=None):
-        if key == 'selectedProfile':
-            self.updateProfileRegistration()
-            self.updateBindingDisplay()
-        elif key == self._keyName:
-            self.updateBindingDisplay()
