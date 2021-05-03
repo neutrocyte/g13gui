@@ -8,6 +8,8 @@ from g13gui.bitwidgets.fonts_tests import *
 from g13gui.bitwidgets.label_tests import *
 from g13gui.bitwidgets.display_tests import *
 from g13gui.bitwidgets.screen_tests import *
+from g13gui.g13.displaydevice_tests import *
+from g13gui.g13.manager_tests import *
 
 
 if __name__ == '__main__':

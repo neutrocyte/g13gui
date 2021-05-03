@@ -1,17 +1,16 @@
 import gi
 
-from g13gui.observer import GtkObserver
-
-from g13gui.model.bindings import G13ToGDK
-from g13gui.model.bindings import GDKToG13
-from g13gui.model.bindings import G13DKeyIsModifier
+from g13gui.observer.gtkobserver import GtkObserver
+from g13gui.model.bindings import BindsToKeynames
+from g13gui.model.bindings import KeycodeIsModifier
+from g13gui.input import InputReader
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk, GObject, Gdk
 
 
-MAX_DELAY_BETWEEN_PRESSES_MILLIS = 250
+MAX_DELAY_BETWEEN_PRESSES_SECONDS = 0.250
 
 
 class G13ButtonPopover(Gtk.Popover, GtkObserver):
@@ -21,6 +20,11 @@ class G13ButtonPopover(Gtk.Popover, GtkObserver):
 
         self._prefs = prefs
         self._prefs.registerObserver(self, {'selectedProfile'})
+
+        self._inputReader = InputReader()
+        self._inputReader.connect('evdev-key-pressed', self.keypress)
+        self._inputReader.connect('evdev-key-released', self.keyrelease)
+
         self._keyName = keyName
 
         self._modifiers = set()
@@ -52,8 +56,6 @@ class G13ButtonPopover(Gtk.Popover, GtkObserver):
         self._box.pack_start(button, True, True, 6)
         self._box.show_all()
 
-        self.connect("key-press-event", self.keypress)
-        self.connect("key-release-event", self.keyrelease)
         self.connect("show", self.shown)
         self.connect("closed", self.closed)
         button.connect("pressed", self.clear)
@@ -61,7 +63,7 @@ class G13ButtonPopover(Gtk.Popover, GtkObserver):
         self.buildBindingDisplay()
 
     def shown(self, widget):
-        self.grab_add()
+        self._inputReader.start()
 
     def rebuildBindingDisplay(self):
         if self._bindingBox:
@@ -76,13 +78,11 @@ class G13ButtonPopover(Gtk.Popover, GtkObserver):
         self._box.reorder_child(self._bindingBox, 1)
 
         if len(self._currentBindings) > 0:
-            keybinds = G13ToGDK(self._currentBindings)
+            keybinds = BindsToKeynames(self._currentBindings)
             accelerator = '+'.join(keybinds)
-            shortcut = Gtk.ShortcutsShortcut(
-                shortcut_type=Gtk.ShortcutType.ACCELERATOR,
-                accelerator=accelerator)
-            shortcut.set_halign(Gtk.Align.CENTER)
-            self._bindingBox.pack_start(shortcut, True, True, 6)
+            label = Gtk.Label(accelerator)
+            label.set_halign(Gtk.Align.CENTER)
+            self._bindingBox.pack_start(label, True, True, 6)
         else:
             label = Gtk.Label()
             label.set_markup("<i>No binding. Press a key to bind.</i>")
@@ -90,31 +90,26 @@ class G13ButtonPopover(Gtk.Popover, GtkObserver):
 
         self._bindingBox.show_all()
 
-    def keypress(self, buttonMenu, eventKey):
-        pressDelta = eventKey.time - self._lastPressTime
-        if pressDelta > MAX_DELAY_BETWEEN_PRESSES_MILLIS:
+    def keypress(self, keyCode, timestamp):
+        print('keypress: %s' % repr(keyCode))
+
+        pressDelta = timestamp - self._lastPressTime
+        if pressDelta > MAX_DELAY_BETWEEN_PRESSES_SECONDS:
             self._modifiers = set()
             self._consonantKey = None
 
-        binding = Gdk.keyval_name(eventKey.keyval)
-        if len(binding) == 1:
-            binding = binding.upper()
-        if binding == 'Meta_L':
-            binding = 'Alt_L'
-        if binding == 'Meta_R':
-            binding = 'Alt_R'
+        key = keyCode
+        print('Hardware keycode: %s' % (key))
 
-        binding = GDKToG13(binding)
-
-        if G13DKeyIsModifier(binding):
-            self._modifiers.add(binding)
+        if KeycodeIsModifier(key):
+            self._modifiers.add(key)
         else:
-            self._consonantKey = binding
+            self._consonantKey = key
 
-        self._lastPressTime = eventKey.time
+        self._lastPressTime = timestamp
         return True
 
-    def keyrelease(self, buttonMenu, eventKey):
+    def keyrelease(self, keyCode):
         self._currentBindings = sorted(list(self._modifiers))
         if self._consonantKey:
             self._currentBindings += [self._consonantKey]
@@ -128,7 +123,7 @@ class G13ButtonPopover(Gtk.Popover, GtkObserver):
         self.hide()
 
     def closed(self, buttonMenu):
-        self.grab_remove()
+        self._inputReader.shutdown()
         self._prefs.selectedProfile().bindKey(self._keyName,
                                               self._currentBindings)
         self.hide()

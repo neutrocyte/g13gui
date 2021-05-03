@@ -44,7 +44,7 @@ class G13Button(Gtk.MenuButton, GtkObserver):
         bindings = self._prefs.selectedProfile().keyBinding(self._keyName)
 
         if len(bindings) > 0:
-            keybinds = G13ToGDK(bindings)
+            keybinds = BindsToKeynames(bindings)
             accelerator = '+'.join(keybinds)
             shortcut = Gtk.ShortcutsShortcut(
                 shortcut_type=Gtk.ShortcutType.ACCELERATOR,
