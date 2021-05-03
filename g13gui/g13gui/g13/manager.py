@@ -254,7 +254,7 @@ class Manager(threading.Thread):
 
     def _synthesizeKeys(self, report):
         for key in G13NormalKeys:
-            binding = self._prefs.selectedProfile().keyBinding(key)
+            binding = self._prefs.selectedProfile().keyBinding(key.name)
             wasPressed = self._lastKeyState.get(key, False)
             nowPressed = key.testReport(report)
 
