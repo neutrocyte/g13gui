@@ -13,6 +13,7 @@ from evdev import UInput
 from evdev import AbsInfo
 from evdev import ecodes as e
 
+from g13gui.observer.observer import Observer
 from g13gui.model.bindings import StickMode
 from g13gui.g13.common import G13NormalKeys
 from g13gui.g13.common import G13SpecialKeys
@@ -47,7 +48,7 @@ class StateError(RuntimeError):
     pass
 
 
-class Manager(threading.Thread):
+class Manager(threading.Thread, Observer):
     class State(enum.Enum):
         DISCOVERING = 0
         FOUND = 1
@@ -55,6 +56,8 @@ class Manager(threading.Thread):
 
     def __init__(self, prefs):
         threading.Thread.__init__(self, daemon=True)
+        Observer.__init__(self)
+
         self._prefs = prefs
         self._state = Manager.State.DISCOVERING
         self._device = None
@@ -65,6 +68,38 @@ class Manager(threading.Thread):
                               product=PRODUCT_ID)
         self._lastKeyState = {}
         self._commandQueue = queue.Queue()
+        self._lastProfile = None
+
+        self._prefs.registerObserver(self, {'selectedProfile'})
+        self._updateProfileRegistration()
+        self.changeTrigger(self.onSelectedProfileChanged,
+                           keys={'selectedProfile'})
+        self.changeTrigger(self.onLcdColorChanged,
+                           keys={'lcdColor'})
+
+    def _updateProfileRegistration(self):
+        if self._lastProfile is not None:
+            self._lastProfile.removeObserver(self)
+
+        self._lastProfile = self._prefs.selectedProfile()
+        self._lastProfile.registerObserver(self, {'lcdColor'})
+
+    def onSelectedProfileChanged(self, subject, changeType, key, data):
+        print('onSelectedProfileChanged')
+        self._updateProfileRegistration()
+
+        if self._state == Manager.State.FOUND:
+            self._updateLcdColor()
+
+    def onLcdColorChanged(self, subject, changeType, key, data):
+        print('onLcdColorChanged')
+        if self._state == Manager.State.FOUND:
+            self._updateLcdColor()
+
+    def _updateLcdColor(self):
+        lcdColor = self._prefs.selectedProfile().lcdColor
+        lcdColor = [int(x * 255) for x in lcdColor]
+        self.setBacklightColor(*lcdColor)
 
     @property
     def state(self):
@@ -160,7 +195,7 @@ class Manager(threading.Thread):
         self._commandQueue.put([self._setBacklightColor, (r, g, b)])
 
     def _setBacklightColor(self, r, g, b):
-        data = [5, r, g, b, 0]
+        data = [5, int(r), int(g), int(b), 0]
         type = usb.util.CTRL_TYPE_CLASS | usb.util.CTRL_RECIPIENT_INTERFACE
 
         self._device.ctrl_transfer(
@@ -200,6 +235,8 @@ class Manager(threading.Thread):
             print('Discovering devices')
             self._discover()
             print('Got device')
+
+            self._updateLcdColor()
 
             while self._state == Manager.State.FOUND:
                 try:
