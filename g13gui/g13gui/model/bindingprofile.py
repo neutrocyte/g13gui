@@ -44,7 +44,8 @@ class BindingProfile(Subject):
         self.setProperty('lcdColor', (red, green, blue), notify=False)
 
     @lcdColor.setter
-    def lcdColor(self, red, green, blue):
+    def lcdColor(self, rgb):
+        (red, green, blue) = rgb
         self._setLCDColor(red, green, blue)
         self.notifyChanged()
 
