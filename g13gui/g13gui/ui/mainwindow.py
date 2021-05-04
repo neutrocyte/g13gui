@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
 import gi
+import threading
 
 import g13gui.ui as ui
 
 from g13gui.observer.gtkobserver import GtkObserver
+from g13gui.model.prefsstore import PreferencesStore
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
@@ -44,9 +46,20 @@ class MainWindow(Gtk.Window, GtkObserver):
 
         self.setupG13ButtonGrid()
 
+    def _updateProfileRegistration(self):
+        self._lastProfileName.removeObserver(self)
+        self._lastProfileName = self._prefs.selectedProfile()
+        self._lastProfileName.registerObserver(self)
+
     def onChangeTrigger(self, subject, changeType, key, data=None):
-        print('Subject changed! Need to save!')
-        pass
+        if key == 'selectedProfile':
+            self._updateProfileRegistration(self)
+        elif key == 'profile':
+            pass
+
+        t = threading.Thread(
+            target=PreferencesStore.storePrefs, args=(self._prefs,))
+        t.start()
 
     def setupHeaderBar(self):
         self._headerBar = Gtk.HeaderBar()
@@ -72,41 +85,7 @@ class MainWindow(Gtk.Window, GtkObserver):
         editProfileButton.set_popover(editProfilePopover)
         self._headerBar.add(editProfileButton)
 
-        self._uploadButton = Gtk.Button.new_from_icon_name(
-            "document-send-symbolic", 1)
-        self._uploadButton.connect("clicked", self.uploadClicked)
-        self._headerBar.add(self._uploadButton)
-
         Gtk.Window.set_titlebar(self, self._headerBar)
-
-    @GObject.Signal(name='daemon-connection-changed', arg_types=(bool,))
-    def daemonConnectionChanged(self, connected):
-        self._connected = connected
-        if connected:
-            self._uploadButton.set_state_flags(Gtk.StateFlags.NORMAL, True)
-            self._infoBar.hide()
-            self._doUpload()
-        else:
-            self._uploadButton.set_state_flags(Gtk.StateFlags.INSENSITIVE,
-                                               True)
-            self._infoBar.set_message_type(Gtk.MessageType.WARNING)
-            self._infoBarLabel.set_text(
-                'The G13 user space driver is not running. '
-                'Attempting to reconnect.')
-            self._infoBar.show()
-
-    @GObject.Signal(name='uploading', arg_types=(float,))
-    def uploadStatusChanged(self, percentage):
-        if percentage < 1.0:
-            self._infoBar.set_message_type(Gtk.MessageType.INFO)
-            self._infoBarLabel.set_text('Uploading to the G13...')
-            self._infoBar.show()
-        else:
-            self._infoBar.hide()
-
-    def uploadClicked(self, widget):
-        self._doUpload()
-        self._doSave()
 
     def setupG13ButtonGrid(self):
         self._mButtons = Gtk.ButtonBox(
