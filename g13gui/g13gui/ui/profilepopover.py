@@ -33,10 +33,10 @@ class ProfilePopover(Gtk.Popover, GtkObserver):
         self._profileName.set_text(self._prefs.selectedProfileName())
 
         profile = self._prefs.selectedProfile()
-        lcdColor = profile.lcdColor()
+        lcdColor = profile.lcdColor
         self._lcdColorButton.set_rgba(Gdk.RGBA(*lcdColor, alpha=1.0))
 
-        stickMode = profile.stickMode()
+        stickMode = profile.stickMode
         activeIndex = sorted(list(ALL_STICK_MODES)).index(stickMode)
         self._stickModeCombo.set_active(activeIndex)
 
@@ -112,8 +112,8 @@ class ProfilePopover(Gtk.Popover, GtkObserver):
         else:
             profile = self._prefs.selectedProfile()
 
-        profile.setLCDColor(*lcdColor)
-        profile.setStickMode(stickMode.upper())
+        profile.lcdColor = lcdColor
+        profile.stickMode = stickMode.upper()
 
         self.hide()
 
