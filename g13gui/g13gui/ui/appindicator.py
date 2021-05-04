@@ -17,12 +17,15 @@ class AppIndicator(GtkObserver):
         self._initIndicator()
 
         self._prefs = prefs
-        self._prefs.registerObserver(self, {'profile'})
         self._mainWindow = mainWindow
         self._menu = Gtk.Menu()
         self._menuItems = []
         self._indicator.set_menu(self._menu)
         self._rebuilding = False
+
+        self._prefs.registerObserver(self, {'selectedProfile'})
+        self.changeTrigger(self.onSelectedProfileChanged,
+                           keys={'selectedProfile'})
 
         self._rebuildMenu()
 
@@ -79,7 +82,6 @@ class AppIndicator(GtkObserver):
 
     def changeProfile(self, menuItem):
         self._prefs.setSelectedProfile(menuItem.get_label())
-        self._rebuildMenu()
 
-    def gtkSubjectChanged(self, subject, changeType, key, data=None):
+    def onSelectedProfileChanged(self, subject, changeType, key, data):
         self._rebuildMenu()

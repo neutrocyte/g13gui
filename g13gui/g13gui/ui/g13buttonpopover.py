@@ -20,6 +20,8 @@ class G13ButtonPopover(Gtk.Popover, GtkObserver):
 
         self._prefs = prefs
         self._prefs.registerObserver(self, {'selectedProfile'})
+        self.changeTrigger(self.onSelectedProfileChanged,
+                           keys={'selectedProfile'})
 
         self._inputReader = InputReader()
         self._inputReader.connect('evdev-key-pressed', self.keypress)
@@ -43,7 +45,7 @@ class G13ButtonPopover(Gtk.Popover, GtkObserver):
         selectedProfile = self._prefs.selectedProfile()
         self._currentBindings = selectedProfile.keyBinding(self._keyName)
 
-    def gtkSubjectChanged(self, subject, changeType, key, data=None):
+    def onSelectedProfileChanged(self, subject, changeType, key, data):
         self.updateBinding()
 
     def build(self):

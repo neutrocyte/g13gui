@@ -28,6 +28,8 @@ class MainWindow(Gtk.Window, GtkObserver):
         self._prefs.selectedProfile().registerObserver(self)
         self._lastProfileName = self._prefs.selectedProfileName()
 
+        self.changeTrigger(self.onChangeTrigger)
+
         self.setupHeaderBar()
 
         self._box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.VERTICAL)
@@ -43,7 +45,7 @@ class MainWindow(Gtk.Window, GtkObserver):
 
         self.setupG13ButtonGrid()
 
-    def gtkSubjectChanged(self, subject, changeType, key, data=None):
+    def onChangeTrigger(self, subject, changeType, key, data=None):
         print('Subject changed! Need to save!')
         pass
 
@@ -53,7 +55,6 @@ class MainWindow(Gtk.Window, GtkObserver):
         self._headerBar.set_show_close_button(True)
 
         self._profileComboBox = ui.ProfileComboBox(self._prefs)
-        self._profileComboBox.connect('changed', self._profileChanged)
         self._headerBar.add(self._profileComboBox)
 
         addProfileButton = Gtk.MenuButton.new()
@@ -103,9 +104,6 @@ class MainWindow(Gtk.Window, GtkObserver):
             self._infoBar.show()
         else:
             self._infoBar.hide()
-
-    def _profileChanged(self, widget):
-        self._doUpload()
 
     def uploadClicked(self, widget):
         self._doUpload()
