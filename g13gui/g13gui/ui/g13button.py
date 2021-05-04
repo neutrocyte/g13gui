@@ -29,6 +29,11 @@ class G13Button(Gtk.MenuButton, GtkObserver):
         self.set_can_default(False)
         self.updateProfileRegistration()
 
+        self.connect('show', self.onShown)
+
+    def onShown(self, widget):
+        self.updateBindingDisplay()
+
     def onSelectedProfileChanged(self, subject, changeType, key, data):
         self.updateProfileRegistration()
         self.updateBindingDisplay()

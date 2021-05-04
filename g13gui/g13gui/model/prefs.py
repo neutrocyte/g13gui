@@ -2,6 +2,8 @@
 
 import traceback
 
+from builtins import property
+
 from g13gui.common import VERSION
 from g13gui.model.bindingprofile import BindingProfile
 from g13gui.observer.subject import Subject
@@ -15,11 +17,20 @@ class Preferences(Subject):
     def __init__(self, dict=None):
         self._profiles = {}
         self._selectedProfile = None
+        self._showWindowOnStart = True
 
         if dict:
             self.loadFromDict(dict)
         else:
             self.initDefaultProfile()
+
+    @property
+    def showWindowOnStart(self):
+        return self._showWindowOnStart
+
+    @showWindowOnStart.setter
+    def showWindowOnStart(self, value):
+        self.setProperty('showWindowOnStart', value)
 
     def profiles(self, profileName=None):
         if profileName:
@@ -85,6 +96,7 @@ class Preferences(Subject):
     def saveToDict(self):
         return {
             'version': VERSION,
+            'showWindowOnStart': self._showWindowOnStart,
             'profiles': dict([(name, profile.saveToDict()) for name, profile in self._profiles.items()]),
             'selectedProfile': self._selectedProfile
         }
@@ -100,6 +112,7 @@ class Preferences(Subject):
                 self._addProfile(name, BindingProfile(profile))
 
             self._setSelectedProfile(dict['selectedProfile'])
+            self._showWindowOnStart = dict['showWindowOnStart']
 
         except (Exception) as err:
             print('Unable to initialize from dict: %s' % err)

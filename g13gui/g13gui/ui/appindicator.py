@@ -3,6 +3,7 @@ import gi
 from g13gui.common import PROGNAME
 from g13gui.observer.gtkobserver import GtkObserver
 from g13gui.observer.subject import ChangeType
+from g13gui.ui.mainwindow import MainWindow
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -11,13 +12,13 @@ from gi.repository import AppIndicator3 as indicator
 
 
 class AppIndicator(GtkObserver):
-    def __init__(self, prefs, mainWindow):
+    def __init__(self, prefs):
         GtkObserver.__init__(self)
 
         self._initIndicator()
 
         self._prefs = prefs
-        self._mainWindow = mainWindow
+        self._mainWindow = None
         self._menu = Gtk.Menu()
         self._menuItems = []
         self._indicator.set_menu(self._menu)
@@ -26,6 +27,9 @@ class AppIndicator(GtkObserver):
         self._prefs.registerObserver(self, {'selectedProfile'})
         self.changeTrigger(self.onSelectedProfileChanged,
                            keys={'selectedProfile'})
+
+        if self._prefs.showWindowOnStart:
+            self.showMainWindow(None)
 
         self._rebuildMenu()
 
@@ -77,7 +81,13 @@ class AppIndicator(GtkObserver):
         self._menu.show_all()
         self._rebuilding = False
 
+    def onMainWindowHidden(self, win):
+        del self._mainWindow
+        self._mainWindow = None
+
     def showMainWindow(self, menuItem):
+        self._mainWindow = MainWindow(self._prefs)
+        self._mainWindow.connect('hide', self.onMainWindowHidden)
         self._mainWindow.show_all()
 
     def changeProfile(self, menuItem):

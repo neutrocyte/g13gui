@@ -12,7 +12,7 @@ from gi.repository import Gtk, Gdk, GObject
 
 
 class MainWindow(Gtk.Window, GtkObserver):
-    def __init__(self, workerQueue, prefs):
+    def __init__(self, prefs):
         Gtk.Window.__init__(self)
         GtkObserver.__init__(self)
 
@@ -22,7 +22,6 @@ class MainWindow(Gtk.Window, GtkObserver):
         geometry.max_height = 480
         self.set_geometry_hints(None, geometry, Gdk.WindowHints.MAX_SIZE)
 
-        self._workerQueue = workerQueue
         self._prefs = prefs
         self._prefs.registerObserver(self, 'selectedProfile')
         self._prefs.selectedProfile().registerObserver(self)
