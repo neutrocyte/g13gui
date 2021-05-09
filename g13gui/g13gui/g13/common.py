@@ -51,7 +51,10 @@ G13NormalKeys = frozenset({
     G13Keys.THUMB_LEFT, G13Keys.THUMB_DOWN, G13Keys.THUMB_STICK
 })
 
+G13AppletKeys = frozenset({
+    G13Keys.BD, G13Keys.L1, G13Keys.L2, G13Keys.L3, G13Keys.L4
+})
+
 G13SpecialKeys = frozenset({
-    G13Keys.BD, G13Keys.L1, G13Keys.L2, G13Keys.L3, G13Keys.L4,
-    G13Keys.M1, G13Keys.M2, G13Keys.M3, G13Keys.MR,
+    G13Keys.M1, G13Keys.M2, G13Keys.M3, G13Keys.MR
 })
