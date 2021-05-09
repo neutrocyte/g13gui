@@ -16,7 +16,9 @@ from evdev import ecodes as e
 from g13gui.observer.observer import Observer
 from g13gui.model.bindings import StickMode
 from g13gui.g13.common import G13NormalKeys
+from g13gui.g13.common import G13AppletKeys
 from g13gui.g13.common import G13SpecialKeys
+from g13gui.applet.manager import AppletManager
 
 
 class G13Endpoints(enum.Enum):
@@ -48,7 +50,7 @@ class StateError(RuntimeError):
     pass
 
 
-class Manager(threading.Thread, Observer):
+class DeviceManager(threading.Thread, Observer):
     class State(enum.Enum):
         DISCOVERING = 0
         FOUND = 1
@@ -59,7 +61,7 @@ class Manager(threading.Thread, Observer):
         Observer.__init__(self)
 
         self._prefs = prefs
-        self._state = Manager.State.DISCOVERING
+        self._state = DeviceManager.State.DISCOVERING
         self._device = None
         self._uinput = UInput(UINPUT_KEYBOARD_CAPS,
                               name='G13 Keyboard',
@@ -69,6 +71,8 @@ class Manager(threading.Thread, Observer):
         self._lastKeyState = {}
         self._commandQueue = queue.Queue()
         self._lastProfile = None
+
+        self._appletManager = AppletManager(self)
 
         self._prefs.registerObserver(self, {'selectedProfile'})
         self._updateProfileRegistration()
@@ -85,15 +89,14 @@ class Manager(threading.Thread, Observer):
         self._lastProfile.registerObserver(self, {'lcdColor'})
 
     def onSelectedProfileChanged(self, subject, changeType, key, data):
-        print('onSelectedProfileChanged')
         self._updateProfileRegistration()
 
-        if self._state == Manager.State.FOUND:
+        if self._state == DeviceManager.State.FOUND:
             self._updateLcdColor()
 
     def onLcdColorChanged(self, subject, changeType, key, data):
         print('onLcdColorChanged')
-        if self._state == Manager.State.FOUND:
+        if self._state == DeviceManager.State.FOUND:
             self._updateLcdColor()
 
     def _updateLcdColor(self):
@@ -104,10 +107,6 @@ class Manager(threading.Thread, Observer):
     @property
     def state(self):
         return self._state
-
-    def _ensureState(self, state):
-        if self._state != state:
-            raise StateError()
 
     def _reset(self):
         try:
@@ -124,9 +123,9 @@ class Manager(threading.Thread, Observer):
         if self._device:
             self._reset()
 
-        self._state = Manager.State.DISCOVERING
+        self._state = DeviceManager.State.DISCOVERING
 
-        while self._state == Manager.State.DISCOVERING:
+        while self._state == DeviceManager.State.DISCOVERING:
             try:
                 while not self._device:
                     self._device = usb.core.find(idVendor=VENDOR_ID,
@@ -144,7 +143,7 @@ class Manager(threading.Thread, Observer):
                 traceback.print_exc()
                 self._reset()
             else:
-                self._state = Manager.State.FOUND
+                self._state = DeviceManager.State.FOUND
 
     def _readKeys(self, buffer):
         # Apparently an "interrupt" read with the G13 "times out" if no keys
@@ -173,7 +172,9 @@ class Manager(threading.Thread, Observer):
 
         leds: a bitwise-or'd bitfield of LEDBits. Set is on.
         """
-        self._ensureState(Manager.State.FOUND)
+        if self.state != DeviceManager.State.FOUND:
+            return
+
         self._commandQueue.put([self._setLedsMode, (leds,)])
 
     def _setLedsMode(self, leds):
@@ -191,7 +192,9 @@ class Manager(threading.Thread, Observer):
 
         r, g, b: byte values between 0-255
         """
-        self._ensureState(Manager.State.FOUND)
+        if self.state != DeviceManager.State.FOUND:
+            return
+
         self._commandQueue.put([self._setBacklightColor, (r, g, b)])
 
     def _setBacklightColor(self, r, g, b):
@@ -208,7 +211,9 @@ class Manager(threading.Thread, Observer):
         Note: buffer must be a byte array containing an LPBM formatted image.
         IOW, each byte represents one vertical row of 8 pixels each.
         """
-        self._ensureState(Manager.State.FOUND)
+        if self.state != DeviceManager.State.FOUND:
+            return
+
         self._commandQueue.put([self._setLCDBuffer, (buffer,)])
 
     def _setLCDBuffer(self, buffer):
@@ -231,30 +236,33 @@ class Manager(threading.Thread, Observer):
     def run(self):
         reportBuffer = usb.util.create_buffer(REPORT_SIZE)
 
-        while self._state != Manager.State.SHUTDOWN:
+        while self._state != DeviceManager.State.SHUTDOWN:
             print('Discovering devices')
             self._discover()
             print('Got device')
 
             self._updateLcdColor()
+            self._appletManager.onPresent()
 
-            while self._state == Manager.State.FOUND:
+            while self._state == DeviceManager.State.FOUND:
                 try:
                     count = self._readKeys(reportBuffer)
 
                     if count == REPORT_SIZE:
                         self._synthesizeKeys(reportBuffer)
+                        self._signalSpecialKeys(reportBuffer)
                         self._synthesizeStick(reportBuffer)
                         self._uinput.syn()
 
                     self._processCommands()
 
                 except usb.core.USBError as err:
-                    print('Unexpected error occurred: %s' % err)
+                    if self._state != DeviceManager.State.SHUTDOWN:
+                        print('Unexpected error occurred: %s' % err)
                     break
 
         print('Shutting down')
-        if self._device and self._state == Manager.State.FOUND:
+        if self._device and self._state == DeviceManager.State.FOUND:
             self._reset()
 
     def _synthesizeStick(self, report):
@@ -304,16 +312,29 @@ class Manager(threading.Thread, Observer):
 
             self._lastKeyState[key] = nowPressed
 
-    def signalSpecialKeys(self, report):
+    def _signalSpecialKeys(self, report):
+        for key in G13AppletKeys:
+            wasPressed = self._lastKeyState.get(key, False)
+            nowPressed = key.testReport(report)
+
+            # Emit special keypress if and only if it was released
+            if wasPressed and not nowPressed:
+                self._appletManager.onKeyReleased(key)
+            elif not wasPressed and nowPressed:
+                self._appletManager.onKeyPressed(key)
+
+            self._lastKeyState[key] = nowPressed
+
         for key in G13SpecialKeys:
             wasPressed = self._lastKeyState.get(key, False)
             nowPressed = key.testReport(report)
 
             # Emit special keypress if and only if it was released
             if wasPressed and not nowPressed:
+                # check for MR, allow for key record this way
                 pass
 
             self._lastKeyState[key] = nowPressed
 
     def shutdown(self):
-        self._state = Manager.State.SHUTDOWN
+        self._state = DeviceManager.State.SHUTDOWN

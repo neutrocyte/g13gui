@@ -6,20 +6,20 @@ import usb.util
 
 from g13gui.observer.observer import ObserverTestCase
 from g13gui.model.prefs import Preferences
-from g13gui.g13.manager import Manager
+from g13gui.g13.manager import DeviceManager
 from g13gui.g13.manager import LCD_BUFFER_SIZE
 
 
-class G13ManagerTests(ObserverTestCase):
+class DeviceManagerTests(ObserverTestCase):
     def setUp(self):
         prefs = Preferences()
-        self.m = Manager(prefs)
+        self.m = DeviceManager(prefs)
         self.m.start()
 
-        while self.m.state != Manager.State.FOUND:
+        while self.m.state != DeviceManager.State.FOUND:
             time.sleep(1)
 
-        self.assertEqual(self.m.state, Manager.State.FOUND)
+        self.assertEqual(self.m.state, DeviceManager.State.FOUND)
 
     def tearDown(self):
         self.m.shutdown()
