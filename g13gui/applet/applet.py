@@ -45,7 +45,7 @@ class Applet(dbus.service.Object):
             self._manager = self._bus.get_object(
                 'com.theonelab.g13.AppletManager',
                 '/com/theonelab/g13/AppletManager')
-        except DBusException as err:
+        except DBusException:
             self._manager = None
             return True
 
