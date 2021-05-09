@@ -72,7 +72,7 @@ class DeviceManager(threading.Thread, Observer):
         self._commandQueue = queue.Queue()
         self._lastProfile = None
 
-        self._appletManager = AppletManager(self)
+        self._appletManager = AppletManager(self, prefs)
 
         self._prefs.registerObserver(self, {'selectedProfile'})
         self._updateProfileRegistration()
