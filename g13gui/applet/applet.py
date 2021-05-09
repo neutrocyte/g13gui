@@ -51,6 +51,8 @@ class Applet(dbus.service.Object):
 
         self._manager.Register(self._name)
         self._registered = True
+
+        GLib.idle_add(self.onRegistered)
         GLib.timeout_add_seconds(1, self._ping)
 
         return False
@@ -62,7 +64,10 @@ class Applet(dbus.service.Object):
             except DBusException as err:
                 print('Lost connection with AppletManager: %s' % err)
                 self._registered = False
+
+                GLib.idle_add(self.onUnregistered)
                 GLib.timeout_add_seconds(1, self.register)
+
                 return False
 
         return True
@@ -91,6 +96,10 @@ class Applet(dbus.service.Object):
     def screen(self):
         return self._s
 
+    @property
+    def manager(self):
+        return self._manager
+
     def onKeyPressed(self, timestamp, key):
         pass
 
@@ -103,7 +112,10 @@ class Applet(dbus.service.Object):
     def onHidden(self):
         pass
 
-    def onUpdateScreen(self):
+    def onRegistered(self):
+        pass
+
+    def onUnregistered(self):
         pass
 
     def maybePresentScreen(self):
@@ -139,7 +151,6 @@ class Applet(dbus.service.Object):
     def KeyPressed(self, timestamp, key):
         self.onKeyPressed(timestamp, key)
         self._setButtonPressed(True, key)
-        self.onUpdateScreen()
         self.screen.nextFrame()
         return ByteArray(self.displayDevice.frame)
 
@@ -147,9 +158,8 @@ class Applet(dbus.service.Object):
                          in_signature='di', out_signature='ay',
                          byte_arrays=True)
     def KeyReleased(self, timestamp, key):
-        self.onKeyPressed(timestamp, key)
+        self.onKeyReleased(timestamp, key)
         self._setButtonPressed(False, key)
-        self.onUpdateScreen()
         self.screen.nextFrame()
         return ByteArray(self.displayDevice.frame)
 

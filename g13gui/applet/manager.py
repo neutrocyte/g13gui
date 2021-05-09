@@ -20,7 +20,7 @@ class AppletManager(dbus.service.Object, Subject):
     BUS_NAME = 'com.theonelab.g13.AppletManager'
     BUS_PATH = '/com/theonelab/g13/AppletManager'
 
-    def __init__(self, manager):
+    def __init__(self, manager, prefs):
         self._bus = dbus.SessionBus()
         self._busName = dbus.service.BusName(AppletManager.BUS_NAME, self._bus)
         dbus.service.Object.__init__(self, self._bus,
@@ -28,6 +28,7 @@ class AppletManager(dbus.service.Object, Subject):
         Subject.__init__(self)
 
         self._manager = manager
+        self._prefs = prefs
 
         # [name] -> (sender, proxy)
         self._applets = {}
@@ -102,14 +103,48 @@ class AppletManager(dbus.service.Object, Subject):
                          in_signature='ay', sender_keyword='sender',
                          byte_arrays=True)
     def Present(self, screen, sender):
-        # if self._activeApplet.bus_name != sender:
-        #     return
+        if self._activeApplet.bus_name != sender:
+            print('Sender %s is not the active applet.' % (sender))
+            return
         GLib.idle_add(self._presentScreen, screen, sender)
 
     @dbus.service.method(dbus_interface=INTERFACE_NAME,
                          out_signature='b',
                          sender_keyword='sender')
     def Ping(self, sender):
-        if sender not in [s[0] for s in self._applets]:
+        if sender not in [s[0] for s in self._applets.values()]:
+            print('Sender %s is not in the registered list of applets.' % (sender))
             return False
         return True
+
+    @dbus.service.method(dbus_interface=INTERFACE_NAME,
+                         out_signature='as',
+                         sender_keyword='sender')
+    def GetProfiles(self, sender):
+        if sender not in [s[0] for s in self._applets.values()]:
+            print('Sender %s is not in the registered list of applets.' % (sender))
+            return []
+        return self._prefs.profileNames()
+
+    @dbus.service.method(dbus_interface=INTERFACE_NAME,
+                         out_signature='s',
+                         sender_keyword='sender')
+    def GetSelectedProfile(self, sender):
+        if sender not in [s[0] for s in self._applets.values()]:
+            print('Sender %s is not in the registered list of applets.' % (sender))
+            return ''
+        return self._prefs.selectedProfileName()
+
+    @dbus.service.method(dbus_interface=INTERFACE_NAME,
+                         in_signature='s', out_signature='b',
+                         sender_keyword='sender')
+    def SetSelectedProfile(self, profileName, sender):
+        if self._activeApplet.bus_name != sender:
+            print('Sender %s is not the active applet' % (sender))
+            return False
+        if profileName not in self._prefs.profileNames():
+            print('Sender %s attempted to set nonexistant profile %s' %
+                  (sender, profileName))
+            return False
+
+        GLib.idle_add(self._prefs.setSelectedProfile, profileName)
