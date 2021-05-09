@@ -12,24 +12,23 @@ from gi.repository import AppIndicator3 as indicator
 
 
 class AppIndicator(GtkObserver):
-    def __init__(self, prefs):
+    def __init__(self, app, prefs):
         GtkObserver.__init__(self)
+
+        self._app = app
+        self._prefs = prefs
 
         self._initIndicator()
 
-        self._prefs = prefs
-        self._mainWindow = None
         self._menu = Gtk.Menu()
         self._menuItems = []
         self._indicator.set_menu(self._menu)
+
         self._rebuilding = False
 
         self._prefs.registerObserver(self, {'selectedProfile'})
         self.changeTrigger(self.onSelectedProfileChanged,
                            keys={'selectedProfile'})
-
-        if self._prefs.showWindowOnStart:
-            self.showMainWindow(None)
 
         self._rebuildMenu()
 
@@ -75,20 +74,17 @@ class AppIndicator(GtkObserver):
         self._attachMenuItem(sep)
 
         quitItem = Gtk.MenuItem('Quit')
+        quitItem.connect('activate', self.onQuit)
         self._attachMenuItem(quitItem)
-        quitItem.connect('activate', Gtk.main_quit)
 
         self._menu.show_all()
         self._rebuilding = False
 
-    def onMainWindowHidden(self, win):
-        del self._mainWindow
-        self._mainWindow = None
-
     def showMainWindow(self, menuItem):
-        self._mainWindow = MainWindow(self._prefs)
-        self._mainWindow.connect('hide', self.onMainWindowHidden)
-        self._mainWindow.show_all()
+        self._app.showMainWindow()
+
+    def onQuit(self, menuItem):
+        self._app.do_shutdown()
 
     def changeProfile(self, menuItem):
         self._prefs.setSelectedProfile(menuItem.get_label())

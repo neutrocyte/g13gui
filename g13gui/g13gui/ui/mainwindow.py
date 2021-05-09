@@ -1,29 +1,32 @@
-#!/usr/bin/python
-
-import gi
 import threading
 
-import g13gui.ui as ui
-
+from g13gui.ui.profilecombobox import ProfileComboBox
+from g13gui.ui.profilepopover import ProfilePopover
+from g13gui.ui.profilepopover import ProfilePopoverMode
+from g13gui.ui.g13button import G13Button
 from g13gui.observer.gtkobserver import GtkObserver
 from g13gui.model.prefsstore import PreferencesStore
 
+import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 from gi.repository import Gtk, Gdk, GObject
 
 
-class MainWindow(Gtk.Window, GtkObserver):
-    def __init__(self, prefs):
-        Gtk.Window.__init__(self)
+class MainWindow(Gtk.ApplicationWindow, GtkObserver):
+    def __init__(self, app, prefs, **kwargs):
+        Gtk.ApplicationWindow.__init__(
+            self,
+            default_width=640,
+            default_height=480,
+            window_position=Gtk.WindowPosition.NONE,
+            name='g13configurator',
+            icon_name='g13configurator',
+            application=app,
+            **kwargs)
         GtkObserver.__init__(self)
 
-        self.set_default_size(640, 480)
-        geometry = Gdk.Geometry()
-        geometry.max_width = 640
-        geometry.max_height = 480
-        self.set_geometry_hints(None, geometry, Gdk.WindowHints.MAX_SIZE)
-
+        self._app = app
         self._prefs = prefs
         self._prefs.registerObserver(self, 'selectedProfile')
         self._prefs.selectedProfile().registerObserver(self)
@@ -46,6 +49,8 @@ class MainWindow(Gtk.Window, GtkObserver):
 
         self.setupG13ButtonGrid()
 
+        self.show_all()
+
     def _updateProfileRegistration(self):
         self._lastProfileName.removeObserver(self)
         self._lastProfileName = self._prefs.selectedProfile()
@@ -66,22 +71,22 @@ class MainWindow(Gtk.Window, GtkObserver):
         self._headerBar.set_title("G13 Configurator")
         self._headerBar.set_show_close_button(True)
 
-        self._profileComboBox = ui.ProfileComboBox(self._prefs)
+        self._profileComboBox = ProfileComboBox(self._prefs)
         self._headerBar.add(self._profileComboBox)
 
         addProfileButton = Gtk.MenuButton.new()
         addProfileButton.add(Gtk.Image.new_from_icon_name(
             "document-new-symbolic", 1))
-        addProfilePopover = ui.ProfilePopover(self._prefs,
-                                              mode=ui.ProfilePopoverMode.ADD)
+        addProfilePopover = ProfilePopover(self._prefs,
+                                           mode=ProfilePopoverMode.ADD)
         addProfileButton.set_popover(addProfilePopover)
         self._headerBar.add(addProfileButton)
 
         editProfileButton = Gtk.MenuButton.new()
         editProfileButton.add(
             Gtk.Image.new_from_icon_name('document-edit-symbolic', 1))
-        editProfilePopover = ui.ProfilePopover(self._prefs,
-                                               mode=ui.ProfilePopoverMode.EDIT)
+        editProfilePopover = ProfilePopover(self._prefs,
+                                            mode=ProfilePopoverMode.EDIT)
         editProfileButton.set_popover(editProfilePopover)
         self._headerBar.add(editProfileButton)
 
@@ -146,6 +151,6 @@ class MainWindow(Gtk.Window, GtkObserver):
         return button
 
     def newG13Button(self, name):
-        button = ui.G13Button(self._prefs, name)
+        button = G13Button(self._prefs, name)
         self._g13Buttons[name] = button
         return button

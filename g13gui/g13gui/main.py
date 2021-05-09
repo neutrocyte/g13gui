@@ -1,22 +1,14 @@
 #!/usr/bin/python
 
-import gi
+import sys
 
-import g13gui.ui as ui
-from g13gui.model.prefsstore import PreferencesStore
-from g13gui.g13.manager import Manager
+from dbus.mainloop.glib import DBusGMainLoop
 
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject
+from g13gui.app import Application
 
 
 if __name__ == '__main__':
-    Gdk.threads_init()
+    DBusGMainLoop(set_as_default=True)
 
-    prefs = PreferencesStore.getPrefs()
-    manager = Manager(prefs)
-    manager.start()
-
-    indicator = ui.AppIndicator(prefs)
-
-    Gtk.main()
+    app = Application()
+    app.run(sys.argv)
