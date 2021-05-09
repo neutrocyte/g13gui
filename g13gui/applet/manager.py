@@ -46,7 +46,13 @@ class AppletManager(dbus.service.Object, Subject):
     @activeApplet.setter
     def activeApplet(self, appletName):
         (name, appletProxy) = self._applets[appletName]
-        self._activeApplet.Unpresent()
+
+        try:
+            self._activeApplet.Unpresent()
+        except dbus.exceptions.DBusException as err:
+            print('Failed to unpresent %s: %s' % (appletName, err))
+            self._removeActiveApplet()
+
         self.setProperty('activeApplet', appletProxy)
         self.onPresent()
 
@@ -61,10 +67,24 @@ class AppletManager(dbus.service.Object, Subject):
     def _updateLCD(self, frame):
         self._manager.setLCDBuffer(frame)
 
+    def _removeActiveApplet(self):
+        senders = {proxy: name for (name, (_, proxy)) in self._applets.items()}
+        print('senders is %s' % (repr(senders)))
+        name = senders[self._activeApplet]
+        del self._applets[name]
+
+        self.addChange(ChangeType.REMOVE, 'applet', name)
+        self._activeApplet = self._switcher
+        self.activeApplet = 'Switcher'
+
     def onPresent(self):
-        frame = self._activeApplet.Present(time.time(), byte_arrays=True)
-        frame = bytes(frame)
-        self._updateLCD(frame)
+        try:
+            frame = self._activeApplet.Present(time.time(), byte_arrays=True)
+            frame = bytes(frame)
+            self._updateLCD(frame)
+        except dbus.exceptions.DBusException as err:
+            print('Failed to present applet: %s' % (err))
+            self._removeActiveApplet()
 
     def onKeyPressed(self, key):
         # Swap to the switcher
@@ -72,12 +92,22 @@ class AppletManager(dbus.service.Object, Subject):
             self.activeApplet = 'Switcher'
             return
 
-        frame = self._activeApplet.KeyPressed(time.time(), key.value['bit'])
-        self._updateLCD(frame)
+        try:
+            frame = self._activeApplet.KeyPressed(time.time(),
+                                                  key.value['bit'])
+            self._updateLCD(frame)
+        except dbus.exceptions.DBusException as err:
+            print('Failed to send keyPressed for applet: %s' % (err))
+            self._removeActiveApplet()
 
     def onKeyReleased(self, key):
-        frame = self._activeApplet.KeyReleased(time.time(), key.value['bit'])
-        self._updateLCD(frame)
+        try:
+            frame = self._activeApplet.KeyReleased(time.time(),
+                                                   key.value['bit'])
+            self._updateLCD(frame)
+        except dbus.exceptions.DBusException as err:
+            print('Failed to send keyReleased for applet: %s' % (err))
+            self._removeActiveApplet()
 
     def _registerApplet(self, name, sender):
         proxy = self._bus.get_object(sender, '/com/theonelab/g13/Applet')
