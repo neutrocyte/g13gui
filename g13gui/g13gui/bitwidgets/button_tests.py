@@ -6,6 +6,7 @@ from g13gui.bitwidgets.x11displaydevice import X11DisplayDevice
 from g13gui.bitwidgets.screen import Screen
 from g13gui.bitwidgets.button import Button
 from g13gui.bitwidgets.button import Glyphs
+from g13gui.bitwidgets.button import Glyph
 from g13gui.bitwidgets.label import Label
 from g13gui.bitwidgets.fonts import Fonts
 
@@ -23,7 +24,18 @@ class ButtonTests(unittest.TestCase):
         self.dd.shutdown()
         self.dd.join()
 
+    def testGlyph(self):
+        self.dd.name = 'testGlyph'
+        ctx = self.display.getContext()
+        glyph = Glyph(10, 10, Glyphs.CHECKMARK)
+        glyph.fill = True
+        glyph.show()
+        glyph.draw(ctx)
+
+        self.display.commit()
+
     def testExButton(self):
+        self.dd.name = 'testExButton'
         ctx = self.display.getContext()
         exButton = Button(Glyphs.XMARK)
         exButton.show()
@@ -44,6 +56,7 @@ class ButtonTests(unittest.TestCase):
         self.display.commit()
 
     def testButtonBar(self):
+        self.dd.name = 'testButtonBar'
         exButton = Button(Glyphs.XMARK)
         upButton = Button(Glyphs.UP_ARROW)
         downButton = Button(Glyphs.DOWN_ARROW)
@@ -58,6 +71,7 @@ class ButtonTests(unittest.TestCase):
         self.screen.nextFrame()
 
     def testLabelButton(self):
+        self.dd.name = 'testLabelButton'
         testButton = Label(0, 0, "Test", font=Fonts.TINY)
         self.screen.buttonBar.addChild(testButton)
         self.screen.buttonBar.showAll()

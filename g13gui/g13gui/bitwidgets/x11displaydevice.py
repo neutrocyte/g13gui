@@ -14,6 +14,21 @@ class X11DisplayDevice(DisplayDevice, threading.Thread):
         self._running = False
         self._name = name
 
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+        if self._win:
+            self._setName()
+
+    def _setName(self):
+        self._win.set_wm_name(self._name)
+        self._win.set_wm_icon_name(self._name)
+        self._win.set_wm_class('bitwidgets', self._name)
+
     def run(self):
         self._display = display.Display()
         self.createWindow()
@@ -55,9 +70,8 @@ class X11DisplayDevice(DisplayDevice, threading.Thread):
             foreground=self._screen.black_pixel,
             background=self._screen.white_pixel)
 
-        self._win.set_wm_name(self._name)
-        self._win.set_wm_icon_name(self._name)
-        self._win.set_wm_class('bitwidgets', self._name)
+        self._setName()
+
         self._win.set_wm_normal_hints(
             flags=(Xutil.PPosition | Xutil.PSize | Xutil.PMinSize),
             min_width=160,

@@ -11,12 +11,12 @@ class Widget(Subject, Observer):
         Observer.__init__(self)
 
         self._children = []
-        self.parent = None
-        self.visible = False
-        self.valid = False
-        self.position = (0, 0)
-        self.bounds = (0, 0)
-        self.fill = False
+        self._parent = None
+        self._visible = False
+        self._valid = False
+        self._position = (0, 0)
+        self._bounds = (0, 0)
+        self._fill = 0
 
     @property
     def position(self):
@@ -28,7 +28,8 @@ class Widget(Subject, Observer):
            len(xy) != 2 or       \
            type(xy[0]) != int or \
            type(xy[1]) != int:
-            raise ValueError('Position must be a tuple of length 2')
+            raise ValueError('Position must be a tuple of length 2 (got %s)'
+                             % (repr(xy)))
         self.setProperty('position', xy)
 
     @property
@@ -41,7 +42,8 @@ class Widget(Subject, Observer):
            len(wh) != 2 or       \
            type(wh[0]) != int or \
            type(wh[1]) != int:
-            raise ValueError('Position must be a tuple of length 2')
+            raise ValueError('Bounds must be a tuple of length 2 (got: %s)'
+                             % (repr(wh)))
         self.setProperty('bounds', wh)
 
     @property
