@@ -1,13 +1,24 @@
 import gi
 import time
+import enum
+import psutil
 
 from g13gui.applet.applet import Applet
+from g13gui.applet.applet import Buttons
 from g13gui.applet.applet import RunApplet
 from g13gui.bitwidgets.label import Label
 from g13gui.bitwidgets.fonts import Fonts
+from g13gui.bitwidgets.button import LabelButton
+from g13gui.bitwidgets.graph import Graph
+from g13gui.bitwidgets import DISPLAY_WIDTH
 
 gi.require_version('GLib', '2.0')
 from gi.repository import GLib
+
+
+class ClockMode(enum.Enum):
+    HOUR_12 = 1
+    HOUR_24 = 2
 
 
 class ClockApplet(Applet):
@@ -20,21 +31,83 @@ class ClockApplet(Applet):
         self._timeLabel.showAll()
         self.screen.addChild(self._timeLabel)
 
-        self._updateTimeLabel()
+        self._modeButtons = {
+            ClockMode.HOUR_12: LabelButton('12 hour'),
+            ClockMode.HOUR_24: LabelButton('24 hour')
+        }
+        self._clockMode = ClockMode.HOUR_24
+        self._onModeSwitch()
 
-    def _updateTimeLabel(self):
+        self._loadGraphToggle = LabelButton('Load', isToggleable=True)
+        self._ramGraphToggle = LabelButton('RAM', isToggleable=True)
+        self.screen.buttonBar.addChild(self._loadGraphToggle)
+        self.screen.buttonBar.addChild(self._ramGraphToggle)
+        self.screen.buttonBar.showAll()
+
+        self._loadGraph = Graph(1, 18,
+                                DISPLAY_WIDTH // 2 - 5, 12)
+        self.screen.addChild(self._loadGraph)
+
+        self._ramGraph = Graph(DISPLAY_WIDTH // 2 + 5, 18,
+                               DISPLAY_WIDTH // 2 - 7, 12)
+        self.screen.addChild(self._ramGraph)
+
+        self._update()
+
+    def _update(self):
         (tm_year, tm_month, tm_mday, tm_hour,
          tm_min, tm_sec, tm_wday, tm_yday, tm_isdst) = time.localtime()
-        self._timeLabel.text = '%d:%0.2d:%0.2d' % (tm_hour, tm_min, tm_sec)
+        ampm = ''
+
+        if self._clockMode == ClockMode.HOUR_12:
+            ampm = ' AM'
+            if tm_hour >= 12:
+                ampm = ' PM'
+                if tm_hour > 12:
+                    tm_hour -= 12
+
+        self._timeLabel.text = '%d:%0.2d:%0.2d%s' % (
+            tm_hour, tm_min, tm_sec, ampm)
+
+        (w, h) = self._timeLabel.bounds
+        x = (DISPLAY_WIDTH // 2) - (w // 2)
+        self._timeLabel.position = (x, 0)
+
+        self._loadGraph.addValue(psutil.cpu_percent())
+        self._ramGraph.addValue(psutil.virtual_memory().percent / 100)
 
     def _pushTime(self):
-        self._updateTimeLabel()
+        self._update()
         self.maybePresentScreen()
         return self.screen.visible
 
     def onShown(self, timestamp):
-        self._updateTimeLabel()
+        self._update()
         GLib.timeout_add_seconds(1, self._pushTime)
+
+    def onUpdateScreen(self):
+        self._update()
+
+    def _onModeSwitch(self):
+        if self._clockMode == ClockMode.HOUR_12:
+            self._clockMode = ClockMode.HOUR_24
+            button = self._modeButtons[ClockMode.HOUR_12]
+        elif self._clockMode == ClockMode.HOUR_24:
+            self._clockMode = ClockMode.HOUR_12
+            button = self._modeButtons[ClockMode.HOUR_24]
+
+        button.show()
+        self.screen.buttonBar.setButton(0, button)
+
+    def onKeyReleased(self, timestamp, key):
+        if key == Buttons.L1:
+            self._onModeSwitch()
+        elif key == Buttons.L2:
+            self._loadGraphToggle.toggle()
+            self._loadGraph.visible = self._loadGraphToggle.isOn
+        elif key == Buttons.L3:
+            self._ramGraphToggle.toggle()
+            self._ramGraph.visible = self._ramGraphToggle.isOn
 
 
 if __name__ == '__main__':
