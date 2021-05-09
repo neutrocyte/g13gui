@@ -1,37 +1,16 @@
-## Welcome to GitHub Pages
+# G13 Configurator
 
-You can use the [editor on GitHub](https://github.com/jtgans/g13/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+## What is this?
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+This is the companion application for configuring a Logitech G13 using the G13 user space driver originally written by ecraven, and available at https://github.com/jtgans/g13.
 
-### Markdown
+This tool allows you to:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+  - Graphically plan out a keymapping
+  - Save multiple profiles
+  - Use the LCD with pluggable dbus-based applications
+  - Switch profiles using the LCD
 
-```markdown
-Syntax highlighted code block
+All wrapped up in a glorious Gtk 3.0 interface.
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/jtgans/g13/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Please note: this is an early version of the application and as such it is still in heavy development.
