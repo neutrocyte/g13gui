@@ -1,4 +1,2 @@
-build/
-GPATH
-GRTAGS
-GTAGS
+__pycache__
+*.pyc
