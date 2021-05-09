@@ -21,14 +21,14 @@ class Label(Widget):
                  align=Alignment.LEFT,
                  strokeWidth=0):
         Widget.__init__(self)
-        self.position = (x, y)
-        self.text = text
-        self.font = font
-        self.fill = fill
-        self.spacing = spacing
-        self.align = align
-        self.strokeWidth = strokeWidth
-        self.bounds = FontManager.getFont(self.font).getsize(self.text)
+        self._position = (x, y)
+        self._text = text
+        self._font = font
+        self._fill = fill
+        self._spacing = spacing
+        self._align = align
+        self._strokeWidth = strokeWidth
+        self._bounds = FontManager.getFont(self.font).getsize(self.text)
 
     def draw(self, ctx):
         if self._visible:
@@ -62,14 +62,17 @@ class Label(Widget):
     @text.setter
     def text(self, text):
         self.setProperty('text', text)
+        self.bounds = FontManager.getFont(self.font).getsize(self.text)
 
     @font.setter
     def font(self, font):
         self.setProperty('font', font)
+        self.bounds = FontManager.getFont(self.font).getsize(self.text)
 
     @spacing.setter
     def spacing(self, spacing):
         self.setProperty('spacing', spacing)
+        self.bounds = FontManager.getFont(self.font).getsize(self.text)
 
     @align.setter
     def align(self, align):
