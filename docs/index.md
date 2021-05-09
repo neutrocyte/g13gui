@@ -14,3 +14,10 @@ This tool allows you to:
 All wrapped up in a glorious Gtk 3.0 interface.
 
 Please note: this is an early version of the application and as such it is still in heavy development.
+
+## Design Docs
+
+At the moment, our design docs are a bit sparse, but there is some useful stuff
+in here, such as:
+
+  - [Applet Model](applet-model.md)
