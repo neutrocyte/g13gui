@@ -2,7 +2,7 @@ import time
 
 from builtins import property
 from g13gui.bitwidgets.widget import Widget
-from g13gui.bitwidgets.button import ButtonBar
+from g13gui.bitwidgets.buttonbar import ButtonBar
 
 
 MIN_NSECS_BETWEEN_FRAMES = 125000

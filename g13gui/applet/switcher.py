@@ -12,7 +12,7 @@ from g13gui.bitwidgets.display import Display
 from g13gui.bitwidgets.screen import Screen
 from g13gui.bitwidgets.label import Label
 from g13gui.bitwidgets.button import Button
-from g13gui.bitwidgets.button import Glyphs
+from g13gui.bitwidgets.glyph import Glyphs
 from g13gui.bitwidgets.listview import ListView
 
 gi.require_version('GLib', '2.0')
