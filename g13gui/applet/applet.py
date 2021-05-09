@@ -103,6 +103,9 @@ class Applet(dbus.service.Object):
     def onHidden(self):
         pass
 
+    def onUpdateScreen(self):
+        pass
+
     def maybePresentScreen(self):
         if self.screen.visible and self._manager:
             self.screen.nextFrame()
@@ -129,9 +132,6 @@ class Applet(dbus.service.Object):
         button = self._s.buttonBar.button(buttonIdx)
         if button:
             button.pressed = state
-
-    def onUpdateScreen(self):
-        pass
 
     @dbus.service.method(BUS_INTERFACE,
                          in_signature='di', out_signature='ay',
