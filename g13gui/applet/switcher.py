@@ -27,9 +27,7 @@ class Switcher(Observer):
         self._applets = []
 
         self._appletManager.registerObserver(self, {'activeApplet', 'applet'})
-        self.changeTrigger(self.onNewApplet,
-                           changeType=ChangeType.ADD,
-                           keys={'applet'})
+        self.changeTrigger(self.onAppletChange, keys={'applet'})
 
         self._initWidgets()
 
@@ -37,7 +35,7 @@ class Switcher(Observer):
     def bus_name(self):
         return self
 
-    def onNewApplet(self, subject, changeType, key, data):
+    def onAppletChange(self, subject, changeType, key, data):
         self._applets = sorted(self._appletManager.appletNames)
         self._lv.model = self._applets
         self._lv.update()
