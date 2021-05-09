@@ -69,8 +69,8 @@ class Subject(object):
         self._changes = []
 
     def setProperty(self, propertyName, value, notify=True):
-        propertyName = '_' + propertyName
-        self.__dict__[propertyName] = value
+        realPropertyName = '_' + propertyName
+        self.__dict__[realPropertyName] = value
         self.addChange(ChangeType.MODIFY, propertyName, value)
         if notify:
             self.notifyChanged()
