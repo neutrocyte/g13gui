@@ -25,7 +25,14 @@ class ProfileComboBox(Gtk.ComboBoxText, GtkObserver):
         self._prefs = prefs
         self._prefs.registerObserver(self, {'profile', 'selectedProfile'})
         self.changeTrigger(self.onSelectedProfileChanged,
+                           changeType=ChangeType.MODIFY,
                            keys={'selectedProfile'})
+        self.changeTrigger(self.onProfileAdded,
+                           changeType=ChangeType.ADD,
+                           keys={'profile'})
+        self.changeTrigger(self.onProfileRemoved,
+                           changeType=ChangeType.REMOVE,
+                           keys={'profile'})
         self._isUpdating = False
         self._ignoreSelectionChange = False
 
@@ -60,7 +67,12 @@ class ProfileComboBox(Gtk.ComboBoxText, GtkObserver):
         if not self._ignoreSelectionChange:
             self.update()
 
-    def onProfileChanged(self, subject, changeType, key, data):
+    def onProfileAdded(self, subject, changeType, key, data):
+        print('onProfileAdded(%s, %s, %s)' % (changeType, key, data))
         name = list(data.keys())[0]
-        if changeType == ChangeType.ADD:
-            self._model.append([name, name])
+        self._model.append([name, name])
+
+    def onProfileRemoved(self, subject, changeType, key, data):
+        print('onProfileRemoved(%s, %s, %s)' % (changeType, key, data))
+        name = list(data.keys())[0]
+        self._model.remove([name, name])
