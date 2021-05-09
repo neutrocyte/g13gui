@@ -1,0 +1,27 @@
+<Project xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns="http://usefulinc.com/ns/doap#">
+
+  <name xml:lang="en">G13 Configurator</name>
+  <shortdesc xml:lang="en">Logitech G13 Configurator GUI</shortdesc>
+  <homepage rdf:resource="https://github.com/jtgans/g13" />
+  <download-page rdf:resource="https://github.com/jtgans/g13/releases/" />
+  <bug-database rdf:resource="https://github.com/jtgans/g13/issues" />
+  <programming-language>Python</programming-language>
+  <description>
+     G13 Configurator is an easy-to-use configuration and user space driver for
+     the Logitech G13 game board.
+
+     The configurator provides a D-Bus interface to allow for applications to
+     render to the G13's LCD display, as well as deal with profile management
+     and conversion of key presses and stick movements into uinput events.
+  </description>
+
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>June Tate-Gans</foaf:name>
+      <foaf:mbox rdf:resource="mailto:jtgans@google.com" />
+    </foaf:Person>
+  </maintainer>
+</Project>
