@@ -25,7 +25,16 @@ class RectangleTests(unittest.TestCase):
     def testRect(self):
         self.dd.name = 'testRect'
         ctx = self.display.getContext()
-        rect = Rectangle(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT - 1, fill=True)
+        rect = Rectangle(0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1)
+        rect.show()
+        rect.draw(ctx)
+
+        self.display.commit()
+
+    def testRectUnfilled(self):
+        self.dd.name = 'testRectUnfilled'
+        ctx = self.display.getContext()
+        rect = Rectangle(0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1, fill=False, outline=1)
         rect.show()
         rect.draw(ctx)
 
