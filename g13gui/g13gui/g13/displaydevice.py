@@ -54,4 +54,7 @@ class G13DisplayDevice(DisplayDevice):
 
     def update(self, image):
         lpbm = ImageToLPBM(image)
+        self._pushFrame(lpbm)
+
+    def _pushFrame(self, lpbm):
         self._manager.setLCDBuffer(lpbm)
