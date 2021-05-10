@@ -28,7 +28,7 @@ class MainWindow(Gtk.ApplicationWindow, GtkObserver):
 
         self._app = app
         self._prefs = prefs
-        self._prefs.registerObserver(self, 'selectedProfile')
+        self._prefs.registerObserver(self, {'selectedProfile'})
         self._prefs.selectedProfile().registerObserver(self)
         self._lastProfileName = self._prefs.selectedProfileName()
 
@@ -52,19 +52,21 @@ class MainWindow(Gtk.ApplicationWindow, GtkObserver):
         self.show_all()
 
     def _updateProfileRegistration(self):
-        self._lastProfileName.removeObserver(self)
-        self._lastProfileName = self._prefs.selectedProfile()
-        self._lastProfileName.registerObserver(self)
+        lastProfile = self._prefs.profiles(self._lastProfileName)
+        lastProfile.removeObserver(self)
+        self._lastProfileName = self._prefs.selectedProfileName()
+        self._prefs.selectedProfile().registerObserver(self)
 
     def onChangeTrigger(self, subject, changeType, key, data=None):
         if key == 'selectedProfile':
-            self._updateProfileRegistration(self)
-        elif key == 'profile':
-            pass
+            self._updateProfileRegistration()
 
         t = threading.Thread(
-            target=PreferencesStore.storePrefs, args=(self._prefs,))
+            target=PreferencesStore.storePrefs,
+            args=(self._prefs,),
+            daemon=True)
         t.start()
+        print('Detected change -- saving via %s' % repr(t))
 
     def setupHeaderBar(self):
         self._headerBar = Gtk.HeaderBar()
