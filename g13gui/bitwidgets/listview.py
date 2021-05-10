@@ -45,14 +45,19 @@ class ListView(Widget):
 
     def selection(self):
         items = sorted(self._model)
+        if self._selectionIdx >= len(items):
+            return None
         return items[self._selectionIdx]
 
     def markedItem(self):
         items = sorted(self._model)
+        if self._markedIdx >= len(items):
+            return None
         return items[self._markedIdx]
 
     def nextSelection(self):
         maxIdx = len(self._model) - 1
+        maxIdx = 0 if maxIdx < 0 else maxIdx
         idx = self.selectionIndex
 
         idx += 1
