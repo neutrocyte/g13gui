@@ -5,14 +5,13 @@ name = "pypi"
 
 [packages]
 dbus-python = "*"
-xdg = "*"
 PyGObject = "*"
 evdev = "*"
 pyusb = "==1.0.2"
-Pillow = "*"
-pillow = "==7.0.0"
+Pillow = "==7.0.0"
 cffi = "*"
 psutil = "*"
+appdirs = "*"
 
 [dev-packages]
 xlib = "*"
