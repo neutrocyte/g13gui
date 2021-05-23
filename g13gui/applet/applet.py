@@ -16,11 +16,9 @@ gi.require_version('GLib', '2.0')
 from gi.repository import GLib
 
 
-class Buttons(object):
-    L1 = 1
-    L2 = 2
-    L3 = 3
-    L4 = 4
+BUTTONS = [
+    'L1', 'L2', 'L3', 'L4'
+]
 
 
 class Applet(dbus.service.Object):
@@ -140,10 +138,11 @@ class Applet(dbus.service.Object):
         self.onHidden()
 
     def _setButtonPressed(self, state, button):
-        buttonIdx = button - 1
-        button = self._s.buttonBar.button(buttonIdx)
-        if button:
-            button.pressed = state
+        if button in BUTTONS:
+            buttonIdx = BUTTONS.index(button)
+            button = self._s.buttonBar.button(buttonIdx)
+            if button:
+                button.pressed = state
 
     @dbus.service.method(BUS_INTERFACE,
                          in_signature='di', out_signature='ay',

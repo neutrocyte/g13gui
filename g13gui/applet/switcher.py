@@ -6,7 +6,7 @@ from builtins import property
 
 from g13gui.observer.observer import Observer
 from g13gui.observer.subject import ChangeType
-from g13gui.applet.applet import Buttons
+from g13gui.applet.applet import BUTTONS
 from g13gui.applet.loopbackdisplaydevice import LoopbackDisplayDevice
 from g13gui.bitwidgets.display import Display
 from g13gui.bitwidgets.screen import Screen
@@ -62,10 +62,11 @@ class Switcher(Observer):
         self._s.buttonBar.showAll()
 
     def _setButtonPressed(self, state, button):
-        buttonIdx = button - 1
-        button = self._s.buttonBar.button(buttonIdx)
-        if button:
-            button.pressed = state
+        if button in BUTTONS:
+            buttonIdx = BUTTONS.index(button)
+            button = self._s.buttonBar.button(buttonIdx)
+            if button:
+                button.pressed = state
 
     def Present(self, timestamp, **kwargs):
         self._s.show()
@@ -82,18 +83,18 @@ class Switcher(Observer):
         return self.Present(timestamp)
 
     def _setActiveApplet(self):
-        selectedName = self._lv.markedItem()
-        self._appletManager.activeApplet = selectedName
+        selectedName = self._lv.selection()
+        if selectedName:
+            self._appletManager.activeApplet = selectedName
 
     def KeyReleased(self, timestamp, key):
         self._setButtonPressed(False, key)
 
-        if key == Buttons.L2:    # down
+        if key == 'L2':    # down
             self._lv.nextSelection()
-        elif key == Buttons.L3:  # up
+        elif key == 'L3':  # up
             self._lv.prevSelection()
-        elif key == Buttons.L4:  # select
-            self._lv.markSelection()
+        elif key == 'L4':  # select
             GLib.idle_add(self._setActiveApplet)
 
         return self.Present(timestamp)

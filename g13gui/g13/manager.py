@@ -15,6 +15,7 @@ from evdev import ecodes as e
 
 from g13gui.observer.observer import Observer
 from g13gui.model.bindings import StickMode
+from g13gui.g13.common import G13Keys
 from g13gui.g13.common import G13NormalKeys
 from g13gui.g13.common import G13AppletKeys
 from g13gui.g13.common import G13SpecialKeys
@@ -71,6 +72,8 @@ class DeviceManager(threading.Thread, Observer):
         self._lastKeyState = {}
         self._commandQueue = queue.Queue()
         self._lastProfile = None
+        self._grabNextKey = False
+        self._leds = 0
 
         self._appletManager = AppletManager(self, prefs)
 
@@ -249,9 +252,7 @@ class DeviceManager(threading.Thread, Observer):
                     count = self._readKeys(reportBuffer)
 
                     if count == REPORT_SIZE:
-                        self._synthesizeKeys(reportBuffer)
-                        self._signalSpecialKeys(reportBuffer)
-                        self._synthesizeStick(reportBuffer)
+                        self._handleKeys(reportBuffer)
                         self._uinput.syn()
 
                     self._processCommands()
@@ -264,6 +265,15 @@ class DeviceManager(threading.Thread, Observer):
         print('Shutting down')
         if self._device and self._state == DeviceManager.State.FOUND:
             self._reset()
+
+    def appletGrabNextKey(self):
+        self._grabNextKey = True
+
+    def _handleKeys(self, reportBuffer):
+        self._synthesizeKeys(reportBuffer)
+        self._signalSpecialKeys(reportBuffer)
+        self._synthesizeStick(reportBuffer)
+        self._grabNextKey = False
 
     def _synthesizeStick(self, report):
         (joy_x, joy_y) = report[1:3]
@@ -282,11 +292,17 @@ class DeviceManager(threading.Thread, Observer):
                 nowPressed = inX and inY
 
                 if not wasPressed and nowPressed:
-                    for code in binding:
-                        self._uinput.write(e.EV_KEY, code, 1)
+                    if self._grabNextKey:
+                        self._appletManager.onKeyPressed(name)
+                    else:
+                        for code in binding:
+                            self._uinput.write(e.EV_KEY, code, 1)
                 elif wasPressed and not nowPressed:
-                    for code in binding:
-                        self._uinput.write(e.EV_KEY, code, 0)
+                    if self._grabNextKey:
+                        self._appletManager.onKeyReleased(name)
+                    else:
+                        for code in binding:
+                            self._uinput.write(e.EV_KEY, code, 0)
 
                 self._lastKeyState[name] = nowPressed
 
@@ -304,11 +320,18 @@ class DeviceManager(threading.Thread, Observer):
             nowPressed = key.testReport(report)
 
             if not wasPressed and nowPressed:
-                for code in binding:
-                    self._uinput.write(e.EV_KEY, code, 1)
+                if self._grabNextKey:
+                    self._appletManager.onKeyPressed(key.name)
+                else:
+                    for code in binding:
+                        self._uinput.write(e.EV_KEY, code, 1)
+
             elif wasPressed and not nowPressed:
-                for code in binding:
-                    self._uinput.write(e.EV_KEY, code, 0)
+                if self._grabNextKey:
+                    self._appletManager.onKeyPressed(key.name)
+                else:
+                    for code in binding:
+                        self._uinput.write(e.EV_KEY, code, 0)
 
             self._lastKeyState[key] = nowPressed
 
@@ -319,9 +342,9 @@ class DeviceManager(threading.Thread, Observer):
 
             # Emit special keypress if and only if it was released
             if wasPressed and not nowPressed:
-                self._appletManager.onKeyReleased(key)
+                self._appletManager.onKeyReleased(key.name)
             elif not wasPressed and nowPressed:
-                self._appletManager.onKeyPressed(key)
+                self._appletManager.onKeyPressed(key.name)
 
             self._lastKeyState[key] = nowPressed
 
@@ -330,9 +353,12 @@ class DeviceManager(threading.Thread, Observer):
             nowPressed = key.testReport(report)
 
             # Emit special keypress if and only if it was released
-            if wasPressed and not nowPressed:
-                # check for MR, allow for key record this way
-                pass
+            if not wasPressed and nowPressed:
+                if key == G13Keys.MR:
+                    self._appletManager.onKeyPressed(key.name)
+            elif wasPressed and not nowPressed:
+                if key == G13Keys.MR:
+                    self._appletManager.onKeyReleased(key.name)
 
             self._lastKeyState[key] = nowPressed
 

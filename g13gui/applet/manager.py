@@ -20,20 +20,21 @@ class AppletManager(dbus.service.Object, Subject):
     BUS_NAME = 'com.theonelab.g13.AppletManager'
     BUS_PATH = '/com/theonelab/g13/AppletManager'
 
-    def __init__(self, manager, prefs):
+    def __init__(self, deviceManager, prefs):
         self._bus = dbus.SessionBus()
         self._busName = dbus.service.BusName(AppletManager.BUS_NAME, self._bus)
         dbus.service.Object.__init__(self, self._bus,
                                      AppletManager.BUS_PATH)
         Subject.__init__(self)
 
-        self._manager = manager
+        self._deviceManager = deviceManager
         self._prefs = prefs
 
         # [name] -> (sender, proxy)
         self._applets = {}
 
         self._switcher = Switcher(self)
+        self._lastApplet = self._switcher
         self._activeApplet = self._switcher
 
         self._applets['Switcher'] = (self._switcher, self._switcher)
@@ -50,12 +51,28 @@ class AppletManager(dbus.service.Object, Subject):
 
         try:
             self._activeApplet.Unpresent()
+            self._lastApplet = self._activeApplet
         except dbus.exceptions.DBusException as err:
-            print('Failed to unpresent %s: %s' % (appletName, err))
+            print('Failed to unpresent active applet: %s' % (err))
             self._removeActiveApplet()
 
         self.setProperty('activeApplet', appletProxy)
         self.onPresent()
+
+    def swapApplets(self):
+        try:
+            self._activeApplet.Unpresent()
+        except dbus.exceptions.DBusException as err:
+            print('Failed to unpresent active applet: %s' % (err))
+            self._removeActiveApplet()
+            self._lastApplet = self._switcher
+            self.setProperty('activeApplet', self._switcher)
+        else:
+            lastApplet = self._lastApplet
+            self._lastApplet = self._activeApplet
+            self.setProperty('activeApplet', lastApplet)
+        finally:
+            self.onPresent()
 
     def raiseSwitcher(self):
         self._activeApplet = self._switcher
@@ -66,7 +83,7 @@ class AppletManager(dbus.service.Object, Subject):
         return self._applets.keys()
 
     def _updateLCD(self, frame):
-        self._manager.setLCDBuffer(frame)
+        self._deviceManager.setLCDBuffer(frame)
 
     def _removeActiveApplet(self):
         senders = {proxy: name for (name, (_, proxy)) in self._applets.items()}
@@ -76,6 +93,7 @@ class AppletManager(dbus.service.Object, Subject):
 
         self.addChange(ChangeType.REMOVE, 'applet', name)
         self._activeApplet = self._switcher
+        self._lastApplet = self._switcher
         self.activeApplet = 'Switcher'
 
     def onPresent(self):
@@ -87,24 +105,24 @@ class AppletManager(dbus.service.Object, Subject):
             print('Failed to present applet: %s' % (err))
             self._removeActiveApplet()
 
-    def onKeyPressed(self, key):
+    def onKeyPressed(self, keyname):
         # Swap to the switcher
-        if key == G13Keys.BD:
-            self.activeApplet = 'Switcher'
+        if keyname == 'BD':
+            self.swapApplets()
             return
 
         try:
             frame = self._activeApplet.KeyPressed(time.time(),
-                                                  key.value['bit'])
+                                                  keyname)
             self._updateLCD(frame)
         except dbus.exceptions.DBusException as err:
             print('Failed to send keyPressed for applet: %s' % (err))
             self._removeActiveApplet()
 
-    def onKeyReleased(self, key):
+    def onKeyReleased(self, keyname):
         try:
             frame = self._activeApplet.KeyReleased(time.time(),
-                                                   key.value['bit'])
+                                                   keyname)
             self._updateLCD(frame)
         except dbus.exceptions.DBusException as err:
             print('Failed to send keyReleased for applet: %s' % (err))

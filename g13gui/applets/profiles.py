@@ -3,7 +3,7 @@ import time
 import enum
 
 from g13gui.applet.applet import Applet
-from g13gui.applet.applet import Buttons
+from g13gui.applet.applet import BUTTONS
 from g13gui.applet.applet import RunApplet
 from g13gui.bitwidgets.listview import ListView
 from g13gui.bitwidgets.button import Button
@@ -63,14 +63,18 @@ class ProfilesApplet(Applet):
         self._updateAndPresent()
 
     def onKeyReleased(self, timestamp, key):
-        if key == Buttons.L2:    # down
+        if key == 'L2':    # down
             self._lv.nextSelection()
-        elif key == Buttons.L3:  # up
+        elif key == 'L3':  # up
             self._lv.prevSelection()
-        elif key == Buttons.L4:  # select
+        elif key == 'L4':  # select
             self._lv.markSelection()
             GLib.idle_add(self._setActiveProfile)
 
 
-if __name__ == '__main__':
+def main():
     RunApplet(ProfilesApplet)
+
+
+if __name__ == '__main__':
+    main()

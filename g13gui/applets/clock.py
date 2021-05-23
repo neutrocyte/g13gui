@@ -4,7 +4,7 @@ import enum
 import psutil
 
 from g13gui.applet.applet import Applet
-from g13gui.applet.applet import Buttons
+from g13gui.applet.applet import BUTTONS
 from g13gui.applet.applet import RunApplet
 from g13gui.bitwidgets.label import Label
 from g13gui.bitwidgets.fonts import Fonts
@@ -100,15 +100,19 @@ class ClockApplet(Applet):
         self.screen.buttonBar.setButton(0, button)
 
     def onKeyReleased(self, timestamp, key):
-        if key == Buttons.L1:
+        if key == 'L1':
             self._onModeSwitch()
-        elif key == Buttons.L2:
+        elif key == 'L2':
             self._loadGraphToggle.toggle()
             self._loadGraph.visible = self._loadGraphToggle.isOn
-        elif key == Buttons.L3:
+        elif key == 'L3':
             self._ramGraphToggle.toggle()
             self._ramGraph.visible = self._ramGraphToggle.isOn
 
 
-if __name__ == '__main__':
+def main():
     RunApplet(ClockApplet)
+
+
+if __name__ == '__main__':
+    main()
