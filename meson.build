@@ -11,7 +11,7 @@ etcdir = get_option('etcdir')
 g13dir = join_paths(pylibdir, 'g13gui')
 
 install_data(
-  files('bin/g13gui', 'bin/g13-clock', 'bin/g13-profiles')
+  files('bin/g13gui', 'bin/g13-clock', 'bin/g13-profiles'),
   install_dir: bindir,
   install_mode: 'rwxr-xr-x',
 )
