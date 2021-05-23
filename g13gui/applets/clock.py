@@ -48,8 +48,8 @@ class ClockApplet(Applet):
                                 DISPLAY_WIDTH // 2 - 5, 12)
         self.screen.addChild(self._loadGraph)
 
-        self._ramGraph = Graph(DISPLAY_WIDTH // 2 + 5, 18,
-                               DISPLAY_WIDTH // 2 - 7, 12)
+        self._ramGraph = Graph(DISPLAY_WIDTH // 2 + 2, 18,
+                               DISPLAY_WIDTH // 2 - 5, 12)
         self.screen.addChild(self._ramGraph)
 
         self._update()
@@ -73,7 +73,7 @@ class ClockApplet(Applet):
         x = (DISPLAY_WIDTH // 2) - (w // 2)
         self._timeLabel.position = (x, 0)
 
-        self._loadGraph.addValue(psutil.cpu_percent())
+        self._loadGraph.addValue(psutil.cpu_percent() / 100)
         self._ramGraph.addValue(psutil.virtual_memory().percent / 100)
 
     def _pushTime(self):
