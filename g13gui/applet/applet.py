@@ -57,15 +57,22 @@ class Applet(dbus.service.Object):
 
     def _ping(self):
         if self._manager:
+            result = False
+
             try:
-                self._manager.Ping()
+                result = self._manager.Ping()
             except DBusException as err:
                 print('Lost connection with AppletManager: %s' % err)
                 self._registered = False
-
                 GLib.idle_add(self.onUnregistered)
                 GLib.timeout_add_seconds(1, self.register)
+                return False
 
+            if not result:
+                print('Lost registration with AppletManager')
+                self._registered = False
+                GLib.idle_add(self.onUnregistered)
+                GLib.timeout_add_seconds(1, self.register)
                 return False
 
         return True
