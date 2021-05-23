@@ -36,26 +36,18 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     python_requires='>=3.8.0',
     install_requires=[
-        'dbus-python==1.2.16',
-        'evdev==1.4.0',
+        'appdirs>=1.4.3',
+        'dbus-python>=1.2.16',
+        'evdev>=1.4.0',
         'Pillow==7.0.0',
-        'PyGObject==3.40.1',
-        'pyusb==1.0.2',
-        'xdg==5.0.2'
+        'PyGObject>=3.40.1',
+        'pyusb>=1.0.2',
     ],
-    data_files={
-        'share/applications': [
-            path.join(here, 'com.theonelab.g13gui.Configurator.desktop'),
-            path.join(here, 'com.theonelab.g13gui.applet.Clock.desktop'),
-            path.join(here, 'com.theonelab.g13gui.applet.Profiles.desktop'),
-        ],
-        'share/icons/hicolor/scalable/apps': [
-            path.join(here, 'g13-logo.svg')
-        ]
-    },
     entry_points={
+        'gui_scripts': [
+            'g13gui=g13gui.main:main'
+        ],
         'console_scripts': [
-            'g13gui=g13gui.main:main',
             'g13-clock=g13gui.applets.clock:main',
             'g13-profiles=g13gui.applets.profiles:main'
         ],
