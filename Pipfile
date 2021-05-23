@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+dbus-python = "*"
+xdg = "*"
+PyGObject = "*"
+evdev = "*"
+pyusb = "==1.0.2"
+Pillow = "*"
+pillow = "==7.0.0"
+cffi = "*"
+psutil = "*"
+
+[dev-packages]
+xlib = "*"
+
+[requires]
+python_version = "3.8"
