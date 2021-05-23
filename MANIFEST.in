@@ -1,0 +1,9 @@
+recursive-include g13gui *.py
+include bin/g13gui
+include bin/g13-clock
+include bin/g13-profiles
+include LICENSE
+include AUTHORS
+include MANIFEST.in
+include README.md
+graft debian
