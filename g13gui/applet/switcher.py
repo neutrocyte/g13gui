@@ -37,6 +37,7 @@ class Switcher(Observer):
 
     def onAppletChange(self, subject, changeType, key, data):
         self._applets = sorted(self._appletManager.appletNames)
+        self._applets.remove('Switcher')
         self._lv.model = self._applets
         self._lv.update()
 
