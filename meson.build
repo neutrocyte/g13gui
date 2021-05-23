@@ -7,7 +7,9 @@ python = import('python').find_installation()
 
 prefix = get_option('prefix')
 bindir = get_option('bindir')
-etcdir = get_option('etcdir')
+datadir = get_option('datadir')
+etcdir = get_option('sysconfdir')
+pylibdir = python.get_install_dir()
 g13dir = join_paths(pylibdir, 'g13gui')
 
 install_data(
