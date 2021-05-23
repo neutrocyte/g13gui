@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+
+import g13gui.applets.profiles
+g13gui.applets.profiles.main()

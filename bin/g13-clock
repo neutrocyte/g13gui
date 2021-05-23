@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+
+import g13gui.applets.clock
+g13gui.applets.clock.main()
