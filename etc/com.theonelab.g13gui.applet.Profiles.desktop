@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories=Game;
+Comment=Profile switching applet for the Logitech G13
+Exec=g13-clock
+Icon=g13-logo
+Keywords=gaming;input;gameboard;logitech;controller
+Name=G13 profile switcher
+Terminal=false
+Type=Application

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories=Game;
+Comment=Clock and resource display applet for the Logitech G13
+Exec=g13-clock
+Icon=g13-logo
+Keywords=gaming;input;gameboard;logitech;controller
+Name=G13 clock applet
+Terminal=false
+Type=Application

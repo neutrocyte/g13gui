@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories=Game;
+Comment=G13 gaming controller configuration tool and user space driver
+Exec=g13gui
+Icon=g13-logo
+Keywords=gaming;input;gameboard;logitech;controller
+Name=G13 Configurator
+Terminal=false
+Type=Application
