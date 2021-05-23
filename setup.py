@@ -4,6 +4,9 @@ from setuptools import setup, find_packages
 from os import path
 from io import open
 
+from g13gui.common import PROGNAME
+from g13gui.common import VERSION
+
 
 here = path.abspath(path.dirname(__file__))
 
@@ -11,8 +14,8 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='g13gui',
-    version='0.1.0',
+    name=PROGNAME,
+    version=VERSION,
     description='A Gtk 3 application to configure the Logitech G13 gameboard',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -31,15 +34,14 @@ setup(
     ],
     keywords='gaming',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    python_requires='>=3.5.0',
+    python_requires='>=3.8.0',
     install_requires=[
-        'PyGObject',
-        'PIL',
-        'Xlib',
-        'dbus',
-        'evdev',
-        'gzip',
-        'usb'
+        'dbus-python==1.2.16',
+        'evdev==1.4.0',
+        'Pillow==7.0.0',
+        'PyGObject==3.40.1',
+        'pyusb==1.0.2',
+        'xdg==5.0.2'
     ],
     data_files={
         'share/applications': [
@@ -54,8 +56,8 @@ setup(
     entry_points={
         'console_scripts': [
             'g13gui=g13gui.main:main',
-            'g13-clock=g13gui.applets.clock:',
-            'g13-profiles=g13gui.applets.profiles:'
+            'g13-clock=g13gui.applets.clock:main',
+            'g13-profiles=g13gui.applets.profiles:main'
         ],
     },
 )
