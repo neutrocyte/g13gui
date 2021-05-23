@@ -1,0 +1,29 @@
+Source: g13gui
+Section: games
+Priority: optional
+Maintainer: June Tate-Gans <june@theonelab.com>
+Build-Depends: debhelper-compat (= 12),
+               appstream,
+               dh-sequence-python3,
+               meson,
+Rules-Requires-Root: no
+Standards-Version: 4.5.0
+Homepage: https://github.com/jtgans/g13gui
+Vcs-Browser: https://github.com/jtgans/g13gui
+Vcs-Git: https://github.com/jtgans/g13gui.git
+
+Package: g13gui
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         python3-dbus,
+         python3-appdirs,
+         python3-evdev,
+         python3-pil,
+         python3-gi,
+         python3-usb,
+Description: Application to configure and drive the Logitech G13 gameboard
+  This is the companion application to the Logitech G13 gameboard, and
+  provides both configuration tooling, applet hosting, and also a user space
+  driver to handle translation of keypresses to real Linux input events by way
+  of uinput.
