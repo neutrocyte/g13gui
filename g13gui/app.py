@@ -18,7 +18,7 @@ class Application(Gtk.Application):
     def __init__(self):
         Gtk.Application.__init__(
             self,
-            application_id='com.theonelab.g13.G13Configurator')
+            application_id='com.theonelab.g13.Configurator')
 
         GLib.set_application_name('G13 Configurator')
 

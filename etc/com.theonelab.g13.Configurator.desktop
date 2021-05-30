@@ -2,7 +2,7 @@
 Categories=Game;
 Comment=G13 gaming controller configuration tool and user space driver
 Exec=g13gui
-Icon=g13-logo
+Icon=com.theonelab.g13.Configurator.png
 Keywords=gaming;input;gameboard;logitech;controller
 Name=G13 Configurator
 Terminal=false

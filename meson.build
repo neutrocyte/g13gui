@@ -23,16 +23,16 @@ install_subdir(
   install_dir: pylibdir,
 )
 
-install_data(
-  files('etc/g13-logo.svg'),
-  install_dir: join_paths(datadir, 'icons/hicolor/scalable/apps'),
+install_subdir(
+  'etc/icons/hicolor',
+  install_dir: join_paths(datadir, 'icons'),
   install_mode: 'rw-r--r--',
 )
 
 install_data(
-  files('etc/com.theonelab.g13gui.Configurator.desktop',
-        'etc/com.theonelab.g13gui.applet.Clock.desktop',
-        'etc/com.theonelab.g13gui.applet.Profiles.desktop'),
+  files('etc/com.theonelab.g13.Configurator.desktop',
+        'etc/com.theonelab.g13.applet.Clock.desktop',
+        'etc/com.theonelab.g13.applet.Profiles.desktop'),
   install_dir: join_paths(datadir, 'applications'),
   install_mode: 'rw-r--r--',
 )

@@ -2,7 +2,7 @@
 Categories=Game;
 Comment=Profile switching applet for the Logitech G13
 Exec=g13-profiles
-Icon=g13-logo
+Icon=com.theonelab.g13.Configurator.png
 Keywords=gaming;input;gameboard;logitech;controller
 Name=G13 profile switcher
 Terminal=false

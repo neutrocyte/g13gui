@@ -1,4 +1,4 @@
-g13gui (0.1.0ubuntu1) focal; urgency=medium
+g13 (0.1.0ubuntu1) focal; urgency=medium
 
   * Initial release of the Debian packaging for g13gui
 
