@@ -34,10 +34,10 @@ class AppIndicator(GtkObserver):
 
     def _initIndicator(self):
         self._indicator = indicator.Indicator.new(
-            'com.theonelab.g13.Configurator',
-            'com.theonelab.g13.Configurator',
+            'com.theonelab.g13.Configurator-symbolic',
+            'com.theonelab.g13.Configurator-symbolic',
             indicator.IndicatorCategory.OTHER)
-        self._indicator.set_attention_icon('com.theonelab.g13.Configurator')
+        self._indicator.set_attention_icon('com.theonelab.g13.Configurator-symbolic')
         self._indicator.set_status(indicator.IndicatorStatus.ACTIVE)
 
     def _removeAllMenuItems(self):
