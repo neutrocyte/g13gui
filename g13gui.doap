@@ -21,7 +21,7 @@
   <maintainer>
     <foaf:Person>
       <foaf:name>June Tate-Gans</foaf:name>
-      <foaf:mbox rdf:resource="mailto:jtgans@google.com" />
+      <foaf:mbox rdf:resource="mailto:june@theonelab.com" />
     </foaf:Person>
   </maintainer>
 </Project>
