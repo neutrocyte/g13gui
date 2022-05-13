@@ -16,20 +16,20 @@ import gzip
 import pathlib
 import enum
 import PIL
+import importlib.resources as pkg_resources
 from PIL.ImageFont import ImageFont
 from PIL.PcfFontFile import PcfFontFile
 from PIL.FontFile import puti16
 
-
-X11_FONT_PATH = pathlib.Path('/usr/share/fonts/X11/misc')
+from . import assets
 
 
 class Fonts(enum.Enum):
-    TINY = X11_FONT_PATH / '4x6.pcf.gz'
-    SMALL = X11_FONT_PATH / '5x7.pcf.gz'
-    MEDIUM = X11_FONT_PATH / '8x13.pcf.gz'
-    LARGE = X11_FONT_PATH / '9x18.pcf.gz'
-    HUGE = X11_FONT_PATH / '10x20.pcf.gz'
+    TINY = '4x6.pcf.gz'
+    SMALL = '5x7.pcf.gz'
+    MEDIUM = '8x13.pcf.gz'
+    LARGE = '9x18.pcf.gz'
+    HUGE = '10x20.pcf.gz'
 
 
 class PcfFontConverter(PcfFontFile):
@@ -108,7 +108,9 @@ class FontManager(object):
         return FontManager._fonts[font]
 
     def _loadPcfFont(filename):
-        with gzip.open(filename, 'rb') as fp:
+        compressed_data = pkg_resources.read_binary(assets, filename)
+        data = gzip.decompress(compressed_data)
+        with io.BytesIO(data) as fp:
             pff = PcfFontConverter(fp)
             imageFont = pff.getImageFont()
             return imageFont
