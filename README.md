@@ -3,8 +3,9 @@ The G13 Configurator
 
 ## What is this?
 
-This is the companion application for configuring a Logitech G13 using the G13
-user space driver originally written by ecraven, and available at
+This is a stand-alone companion application and user space driver for
+configuring a Logitech G13 game board. The original code was based upon another
+driver originally written by ecraven, and available at
 https://github.com/jtgans/g13.
 
 This tool allows you to:
