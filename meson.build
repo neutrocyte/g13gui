@@ -1,5 +1,5 @@
 project(
-  'lutris',
+  'g13gui',
   license: 'MIT'
 )
 
