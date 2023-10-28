@@ -2,13 +2,13 @@
 
 pkgbase="g13gui"
 pkgname="g13gui-git"
-pkgver=5dd39e4
+pkgver=fa65c30
 pkgrel=1
 pkgdesc="A user-space driver and GUI configurator for the Logitech G13"
 arch=('any')
 url="https://github.com/jtgans/g13gui"
-license=('unknown')
-depends=('python' 'python-evdev' 'python-pyusb')
+license=('GPL')
+depends=('python' 'python-evdev' 'python-pyusb', 'xorg-fonts-misc')
 makedepends=('git' 'meson')
 source=("${pkgname}::git+http://github.com/jtgans/g13gui.git")
 sha256sums=('SKIP')
