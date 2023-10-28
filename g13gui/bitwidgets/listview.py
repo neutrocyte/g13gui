@@ -141,7 +141,8 @@ class ListItem(Widget):
         self._isHighlighted = is_highlighted
 
         self._font = font
-        (_, self._fontHeight) = FontManager.getFont(self._font).getsize('Wqpj')
+        (_, top, _, bottom) = FontManager.getFont(self._font).getbbox('Wqpj')
+        self._fontHeight = bottom - top
 
         self.position = (0, ypos)
         self.bounds = (DISPLAY_WIDTH, self._fontHeight + 3)

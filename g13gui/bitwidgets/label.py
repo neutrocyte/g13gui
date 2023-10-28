@@ -28,7 +28,9 @@ class Label(Widget):
         self._spacing = spacing
         self._align = align
         self._strokeWidth = strokeWidth
-        self._bounds = FontManager.getFont(self.font).getsize(self.text)
+        
+        (left, top, right, bottom) = FontManager.getFont(self.font).getbbox(self.text)
+        self._bounds = (right - left, bottom - top)
 
     def draw(self, ctx):
         if self._visible:
@@ -62,17 +64,20 @@ class Label(Widget):
     @text.setter
     def text(self, text):
         self.setProperty('text', text)
-        self.bounds = FontManager.getFont(self.font).getsize(self.text)
+        (left, top, right, bottom) = FontManager.getFont(self.font).getbbox(self.text)
+        self.bounds = (right - left, bottom - top)
 
     @font.setter
     def font(self, font):
         self.setProperty('font', font)
-        self.bounds = FontManager.getFont(self.font).getsize(self.text)
+        (left, top, right, bottom) = FontManager.getFont(self.font).getbbox(self.text)
+        self.bounds = (right - left, bottom - top)
 
     @spacing.setter
     def spacing(self, spacing):
         self.setProperty('spacing', spacing)
-        self.bounds = FontManager.getFont(self.font).getsize(self.text)
+        (left, top, right, bottom) = FontManager.getFont(self.font).getbbox(self.text)
+        self.bounds = (right - left, bottom - top)
 
     @align.setter
     def align(self, align):
