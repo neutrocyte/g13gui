@@ -15,8 +15,21 @@ $(warning Building on ${DISTRO})
 
 all: ${DISTRO}
 
+clean: ${DISTRO}-clean
+
+install: ${DISTRO}-install
+
 manjaro:
 	makepkg
+
+manjaro-clean:
+	rm -f g13gui-git-*-any.pkg.tar.zst
+	rm -rf g13gui-git/
+	rm -rf pkg/
+	rm -rf src/
+
+manjaro-install:
+	makepkg -i
 
 debian:
 	export GITBRANCH=master
