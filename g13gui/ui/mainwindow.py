@@ -121,12 +121,13 @@ class MainWindow(Gtk.ApplicationWindow, GtkObserver):
 
         self._g13Buttons = {}
 
-        mrButton = self.newG13Button('MR')
-        mrButton.set_sensitive(False)
-        self._mButtons.pack_start(mrButton, False, False, 6)
         self._mButtons.pack_start(self.newG13Button('M1'), False, False, 6)
         self._mButtons.pack_start(self.newG13Button('M2'), False, False, 6)
         self._mButtons.pack_start(self.newG13Button('M3'), False, False, 6)
+
+        mrButton = self.newG13Button('MR')
+        mrButton.set_sensitive(False)
+        self._mButtons.pack_start(mrButton, False, False, 6)
 
         # G1 to G14
         self._buttonNum = 1
@@ -148,12 +149,12 @@ class MainWindow(Gtk.ApplicationWindow, GtkObserver):
         self._keyGrid.attach(self.newG13NumberedButton(), 4, 4, 1, 1)
 
         self._stickGrid.attach(self.newG13Button("STICK_UP"),    4, 0, 1, 1)
-        self._stickGrid.attach(self.newG13Button("THUMB_LEFT"),  2, 1, 1, 1)
+        self._stickGrid.attach(self.newG13Button("THUMB_LEFT"),  2, 0, 1, 3)
         self._stickGrid.attach(self.newG13Button("STICK_LEFT"),  3, 1, 1, 1)
         self._stickGrid.attach(self.newG13Button("THUMB_STICK"), 4, 1, 1, 1)
         self._stickGrid.attach(self.newG13Button("STICK_RIGHT"), 5, 1, 1, 1)
         self._stickGrid.attach(self.newG13Button("STICK_DOWN"),  4, 2, 1, 1)
-        self._stickGrid.attach(self.newG13Button("THUMB_DOWN"),  4, 3, 1, 1)
+        self._stickGrid.attach(self.newG13Button("THUMB_DOWN"),  3, 3, 3, 1)
 
     def newG13NumberedButton(self):
         button = self.newG13Button('G' + str(self._buttonNum))
