@@ -1,3 +1,8 @@
 __pycache__
 *.pyc
 obj-*/
+*.pkg.tar.zst
+g13gui-git/
+pkg/
+src/
+
