@@ -41,7 +41,8 @@ class ProfilesApplet(Applet):
         self._selectedProfile = str(self.manager.GetSelectedProfile())
 
     def _updateListView(self):
-        self._lv.markedIndex = self._profiles.index(self._selectedProfile)
+        if self._selectedProfile:
+            self._lv.markedIndex = self._profiles.index(self._selectedProfile)
         self._lv.model = self._profiles
         self._lv.update()
 
