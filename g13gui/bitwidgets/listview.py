@@ -145,7 +145,7 @@ class ListItem(Widget):
         self._fontHeight = bottom - top
 
         self.position = (0, ypos)
-        self.bounds = (DISPLAY_WIDTH, self._fontHeight + 3)
+        self.bounds = (DISPLAY_WIDTH - 1, self._fontHeight + 3)
 
         self._setup()
 
