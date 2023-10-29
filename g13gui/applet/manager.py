@@ -8,7 +8,7 @@ from builtins import property
 
 from g13gui.observer.subject import Subject
 from g13gui.observer.subject import ChangeType
-from g13gui.applet.switcher import Switcher
+from g13gui.applets.switcher import Switcher
 from g13gui.g13.common import G13Keys
 
 gi.require_version('GLib', '2.0')
