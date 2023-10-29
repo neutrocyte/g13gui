@@ -94,7 +94,15 @@ def KeycodeIsModifier(code):
 def BindsToKeynames(binds):
     keybinds = []
     for bind in binds:
-        name = e.KEY[bind][4:].capitalize()
+        name = e.KEY[bind][4:]             # Strip KEY_ prefix
+        prefix = ''
+        if name.startswith('LEFT'):
+            prefix = 'L'
+            name = name[4:]
+        elif name.startswith('RIGHT'):
+            prefix = 'R'
+            name = name[5:]
+        name = prefix + name.capitalize()
         keybinds.append(name)
 
     return keybinds
