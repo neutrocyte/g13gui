@@ -74,6 +74,8 @@ class DeviceManager(threading.Thread, Observer):
         self._lastProfile = None
         self._grabNextKey = False
         self._leds = 0
+        self._lastBacklightColor = [0, 0, 0]
+        self._lastBuffer = [0] * LCD_BUFFER_SIZE
 
         self._appletManager = AppletManager(self, prefs)
 
@@ -201,12 +203,18 @@ class DeviceManager(threading.Thread, Observer):
         self._commandQueue.put([self._setBacklightColor, (r, g, b)])
 
     def _setBacklightColor(self, r, g, b):
+        self._lastBacklightColor = [r, g, b]
+
         data = [5, int(r), int(g), int(b), 0]
         type = usb.util.CTRL_TYPE_CLASS | usb.util.CTRL_RECIPIENT_INTERFACE
 
         self._device.ctrl_transfer(
             type, bRequest=9, wValue=0x307, wIndex=0,
             data_or_wLength=data)
+
+    @property
+    def lastBacklightColor(self):
+        return self._lastBacklightColor
 
     def setLCDBuffer(self, buffer):
         """Updates the LCD screen with the contents of buffer.
@@ -226,6 +234,12 @@ class DeviceManager(threading.Thread, Observer):
         self._device.write(
             usb.util.CTRL_OUT | G13Endpoints.LCD.value,
             bytes(header) + bytes(buffer))
+
+        self._lastBuffer = buffer
+
+    @property
+    def lastBuffer(self):
+        return self._lastBuffer
 
     def _processCommands(self):
         while True:
