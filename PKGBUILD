@@ -2,6 +2,7 @@
 
 pkgbase="g13gui"
 pkgname="g13gui-git"
+pkgver=e326097
 pkgrel=1
 pkgdesc="A user-space driver and GUI configurator for the Logitech G13"
 arch=('any')
