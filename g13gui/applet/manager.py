@@ -32,6 +32,7 @@ class AppletManager(dbus.service.Object, Subject):
 
         # [name] -> (sender, proxy)
         self._applets = {}
+        self._datastore = {}
 
         self._switcher = Switcher(self)
         self._lastApplet = self._switcher
@@ -88,10 +89,15 @@ class AppletManager(dbus.service.Object, Subject):
     def _removeActiveApplet(self):
         senders = {proxy: name for (name, (_, proxy)) in self._applets.items()}
         print('senders is %s' % (repr(senders)))
-        name = senders[self._activeApplet]
-        del self._applets[name]
 
-        self.addChange(ChangeType.REMOVE, 'applet', name)
+        try:
+            name = senders[self._activeApplet]
+            del self._applets[name]
+            self.addChange(ChangeType.REMOVE, 'applet', name)
+        except KeyError as err:
+            print('Desync occurred: senders does not contain %s!',
+                  (self._activeApplet))
+
         self._activeApplet = self._switcher
         self._lastApplet = self._switcher
         self.activeApplet = 'Switcher'
@@ -196,3 +202,22 @@ class AppletManager(dbus.service.Object, Subject):
             return False
 
         GLib.idle_add(self._prefs.setSelectedProfile, profileName)
+
+    @dbus.service.method(dbus_interface=INTERFACE_NAME,
+                         in_signature='ss',
+                         sender_keyword='sender')
+    def SetKey(self, keyName, data, sender):
+        if sender not in [s[0] for s in self._applets.values()]:
+            print('Sender %s is not in the registered list of applets.' % (sender))
+            return
+        self._datastore[keyName] = data
+
+    @dbus.service.method(dbus_interface=INTERFACE_NAME,
+                         in_signature='s', out_signature='s',
+                         sender_keyword='sender')
+    def GetKey(self, keyName, sender):
+       if sender not in [s[0] for s in self._applets.values()]:
+           print('Sender %s is not in the registered list of applets.' % (sender))
+           return ''
+       return self._datastore.get(keyName, '')
+

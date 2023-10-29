@@ -2,6 +2,7 @@ import gi
 import time
 import enum
 import psutil
+import json
 
 from g13gui.applet.applet import Applet
 from g13gui.applet.applet import BUTTONS
@@ -23,6 +24,7 @@ class ClockMode(enum.Enum):
 
 class ClockApplet(Applet):
     NAME = 'Clock'
+    DATASTORE_KEY = 'com.theonelab.g13gui.applets.clock'
 
     def __init__(self):
         Applet.__init__(self, ClockApplet.NAME)
@@ -108,6 +110,34 @@ class ClockApplet(Applet):
         elif key == 'L3':
             self._ramGraphToggle.toggle()
             self._ramGraph.visible = self._ramGraphToggle.isOn
+        GLib.idle_add(self._storeSettings)
+
+    def onRegistered(self):
+        GLib.idle_add(self._loadSettings)
+
+    def _storeSettings(self):
+        settings = json.dumps([
+            self._clockMode.value,
+            self._loadGraph.visible,
+            self._ramGraph.visible
+        ])
+        print(f'Storing settings [{settings}]')
+        self.manager.SetKey(ClockApplet.DATASTORE_KEY, settings)
+
+    def _loadSettings(self):
+        settings = self.manager.GetKey(ClockApplet.DATASTORE_KEY)
+        print(f'Loaded settings are [{settings}]')
+        if settings:
+            (clockMode,
+             loadGraphVisible,
+             ramGraphVisible) = json.loads(settings)
+            self._clockMode = ClockMode(clockMode)
+            self._loadGraph.visible = loadGraphVisible
+            self._loadGraphToggle.isOn = loadGraphVisible
+            self._ramGraph.visible = ramGraphVisible
+            self._ramGraphToggle.isOn = ramGraphVisible
+            self._onModeSwitch()
+            self._update()
 
 
 def main():
