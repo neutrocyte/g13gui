@@ -26,6 +26,7 @@ class G13Button(Gtk.MenuButton, GtkObserver):
         self._popover = ui.G13ButtonPopover(self, self._prefs, self._keyName)
         self.set_popover(self._popover)
 
+        self.set_size_request(100, 25)
         self.set_can_default(False)
         self.updateProfileRegistration()
 
@@ -57,15 +58,19 @@ class G13Button(Gtk.MenuButton, GtkObserver):
     def updateBindingDisplay(self):
         self._removeChild()
         bindings = self._prefs.selectedProfile().keyBinding(self._keyName)
+        label = Gtk.Label('')
+        label.set_halign(Gtk.Align.CENTER)
+        label.set_ellipsize(2)
+        label.set_max_width_chars(10)
+        label.set_width_chars(10)
 
         if len(bindings) > 0:
             keybinds = BindsToKeynames(bindings)
             accelerator = '+'.join(keybinds)
-            label = Gtk.Label(accelerator)
-            label.set_halign(Gtk.Align.CENTER)
-            self.add(label)
+            label.set_text(accelerator)
         else:
-            label = Gtk.Label(self._keyName)
-            self.add(label)
+            label.set_text(self._keyName)
+            label.set_sensitive(False)
 
+        self.add(label)
         self.show_all()
