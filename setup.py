@@ -36,12 +36,12 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     python_requires='>=3.8.0',
     install_requires=[
-        'appdirs>=1.4.3',
-        'dbus-python>=1.2.16',
-        'evdev>=1.4.0',
-        'Pillow==7.0.0',
-        'PyGObject>=3.40.1',
-        'pyusb>=1.0.2',
+        'appdirs',
+        'dbus-python',
+        'evdev',
+        'Pillow',
+        'PyGObject',
+        'pyusb',
     ],
     entry_points={
         'gui_scripts': [
