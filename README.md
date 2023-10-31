@@ -1,12 +1,14 @@
 The G13 Configurator
 ====================
 
+![GUI Screenshot](assets/g13gui.png)
+
 ## What is this?
 
 This is a stand-alone companion application and user space driver for
 configuring a Logitech G13 game board. The original code was based upon another
 driver originally written by ecraven, and available at
-https://github.com/jtgans/g13, but this codebase was modernized, cleaned up
+https://github.com/ecraven/g13, but this codebase was modernized, cleaned up
 and totally rewritten in Python.
 
 Using this tool allows you to:
