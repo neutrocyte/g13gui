@@ -106,7 +106,7 @@ class DeviceManager(threading.Thread, Observer):
 
     def _updateLcdColor(self):
         lcdColor = self._prefs.selectedProfile().lcdColor
-        lcdColor = [int(x * 255) for x in lcdColor]
+        lcdColor = [lcdColor[0] * 190, lcdColor[1] * 255, lcdColor[2] * 255]
         self.setBacklightColor(*lcdColor)
 
     @property
