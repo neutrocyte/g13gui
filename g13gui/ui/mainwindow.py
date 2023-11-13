@@ -110,6 +110,8 @@ class MainWindow(Gtk.ApplicationWindow, GtkObserver):
         self._keyGrid.set_column_homogeneous(True)
         self._box.pack_start(self._keyGrid, True, False, 6)
 
+        self._stickbox = Gtk.HBox()
+        self._blankbox = Gtk.HBox()
         self._stickGrid = Gtk.Grid()
         self._stickGrid.set_hexpand(False)
         self._stickGrid.set_vexpand(False)
@@ -117,7 +119,9 @@ class MainWindow(Gtk.ApplicationWindow, GtkObserver):
         self._stickGrid.set_column_spacing(6)
         self._stickGrid.set_row_homogeneous(True)
         self._stickGrid.set_column_homogeneous(True)
-        self._box.pack_start(self._stickGrid, True, False, 6)
+        self._stickbox.pack_start(self._blankbox, True, False, 0)
+        self._stickbox.pack_start(self._stickGrid, False, False, 0)
+        self._box.pack_start(self._stickbox, True, False, 6)
 
         self._g13Buttons = {}
 
@@ -148,13 +152,13 @@ class MainWindow(Gtk.ApplicationWindow, GtkObserver):
         self._keyGrid.attach(self.newG13NumberedButton(), 3, 4, 1, 1)
         self._keyGrid.attach(self.newG13NumberedButton(), 4, 4, 1, 1)
 
-        self._stickGrid.attach(self.newG13Button("STICK_UP"),    4, 0, 1, 1)
-        self._stickGrid.attach(self.newG13Button("THUMB_LEFT"),  2, 0, 1, 3)
-        self._stickGrid.attach(self.newG13Button("STICK_LEFT"),  3, 1, 1, 1)
-        self._stickGrid.attach(self.newG13Button("THUMB_STICK"), 4, 1, 1, 1)
-        self._stickGrid.attach(self.newG13Button("STICK_RIGHT"), 5, 1, 1, 1)
-        self._stickGrid.attach(self.newG13Button("STICK_DOWN"),  4, 2, 1, 1)
-        self._stickGrid.attach(self.newG13Button("THUMB_DOWN"),  3, 3, 3, 1)
+        self._stickGrid.attach(self.newG13Button("STICK_UP"),    2, 0, 1, 1)
+        self._stickGrid.attach(self.newG13Button("THUMB_LEFT"),  0, 0, 1, 3)
+        self._stickGrid.attach(self.newG13Button("STICK_LEFT"),  1, 1, 1, 1)
+        self._stickGrid.attach(self.newG13Button("THUMB_STICK"), 2, 1, 1, 1)
+        self._stickGrid.attach(self.newG13Button("STICK_RIGHT"), 3, 1, 1, 1)
+        self._stickGrid.attach(self.newG13Button("STICK_DOWN"),  2, 2, 1, 1)
+        self._stickGrid.attach(self.newG13Button("THUMB_DOWN"),  1, 3, 3, 1)
 
     def newG13NumberedButton(self):
         button = self.newG13Button('G' + str(self._buttonNum))
