@@ -2,7 +2,7 @@
 
 pkgbase="g13gui"
 pkgname="g13gui-git"
-pkgver=d4a5186
+pkgver=b7584f6
 pkgrel=1
 pkgdesc="A user-space driver and GUI configurator for the Logitech G13"
 arch=('any')
@@ -14,7 +14,6 @@ depends=(
   'python-pyusb>=1.0.2'
   'python-dbus'
   'python-gobject'
-  'python-pyusb'
   'python-pillow>=10.0.1'
   'python-cffi'
   'python-psutil'
