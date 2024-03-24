@@ -1,0 +1,6 @@
+{
+    "name": "Python build",
+    "description": "Build the python packages",
+    "iconName": "python",
+    "categories": ["Continuous integration", "Python"]
+}
