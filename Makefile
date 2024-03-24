@@ -48,3 +48,8 @@ debian-build-source: debian-clean
 	mv ../g13gui_$(VERSION)* build
 
 debian-release: debian-build-source
+
+.PHONY: all clean install
+.PHONY: manjaro manjaro-clean manjaro-install
+.PHONY: debian debian-build debian-clean debian-build-source debian-release
+
