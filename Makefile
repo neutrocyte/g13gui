@@ -37,7 +37,7 @@ manjaro-install:
 
 debian:
 	mkdir -p build
-	gbp buildpackage --git-verbose --git-debian-branch=$(GITBRANCH) -us -ui -uc
+	gbp buildpackage --git-verbose --git-ignore-branch --git-debian-branch=$(GITBRANCH) -us -ui -uc
 	mv ../g13gui_$(VERSION)* build
 
 debian-install:
@@ -49,7 +49,7 @@ debian-clean:
 
 debian-build-source: debian-clean
 	mkdir -p build
-	gbp buildpackage -S --git-verbose --git-debian-branch=$(GITBRANCH) -us -uc
+	gbp buildpackage -S --git-verbose --git-ignore-branch --git-debian-branch=$(GITBRANCH) -us -uc
 	mv ../g13gui_$(VERSION)* build
 
 debian-release: debian-build-source
