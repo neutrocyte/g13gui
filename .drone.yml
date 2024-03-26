@@ -5,7 +5,7 @@ name: debian
 
 steps:
   - name: debian
-    image: debian/testing
+    image: debian:testing
 
     settings:
       registry: gitea.hedron.io
