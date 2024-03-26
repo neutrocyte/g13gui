@@ -5,7 +5,7 @@ name: debian
 
 steps:
   - name: debian
-    image: debian
+    image: debian/testing
 
     settings:
       registry: gitea.hedron.io
@@ -20,6 +20,7 @@ steps:
       mtu: 1000
 
     commands:
+      - apt-get update
       - apt-get install devscripts python3 build-essential git-buildpackage appstream dh-sequence-python3 meson
       - make
 
