@@ -9,6 +9,7 @@ prefix = get_option('prefix')
 bindir = get_option('bindir')
 datadir = get_option('datadir')
 etcdir = get_option('sysconfdir')
+prefix = get_option('prefix')
 pylibdir = python.get_install_dir()
 g13dir = join_paths(pylibdir, 'g13gui')
 
@@ -39,6 +40,6 @@ install_data(
 
 install_data(
   files('etc/91-g13.rules'),
-  install_dir: join_paths(etcdir, 'udev/rules.d'),
+  install_dir: join_paths(prefix, 'lib/udev/rules.d'),
   install_mode: 'rw-r--r--',
 )
