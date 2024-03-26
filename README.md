@@ -27,7 +27,7 @@ play most of her game library.
 
 ## Building
 
-[![Build Status](https://drone.hedron.io/api/badges/jtgans/g13gui/status.svg)](https://drone.hedron.io/jtgans/g13gui)
+[![Build Status](https://drone.hedron.io/api/badges/jtgans/g13gui/status.svg?)](https://drone.hedron.io/jtgans/g13gui)
 
 We have a continuous build running to make packaging, and periodically those
 artifacts are brought over as releases on the Github site. The CI is run on
