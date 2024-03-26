@@ -11,6 +11,10 @@ DISTRO    := $(shell \
         |tr '[A-Z]' '[a-z]' \
         |sed -e 's/linux//g')
 
+ifeq (${DISTRO},ubuntu)
+DISTRO := debian
+endif
+
 $(warning Building on ${DISTRO})
 
 all: ${DISTRO}
