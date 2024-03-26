@@ -1,4 +1,4 @@
-VERSION   := `grep "VERSION" g13gui/common.py |awk '{ print $$2 }' |sed 's/'//g'`
+VERSION   := `grep "VERSION" g13gui/common.py |awk '{ print $$3 }' |tr -d "'"`
 GITBRANCH ?= master
 PIPENV    := pipenv
 PYTHON    := `which python3`
@@ -36,19 +36,20 @@ manjaro-install:
 	makepkg -i
 
 debian:
-	export GITBRANCH=master
-	debuild
-	debclean
+	mkdir -p build
+	gbp buildpackage --git-verbose --git-debian-branch=$(GITBRANCH) -us -ui -uc
+	mv ../g13gui_$(VERSION)* build
 
-debian-build:
-	gbp buildpackage --git-debian-branch=$(GITBRANCH)
+debian-install:
+	sudo dpkg -i g13gui_$(VERSION).deb
 
 debian-clean:
 	debclean
+	rm -rf build
 
 debian-build-source: debian-clean
-	gbp buildpackage -S --git-debian-branch=$(GITBRANCH)
-	mkdir build
+	mkdir -p build
+	gbp buildpackage -S --git-verbose --git-debian-branch=$(GITBRANCH) -us -uc
 	mv ../g13gui_$(VERSION)* build
 
 debian-release: debian-build-source

@@ -1,4 +1,4 @@
-Source: g13
+Source: g13gui
 Section: misc
 Priority: optional
 Maintainer: June Tate-Gans <june@theonelab.com>
@@ -12,7 +12,7 @@ Homepage: https://github.com/jtgans/g13gui
 Vcs-Browser: https://github.com/jtgans/g13gui
 Vcs-Git: https://github.com/jtgans/g13gui.git
 
-Package: g13
+Package: g13gui
 Architecture: all
 Depends: ${misc:Depends},
          ${python3:Depends},
