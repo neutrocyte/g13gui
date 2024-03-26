@@ -5,4 +5,13 @@ obj-*/
 g13gui-git/
 pkg/
 src/
+build/
 
+# Debian build junk
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/g13gui.postinst.debhelper
+debian/g13gui.prerm.debhelper
+debian/g13gui.substvars
+debian/g13gui/
