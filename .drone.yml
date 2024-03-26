@@ -1,0 +1,24 @@
+---
+kind: pipeline
+type: kubernetes
+name: debian
+
+steps:
+  - name: debian
+    image: debian
+
+    settings:
+      registry: gitea.hedron.io
+      username:
+        from_secret: username
+      password:
+        from_secret: password
+      repo: gitea.hedron.io/jtgans/g13gui
+      tags:
+        - latest
+      platform: linux/amd64
+      mtu: 1000
+
+    commands:
+      - make
+
