@@ -20,5 +20,6 @@ steps:
       mtu: 1000
 
     commands:
+      - apt-get install devscripts python3 build-essential git-buildpackage appstream dh-sequence-python3 meson
       - make
 
