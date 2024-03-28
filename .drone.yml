@@ -47,7 +47,7 @@ steps:
       mtu: 1000
 
     commands:
-      - pacman -Sy
-      - pacman -S base-devel python meson
+      - pacman -Sy --noconfirm
+      - pacman -S --noconfirm base-devel python meson
       - make
 
