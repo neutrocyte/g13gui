@@ -28,7 +28,7 @@ clean: ${DISTRO}-clean
 install: ${DISTRO}-install
 
 manjaro:
-	makepkg
+	makepkg --nodeps
 
 manjaro-clean:
 	rm -f g13gui-git-*-any.pkg.tar.zst
