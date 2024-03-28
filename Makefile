@@ -15,6 +15,10 @@ ifeq (${DISTRO},ubuntu)
 DISTRO := debian
 endif
 
+ifeq (${DISTRO},arch)
+DISTRO := manjaro
+endif
+
 $(warning Building on ${DISTRO})
 
 all: ${DISTRO}
