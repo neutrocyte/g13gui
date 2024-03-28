@@ -49,5 +49,6 @@ steps:
     commands:
       - pacman -Sy --noconfirm
       - pacman -S --noconfirm base-devel python meson lsb-release
-      - make
+      - chown -R nobody:nobody .
+      - sudo -u nobody make
 
