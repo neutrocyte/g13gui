@@ -24,3 +24,28 @@ steps:
       - touch /etc/pbuilderrc
       - apt-get install -y devscripts python3 build-essential git-buildpackage appstream dh-sequence-python3 meson
       - make
+
+---
+kind: pipeline
+type: kubernetes
+name: manjaro-build
+
+steps:
+  - name: build
+    image: archlinux:latest
+
+    settings:
+      registry: gitea.hedron.io
+      username:
+        from_secret: username
+      password:
+        from_secret: password
+      repo: gitea.hedron.io/jtgans/g13gui
+      tags:
+        - latest
+      platform: linux/amd64
+      mtu: 1000
+
+    commands:
+      - make
+
