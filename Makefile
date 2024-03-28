@@ -60,6 +60,9 @@ debian-build-source: debian-clean
 
 debian-release: debian-build-source
 
+test:
+	PYTHONPATH=. python3 -m g13gui.tests
+
 .PHONY: all clean install
 .PHONY: manjaro manjaro-clean manjaro-install
 .PHONY: debian debian-build debian-clean debian-build-source debian-release
