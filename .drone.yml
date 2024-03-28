@@ -1,6 +1,32 @@
 ---
 kind: pipeline
 type: kubernetes
+name: tests
+
+steps:
+  - name: tests
+    image: archlinux:latest
+
+    settings:
+      registry: gitea.hedron.io
+      username:
+        from_secret: username
+      password:
+        from_secret: password
+      repo: gitea.hedron.io/jtgans/g13gui
+      tags:
+        - latest
+      platform: linux/amd64
+      mtu: 1000
+
+    commands:
+      - pacman -Sy --noconfirm
+      - makepkg -s
+      - make test
+
+---
+kind: pipeline
+type: kubernetes
 name: debian-build
 
 steps:
@@ -51,4 +77,3 @@ steps:
       - pacman -S --noconfirm base-devel python meson lsb-release git
       - chown -R nobody:nobody .
       - sudo -u nobody make
-
