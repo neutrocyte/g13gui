@@ -2,8 +2,8 @@
 
 pkgbase="g13gui"
 pkgname="g13gui-git"
-pkgver=b7584f6
 pkgrel=1
+pkgver="(replaceme)"
 pkgdesc="A user-space driver and GUI configurator for the Logitech G13"
 arch=('any')
 url="https://github.com/jtgans/g13gui"
@@ -18,6 +18,7 @@ depends=(
   'python-cffi'
   'python-psutil'
   'python-appdirs'
+  'python-xlib'
   'xorg-fonts-misc'
 )
 makedepends=('git' 'meson')
