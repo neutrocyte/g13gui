@@ -19,6 +19,7 @@ depends=(
   'python-psutil'
   'python-pyusb>=1.0.2'
   'python-xlib'
+  'glib2'
   'xorg-fonts-misc'
 )
 makedepends=('git' 'meson')
