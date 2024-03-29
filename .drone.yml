@@ -58,6 +58,7 @@ steps:
       mtu: 1000
 
     commands:
+      - touch /etc/pbuilderrc
       - apt-get update
       - apt-get install -y devscripts python3 build-essential git-buildpackage appstream dh-sequence-python3 meson
       - make
