@@ -56,7 +56,7 @@ steps:
     image: archlinux:latest
 
     depends_on:
-      - manjaro-build
+      - build
 
     commands:
       - pacman -Sy --noconfirm
