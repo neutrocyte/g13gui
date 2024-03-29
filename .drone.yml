@@ -19,10 +19,13 @@ steps:
       platform: linux/amd64
       mtu: 1000
 
+    depends:
+      - manjaro-build
+
     commands:
       - pacman -Sy --noconfirm
-      - pacman -S --noconfirm base-devel python meson lsb-release git
-      - make test
+      - pacman -U --noconfirm build/g13gui*.zst
+      - python3 -m g13gui.tests
 
 ---
 kind: pipeline
