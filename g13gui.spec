@@ -1,5 +1,5 @@
 Name:       g13gui
-Version:    1
+Version:    0.1.0
 Release:    1
 Summary:    A user-space driver and GUI configurator for the Logitech G13
 License:    BSD
@@ -14,7 +14,9 @@ handle translation of keypresses to real Linux input events by way of uinput.
 %meson
 
 %prep
-
+cd %{_topdir}/BUILD
+rm -rf *
+tar zxf %{_topdir}/SOURCES/g13gui-%{version}.tar.gz
 
 %build
 %meson
@@ -24,4 +26,13 @@ handle translation of keypresses to real Linux input events by way of uinput.
 %meson_install
 
 %check
+
+%files
+/usr/bin/g13-clock
+/usr/bin/g13-profiles
+/usr/bin/g13gui
+/usr/lib/python3.12/site-packages/g13gui/*
+/usr/lib/udev/rules.d/91-g13.rules
+/usr/share/applications/com.theonelab.g13.*.desktop
+/usr/share/icons/hicolor/*
 
