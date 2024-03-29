@@ -19,7 +19,7 @@ DISTRO="$1"; shift
 [[ -z "${DISTRO}" ]] && die "Usage: dockerbuild.sh <distro>"
 
 case "${DISTRO}" in
-	manjaro)
+	archlinux)
 		try pacman -Sy --noconfirm
 		try pacman -S --noconfirm base-devel python meson lsb-release git
 

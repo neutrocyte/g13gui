@@ -15,8 +15,8 @@ ifeq (${DISTRO},ubuntu)
 DISTRO := debian
 endif
 
-ifeq (${DISTRO},arch)
-DISTRO := manjaro
+ifeq (${DISTRO},manjaro)
+DISTRO := archlinux
 endif
 
 $(warning Building on ${DISTRO})
@@ -29,18 +29,18 @@ clean: ${DISTRO}-clean
 
 install: ${DISTRO}-install
 
-manjaro:
+archlinux:
 	mkdir -p build
 	makepkg --nodeps
 	mv g13gui*.pkg.tar.zst build
 
-manjaro-clean:
+archlinux-clean:
 	rm -f g13gui-git-*-any.pkg.tar.zst
 	rm -rf g13gui-git/
 	rm -rf pkg/
 	rm -rf src/
 
-manjaro-install:
+archlinux-install:
 	makepkg -i
 
 fedora:
@@ -86,9 +86,9 @@ dist: clean
 	tar --exclude=build --exclude=.drone.yml --exclude-vcs -zcf build/g13gui_$(VERSION).tar.gz .
 	docker run -ti -v ${PWD}:/srcs -w /srcs fedora:latest tools/dockerbuild.sh fedora
 	docker run -ti -v ${PWD}:/srcs -w /srcs debian:latest tools/dockerbuild.sh debian
-	docker run -ti -v ${PWD}:/srcs -w /srcs archlinux:latest tools/dockerbuild.sh arch
+	docker run -ti -v ${PWD}:/srcs -w /srcs archlinux:latest tools/dockerbuild.sh archlinux
 
 .PHONY: all clean install test
-.PHONY: manjaro manjaro-clean manjaro-install
+.PHONY: archlinux archlinux-clean archlinux-install
 .PHONY: debian debian-build debian-clean debian-build-source debian-release
 

@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: drone
-name: manjaro
+name: archlinux
 
 steps:
   - name: build
@@ -20,7 +20,7 @@ steps:
       mtu: 1000
 
     commands:
-      - tools/dockerbuild.sh manjaro
+      - tools/dockerbuild.sh archlinux
 
   - name: test
     image: archlinux:latest
