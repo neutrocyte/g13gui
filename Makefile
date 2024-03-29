@@ -43,6 +43,19 @@ manjaro-clean:
 manjaro-install:
 	makepkg -i
 
+fedora:
+	rpmdev-setuptree
+	cp g13gui.spec ~/rpmbuild/SPECS
+	tar -zcf ~/rpmbuild/SOURCES/g13gui-${VERSION}.tar.gz .
+	rpmbuild -bb ~/rpmbuild/SPECS/g13gui.spec
+	mkdir -p build
+	mv ~/rpmbuild/RPMS/*/g13gui*.rpm build/
+
+fedora-clean:
+	rm -rf ~/rpmbuild
+
+fedora-install:
+
 debian:
 	mkdir -p build
 	gbp buildpackage --git-verbose --git-ignore-branch --git-debian-branch=$(GITBRANCH) -us -ui -uc
