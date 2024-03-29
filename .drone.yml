@@ -4,7 +4,7 @@ type: kubernetes
 name: tests
 
 steps:
-  - name: setup
+  - name: test
     image: archlinux:latest
 
     settings:
