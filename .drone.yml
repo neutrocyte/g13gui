@@ -20,7 +20,7 @@ steps:
       mtu: 1000
 
     commands:
-      - pacman -Syu --noconfirm
+      - pacman -Sy --noconfirm
       - pacman -S --noconfirm base-devel python meson lsb-release git
       - chown -R nobody:nobody .
       - sudo -u nobody make
@@ -32,7 +32,7 @@ steps:
       - build
 
     commands:
-      - pacman -Sy --noconfirm
+      - pacman -Syu --noconfirm
       - pacman -U --noconfirm build/g13gui*.zst
       - python3 -m g13gui.tests
 
