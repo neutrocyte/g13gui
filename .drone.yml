@@ -71,7 +71,7 @@ steps:
 
     commands:
       - apt-get update
-      - apt-get -f install ./build/g13*.deb
+      - apt-get -fy install ./build/g13*.deb
       - python3 -m g13gui.tests
 
 ---
