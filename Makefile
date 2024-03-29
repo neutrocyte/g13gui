@@ -37,6 +37,7 @@ manjaro-clean:
 	rm -rf g13gui-git/
 	rm -rf pkg/
 	rm -rf src/
+	rm -rf build/
 
 manjaro-install:
 	makepkg -i
