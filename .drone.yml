@@ -43,7 +43,7 @@ name: debian-build
 
 steps:
   - name: build
-    image: debian:testing
+    image: debian:sid
 
     settings:
       registry: gitea.hedron.io
@@ -63,7 +63,7 @@ steps:
       - make
 
   - name: test
-    image: debian:testing
+    image: debian:sid
 
     depends_on:
       - build
