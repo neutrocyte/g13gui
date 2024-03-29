@@ -4,6 +4,14 @@ Release:    1
 Summary:    A user-space driver and GUI configurator for the Logitech G13
 License:    BSD
 URL:        https://github.com/jtgans/g13gui
+Requires:   python3-dbus
+Requires:   python3-appdirs
+Requires:   python3-evdev
+Requires:   python3-pillow
+Requires:   python3-gobject
+Requires:   python3-pyusb
+Requires:   gtk3
+Requires:   libappindicator-gtk3
 BuildRequires: meson
 
 %description
