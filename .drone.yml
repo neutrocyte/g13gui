@@ -73,3 +73,27 @@ steps:
       - apt-get install ./build/g13*.deb
       - python3 -m g13gui.tests
 
+---
+kind: pipeline
+type: kubernetes
+name: fedora-build
+
+steps:
+  - name: build
+    image: fedora:latest
+
+    settings:
+      registry: gitea.hedron.io
+      username:
+        from_secret: username
+      password:
+        from_secret: password
+      repo: gitea.hedron.io/jtgans/g13gui
+      tags:
+        - latest
+      platform: linux/amd64
+      mtu: 1000
+
+    commands:
+      - dnf install -y rpmdevtools rpmlint make automake python meson lsb-release git
+      - make
