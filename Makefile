@@ -81,7 +81,14 @@ env:
 test: env
 	PYTHONPATH=. tools/in-env python3 -m g13gui.tests
 
-.PHONY: all clean install
+dist: clean
+	mkdir -p build
+	tar --exclude=build --exclude=.drone.yml --exclude-vcs -zcf build/g13gui_$(VERSION).tar.gz .
+	docker run -ti -v ${PWD}:/srcs -w /srcs fedora:latest tools/dockerbuild.sh fedora
+	docker run -ti -v ${PWD}:/srcs -w /srcs debian:latest tools/dockerbuild.sh debian
+	docker run -ti -v ${PWD}:/srcs -w /srcs arch:latest tools/dockerbuild.sh arch
+
+.PHONY: all clean install test
 .PHONY: manjaro manjaro-clean manjaro-install
 .PHONY: debian debian-build debian-clean debian-build-source debian-release
 

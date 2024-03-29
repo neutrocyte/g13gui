@@ -1,6 +1,6 @@
 ---
 kind: pipeline
-type: kubernetes
+type: drone
 name: manjaro
 
 steps:
@@ -20,10 +20,7 @@ steps:
       mtu: 1000
 
     commands:
-      - pacman -Sy --noconfirm
-      - pacman -S --noconfirm base-devel python meson lsb-release git
-      - chown -R nobody:nobody .
-      - sudo -u nobody make
+      - tools/dockerbuild.sh manjaro
 
   - name: test
     image: archlinux:latest
@@ -38,7 +35,7 @@ steps:
 
 ---
 kind: pipeline
-type: kubernetes
+type: drone
 name: debian
 
 steps:
@@ -58,10 +55,7 @@ steps:
       mtu: 1000
 
     commands:
-      - touch /etc/pbuilderrc
-      - apt-get update
-      - apt-get install -y devscripts python3 build-essential git-buildpackage appstream dh-sequence-python3 meson
-      - make
+      - tools/dockerbuild.sh debian
 
   - name: test
     image: debian:unstable
@@ -76,7 +70,7 @@ steps:
 
 ---
 kind: pipeline
-type: kubernetes
+type: drone
 name: fedora
 
 steps:
@@ -96,8 +90,7 @@ steps:
       mtu: 1000
 
     commands:
-      - dnf install -y rpmdevtools rpmlint make automake python meson lsb-release git
-      - make
+      - tools/dockerbuild.sh fedora
 
   - name: test
     image: fedora:latest
