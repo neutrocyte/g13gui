@@ -22,7 +22,7 @@ Depends: ${misc:Depends},
          python3-pil,
          python3-gi,
          python3-usb,
-         gir1.2-appindicator3-0.1,
+         gir1.2-ayatanaappindicator3-0.1,
 Description: Application to configure and drive the Logitech G13 gameboard
   This is the companion application to the Logitech G13 gameboard, and
   provides both configuration tooling, applet hosting, and also a user space
