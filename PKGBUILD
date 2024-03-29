@@ -7,7 +7,7 @@ pkgver="(replaceme)"
 pkgdesc="A user-space driver and GUI configurator for the Logitech G13"
 arch=('any')
 url="https://github.com/jtgans/g13gui"
-license=('BSD')
+license=('MIT')
 depends=(
   'python>=3.8'
   'python-appdirs'
