@@ -10,14 +10,14 @@ url="https://github.com/jtgans/g13gui"
 license=('BSD')
 depends=(
   'python>=3.8'
-  'python-evdev'
-  'python-pyusb>=1.0.2'
+  'python-appdirs'
+  'python-cffi'
   'python-dbus'
+  'python-evdev'
   'python-gobject'
   'python-pillow>=10.0.1'
-  'python-cffi'
   'python-psutil'
-  'python-appdirs'
+  'python-pyusb>=1.0.2'
   'python-xlib'
   'xorg-fonts-misc'
 )
