@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: kubernetes
-name: manjaro-build
+name: manjaro
 
 steps:
   - name: build
@@ -39,7 +39,7 @@ steps:
 ---
 kind: pipeline
 type: kubernetes
-name: debian-build
+name: debian
 
 steps:
   - name: build
@@ -77,7 +77,7 @@ steps:
 ---
 kind: pipeline
 type: kubernetes
-name: fedora-build
+name: fedora
 
 steps:
   - name: build
