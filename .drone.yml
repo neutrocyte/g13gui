@@ -1,35 +1,6 @@
 ---
 kind: pipeline
 type: kubernetes
-name: tests
-
-steps:
-  - name: test
-    image: archlinux:latest
-
-    settings:
-      registry: gitea.hedron.io
-      username:
-        from_secret: username
-      password:
-        from_secret: password
-      repo: gitea.hedron.io/jtgans/g13gui
-      tags:
-        - latest
-      platform: linux/amd64
-      mtu: 1000
-
-    depends_on:
-      - manjaro-build
-
-    commands:
-      - pacman -Sy --noconfirm
-      - pacman -U --noconfirm build/g13gui*.zst
-      - python3 -m g13gui.tests
-
----
-kind: pipeline
-type: kubernetes
 name: debian-build
 
 steps:
@@ -80,3 +51,15 @@ steps:
       - pacman -S --noconfirm base-devel python meson lsb-release git
       - chown -R nobody:nobody .
       - sudo -u nobody make
+
+  - name: test
+    image: archlinux:latest
+
+    depends_on:
+      - manjaro-build
+
+    commands:
+      - pacman -Sy --noconfirm
+      - pacman -U --noconfirm build/g13gui*.zst
+      - python3 -m g13gui.tests
+
