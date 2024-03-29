@@ -43,7 +43,7 @@ name: debian-build
 
 steps:
   - name: build
-    image: debian:testing
+    image: debian:unstable
 
     settings:
       registry: gitea.hedron.io
@@ -64,7 +64,7 @@ steps:
       - make
 
   - name: test
-    image: debian:testing
+    image: debian:unstable
 
     depends_on:
       - build
