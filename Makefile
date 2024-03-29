@@ -63,14 +63,10 @@ debian-release: debian-build-source
 
 env:
 	python3 -m venv env
-	tools/in-env python3 -m pip install pipenv
-	tools/in-env python3 -m pipenv sync --dev
+	tools/in-env python3 -m pip install -r requirements.txt
 
 test: env
 	PYTHONPATH=. tools/in-env python3 -m g13gui.tests
-
-lock: env
-	tools/in-env python3 -m pipenv lock
 
 .PHONY: all clean install
 .PHONY: manjaro manjaro-clean manjaro-install

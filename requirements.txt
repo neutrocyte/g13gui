@@ -1,0 +1,8 @@
+Pillow
+PyGObject
+appdirs
+cffi
+dbus-python
+evdev
+psutil
+pyusb
