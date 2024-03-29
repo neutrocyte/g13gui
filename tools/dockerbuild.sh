@@ -24,10 +24,9 @@ case "${DISTRO}" in
 		try pacman -S --noconfirm base-devel python meson lsb-release git
 
 		# Work around makepkg brain-damage and build as nobody
-		try mkdir -p /tmp/build
 		try cp -r /srcs /tmp/build
 		try chown -R nobody:nobody /tmp/build
-		cd /tmp/build
+		try cd /tmp/build
 		try sudo -u nobody make
 		try cp build/* /srcs/build
 		;;

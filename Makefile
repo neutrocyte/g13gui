@@ -17,6 +17,8 @@ endif
 
 ifeq (${DISTRO},manjaro)
 DISTRO := archlinux
+else ifeq (${DISTRO},arch)
+DISTRO := archlinux
 endif
 
 $(warning Building on ${DISTRO})
