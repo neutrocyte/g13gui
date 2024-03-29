@@ -24,6 +24,8 @@ $(warning Building on ${DISTRO})
 all: ${DISTRO}
 
 clean: ${DISTRO}-clean
+	rm -rf build/
+	rm -rf env/
 
 install: ${DISTRO}-install
 
@@ -37,7 +39,6 @@ manjaro-clean:
 	rm -rf g13gui-git/
 	rm -rf pkg/
 	rm -rf src/
-	rm -rf build/
 
 manjaro-install:
 	makepkg -i
@@ -52,7 +53,6 @@ debian-install:
 
 debian-clean:
 	debclean
-	rm -rf build
 
 debian-build-source: debian-clean
 	mkdir -p build
@@ -61,8 +61,16 @@ debian-build-source: debian-clean
 
 debian-release: debian-build-source
 
-test:
-	PYTHONPATH=. python3 -m g13gui.tests
+env:
+	python3 -m venv env
+	tools/in-env python3 -m pip install pipenv
+	tools/in-env python3 -m pipenv lock
+	tools/in-env python3 -m pipenv sync --dev
+
+test: env
+	PYTHONPATH=. tools/in-env python3 -m g13gui.tests
+
+lock: env
 
 .PHONY: all clean install
 .PHONY: manjaro manjaro-clean manjaro-install
