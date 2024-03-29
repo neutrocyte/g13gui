@@ -22,10 +22,6 @@ steps:
     commands:
       - pacman -Sy --noconfirm
       - pacman -S --noconfirm base-devel python meson lsb-release git
-
-  - name: test
-    image: archlinux:latest
-    commands:
       - make test
 
 ---
