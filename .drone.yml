@@ -19,7 +19,7 @@ steps:
       platform: linux/amd64
       mtu: 1000
 
-    depends:
+    depends_on:
       - manjaro-build
 
     commands:
