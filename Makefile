@@ -31,7 +31,7 @@ install: ${DISTRO}-install
 
 manjaro:
 	mkdir -p build
-	makepkg -s
+	makepkg --nodeps
 	mv g13gui*.pkg.tar.zst build
 
 manjaro-clean:
