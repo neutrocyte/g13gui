@@ -98,3 +98,14 @@ steps:
     commands:
       - dnf install -y rpmdevtools rpmlint make automake python meson lsb-release git
       - make
+
+  - name: test
+    image: fedora:latest
+
+    depends_on:
+      - build
+
+    commands:
+      - dnf install -y ./build/g13gui*.rpm
+      - python3 -m g13gui.tests
+
