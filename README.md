@@ -54,8 +54,9 @@ your appropriate distro-specific location.
 
 In the major distributions, it should just be possible to run `make` to build
 a package for your specific distro. As of this writing, there is support to
-build for Debian, Ubuntu, Arch, Manjaro, and an experimental package for
-Fedora. Patches are welcome to help improve availability on other platforms.
+build for Debian, Ubuntu, and an experimental package for Fedora. Patches are
+welcome to help improve availability on other platforms and will be considered
+on a case by case basis to protect the project's copyrights.
 
 For the most up-to-date build instructions, have a look at the
 [.drone.yml](.drone.yml) file, but below are more human-friendly instructions
@@ -80,21 +81,10 @@ install using `make install`.
 
 #### Arch and Arch derivatives
 
-First, setup your system with build tooling:
-
-```
-lupin:~/src/g13gui$ sudo pacman -Syu
-lupin:~/src/g13gui$ sudo pacman -S base-devel python meson lsb-release git
-```
-
-And build the package:
-
-```
-lupin:~/src/g13gui$ make
-```
-
-After this completes, you should have a shiny new `zst` package in `build/` that you can
-install using `make install`.
+Arch Linux packaging is explicitly denied due to the project's lack of understanding of
+legal consent when it comes to copyright. See also
+[https://gitlab.archlinux.org/archlinux/rfcs/-/merge_requests/0040#note_222407](this objection from an ex-lawyer)
+in their own RFC regarding consent.
 
 #### Fedora and RPM derivatives
 
