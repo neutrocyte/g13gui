@@ -2,7 +2,7 @@ Copyright (C) 2021 June Tate-Gans <june@theonelab.com>
 
 Original Authors:
 
-    "ecraven" (original g13d C++ daemon, which this code base diverged from)
+    "ecraven" (original g13d C++ daemon, which this code base diverged from and was ultimately totally rewritten from)
     James Fowler (C++ fixes in the original codebase)
 
 Contributors:
