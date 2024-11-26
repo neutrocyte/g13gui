@@ -4,7 +4,7 @@ You are welcome to contribute code to G13GUI in order to fix bugs or implement n
 
 There are three important things to know:
 
-  1. You must be aware of the (LICENSE)[license] this project is licensed
+  1. You must be aware of the [license](LICENSE) this project is licensed
      under, and *agree to the Contributors License Agreement*. This is common
      practice in all major Open Source projects.
 
