@@ -1,7 +1,7 @@
 ## Contributing Code
 
-You are welcome to contribute code to G13GUI in order to fix bugs or
-implement new features.
+You are welcome to contribute code to G13GUI (hereafter, the Project) in
+order to fix bugs or implement new features.
 
 There are three important things to know:
 
