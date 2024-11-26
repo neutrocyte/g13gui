@@ -82,9 +82,8 @@ install using `make install`.
 #### Arch and Arch derivatives
 
 Arch Linux packaging is explicitly denied due to the project's lack of understanding of
-legal consent when it comes to copyright. See also
-[https://gitlab.archlinux.org/archlinux/rfcs/-/merge%5Frequests/0040#note%5F222407](this objection)
-in their own RFC regarding consent.
+legal consent when it comes to copyright. See also the objection from an ex-lawyer on silent
+"consent" here: https://gitlab.archlinux.org/archlinux/rfcs/-/merge_requests/0040#note_222407
 
 #### Fedora and RPM derivatives
 
